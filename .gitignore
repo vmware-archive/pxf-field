@@ -1,6 +1,6 @@
-*.class
+# Eclipse Files
+*/.settings
+.metadata
 
-# Package Files #
-*.jar
-*.war
-*.ear
+# Maven build directories
+*/target
