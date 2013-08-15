@@ -3,7 +3,7 @@
 tar -zxvf dependencies.tar.gz
 
 GROUP=com.gopivotal
-VERSION=2.0.2-alpha-gphd-2.0.1.0-SNAPSHOT
+VERSION=2.0.2-alpha-gphd-2.0.1.0
 
 mvn install:install-file -Dfile=./hadoop-auth-2.0.2-alpha-gphd-2.0.1.0.jar -DgroupId=$GROUP -DartifactId=hadoop-auth -Dversion=$VERSION -Dpackaging=jar
 mvn install:install-file -Dfile=./hadoop-common-2.0.2-alpha-gphd-2.0.1.0.jar -DgroupId=$GROUP -DartifactId=hadoop-common -Dversion=$VERSION -Dpackaging=jar
