@@ -102,35 +102,36 @@ public class JsonResolver extends Resolver {
 		return list;
 	}
 
+	@SuppressWarnings("deprecation")
 	private void addOneFieldToRecord(List<OneField> record,
 			int gpdbWritableType, JsonNode val) throws IOException {
 		OneField oneField = new OneField();
 		oneField.type = gpdbWritableType;
 		switch (gpdbWritableType) {
 		case GPDBWritable.BIGINT:
-			oneField.val = val.asLong();
+			oneField.val = val.getValueAsLong();
 			break;
 		case GPDBWritable.BOOLEAN:
-			oneField.val = val.asBoolean();
+			oneField.val = val.getValueAsBoolean();
 			break;
 		case GPDBWritable.BPCHAR:
 		case GPDBWritable.CHAR:
-			oneField.val = val.asText().charAt(0);
+			oneField.val = val.getValueAsText().charAt(0);
 			break;
 		case GPDBWritable.BYTEA:
-			oneField.val = val.asText().getBytes();
+			oneField.val = val.getValueAsText().getBytes();
 			break;
 		case GPDBWritable.FLOAT8:
 		case GPDBWritable.REAL:
-			oneField.val = val.asDouble();
+			oneField.val = val.getValueAsDouble();
 			break;
 		case GPDBWritable.INTEGER:
 		case GPDBWritable.SMALLINT:
-			oneField.val = val.asInt();
+			oneField.val = val.getValueAsInt();
 			break;
 		case GPDBWritable.TEXT:
 		case GPDBWritable.VARCHAR:
-			oneField.val = val.asText();
+			oneField.val = val.getValueAsText();
 			break;
 		default:
 			throw new IOException("Unsupported type " + gpdbWritableType);
