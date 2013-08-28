@@ -4,6 +4,13 @@
 	<groupId>com.gopivotal</groupId>
 	<artifactId>pxf-test</artifactId>
 	<version>1.0.0</version>
+	<repositories>
+		<repository>
+			<id>org.springsource.maven.milestone</id>
+			<name>SpringSource Maven Release Repository</name>
+			<url>http://repo.springsource.org/libs-release</url>
+		</repository>
+	</repositories>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
@@ -19,7 +26,7 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>com.gopivotal</groupId>
+			<groupId>org.apache.hadoop</groupId>
 			<artifactId>hadoop-common</artifactId>
 			<version>2.0.2-alpha-gphd-2.0.1.0</version>
 		</dependency>
@@ -32,11 +39,6 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.9.12</version>
 		</dependency>
 	</dependencies>
 </project>
