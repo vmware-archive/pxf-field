@@ -59,7 +59,7 @@ public class JsonResolver extends Resolver {
 					node = node.get(token);
 
 					if (node == null || node.isMissingNode()) {
-						list.add(null);
+						list.add(new OneField(0, null));
 					} else if (node.isArray()) {
 						int count = 0;
 						boolean added = false;
@@ -80,7 +80,7 @@ public class JsonResolver extends Resolver {
 						// if we reached the end of the array without adding a
 						// field, add null
 						if (!added) {
-							list.add(null);
+							list.add(new OneField(0, null));
 						}
 
 					} else {
@@ -91,7 +91,7 @@ public class JsonResolver extends Resolver {
 				} else {
 					node = node.get(tokens[tokens.length - 1]);
 					if (node == null || node.isMissingNode()) {
-						list.add(null);
+						list.add(new OneField(0, null));
 					} else {
 						addOneFieldToRecord(list, cd.columnType(), node);
 					}
@@ -102,39 +102,43 @@ public class JsonResolver extends Resolver {
 		return list;
 	}
 
-	@SuppressWarnings("deprecation")
 	private void addOneFieldToRecord(List<OneField> record,
 			int gpdbWritableType, JsonNode val) throws IOException {
 		OneField oneField = new OneField();
 		oneField.type = gpdbWritableType;
-		switch (gpdbWritableType) {
-		case GPDBWritable.BIGINT:
-			oneField.val = val.getValueAsLong();
-			break;
-		case GPDBWritable.BOOLEAN:
-			oneField.val = val.getValueAsBoolean();
-			break;
-		case GPDBWritable.BPCHAR:
-		case GPDBWritable.CHAR:
-			oneField.val = val.getValueAsText().charAt(0);
-			break;
-		case GPDBWritable.BYTEA:
-			oneField.val = val.getValueAsText().getBytes();
-			break;
-		case GPDBWritable.FLOAT8:
-		case GPDBWritable.REAL:
-			oneField.val = val.getValueAsDouble();
-			break;
-		case GPDBWritable.INTEGER:
-		case GPDBWritable.SMALLINT:
-			oneField.val = val.getValueAsInt();
-			break;
-		case GPDBWritable.TEXT:
-		case GPDBWritable.VARCHAR:
-			oneField.val = val.getValueAsText();
-			break;
-		default:
-			throw new IOException("Unsupported type " + gpdbWritableType);
+
+		if (val.isNull()) {
+			oneField.val = null;
+		} else {
+			switch (gpdbWritableType) {
+			case GPDBWritable.BIGINT:
+				oneField.val = val.getValueAsLong();
+				break;
+			case GPDBWritable.BOOLEAN:
+				oneField.val = val.getValueAsBoolean();
+				break;
+			case GPDBWritable.BPCHAR:
+			case GPDBWritable.CHAR:
+				oneField.val = val.getValueAsText().charAt(0);
+				break;
+			case GPDBWritable.BYTEA:
+				oneField.val = val.getValueAsText().getBytes();
+				break;
+			case GPDBWritable.FLOAT8:
+			case GPDBWritable.REAL:
+				oneField.val = val.getValueAsDouble();
+				break;
+			case GPDBWritable.INTEGER:
+			case GPDBWritable.SMALLINT:
+				oneField.val = val.getValueAsInt();
+				break;
+			case GPDBWritable.TEXT:
+			case GPDBWritable.VARCHAR:
+				oneField.val = val.getValueAsText();
+				break;
+			default:
+				throw new IOException("Unsupported type " + gpdbWritableType);
+			}
 		}
 
 		record.add(oneField);

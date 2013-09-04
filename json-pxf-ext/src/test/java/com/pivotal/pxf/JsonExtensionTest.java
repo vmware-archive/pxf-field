@@ -59,6 +59,18 @@ public class JsonExtensionTest extends PxfUnit {
 	}
 
 	@Test
+	public void testTweetsWithNull() throws Exception {
+
+		List<String> output = new ArrayList<String>();
+
+		output.add("Fri Jun 07 22:45:02 +0000 2013,,REPAIR THE TRUST: REMOVE OBAMA/BIDEN FROM OFFICE. #IRS #DOJ #NSA #tcot,SpreadButter,tweetCongress,,");
+		output.add("Fri Jun 07 22:45:02 +0000 2013,,@marshafitrie dibagi 1000 aja sha :P,patronusdeadly,,,");
+
+		super.assertOutput(new Path(System.getProperty("user.dir") + "/"
+				+ "src/test/resources/null-tweets.json"), output);
+	}
+
+	@Test
 	public void testSmallTweetsWithDelete() throws Exception {
 
 		List<String> output = new ArrayList<String>();

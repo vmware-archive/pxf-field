@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gopivotal</groupId>
 	<artifactId>json-pxf-ext</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<repositories>
 		<repository>
 			<id>org.springsource.maven.milestone</id>
@@ -45,11 +45,8 @@
 			<artifactId>hadoop-mapreduce-client-core</artifactId>
 			<version>2.0.2-alpha-gphd-2.0.1.0</version>
 		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>r05</version>
-		</dependency>
+		<!-- dependency> <groupId>com.google.guava</groupId> <artifactId>guava</artifactId> 
+			<version>r05</version> </dependency -->
 		<dependency>
 			<groupId>com.gopivotal</groupId>
 			<artifactId>gpxf</artifactId>
@@ -101,7 +98,6 @@
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>1.8.8</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-core-asl</artifactId>
