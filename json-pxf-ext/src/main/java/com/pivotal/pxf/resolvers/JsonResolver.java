@@ -59,7 +59,7 @@ public class JsonResolver extends Resolver {
 					node = node.get(token);
 
 					if (node == null || node.isMissingNode()) {
-						list.add(new OneField(0, null));
+						list.add(new OneField(cd.columnType(), null));
 					} else if (node.isArray()) {
 						int count = 0;
 						boolean added = false;
@@ -80,7 +80,7 @@ public class JsonResolver extends Resolver {
 						// if we reached the end of the array without adding a
 						// field, add null
 						if (!added) {
-							list.add(new OneField(0, null));
+							list.add(new OneField(cd.columnType(), null));
 						}
 
 					} else {
@@ -91,7 +91,7 @@ public class JsonResolver extends Resolver {
 				} else {
 					node = node.get(tokens[tokens.length - 1]);
 					if (node == null || node.isMissingNode()) {
-						list.add(new OneField(0, null));
+						list.add(new OneField(cd.columnType(), null));
 					} else {
 						addOneFieldToRecord(list, cd.columnType(), node);
 					}
@@ -143,5 +143,4 @@ public class JsonResolver extends Resolver {
 
 		record.add(oneField);
 	}
-
 }
