@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>PXF by Pivotal-Field-Engineering</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>PXF</h1>
+        <p>Prototype PXF extensions for HAWQ</p>
+
+        <p class="view"><a href="https://github.com/Pivotal-Field-Engineering/pxf-field">View the Project on GitHub <small>Pivotal-Field-Engineering/pxf-field</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/Pivotal-Field-Engineering/pxf-field/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/Pivotal-Field-Engineering/pxf-field/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/Pivotal-Field-Engineering/pxf-field">View On <strong>GitHub</strong></a></li>
+        </ul>
+		<br/><br/>
+        <p><a href="index.html">Home</a></p>
+      </header>
+      <section>
+        
+<h2>Accumulo</h2>
+<h3>Overview</h3>
+
+<p>The Accumulo PXF extension is similar to the HBase extension, in both functionality and usage.  Note that Accumulo is not currently a supported product on Pivotal HD.  See <a href="installing.html">Installing an Extension</a> for details on doing just that.</p>
+
+<p>The Accumulo user name, password, and authorizations are included in the table definition.  This is clearly a security hole and should be addressed.  This extension is a functional prototype only.</p>
+
+<p>The current version, version 1.0.0, does <b>not</b> support any push-down range scans.  This feature is possible, but some engineering needs to go into it.</p>
+
+<h3>Required HADOOP_CLASSPATH Additions</h3>
+
+<code>
+# Required only for GPXF with Accumulo
+HADOOP_CLASSPATH=$HADOOP_CLASSPATH:\
+$GPHD_HOME/gpxf/accumulo-pxf-ext-1.0.0.jar:\
+$GPHD_HOME/accumulo/lib/accumulo-core.jar:\
+$GPHD_HOME/accumulo/lib/accumulo-core.jar:\
+$GPHD_HOME/accumulo/lib/accumulo-fate.jar:\
+$GPHD_HOME/accumulo/lib/accumulo-minicluster.jar:\
+$GPHD_HOME/accumulo/lib/accumulo-proxy.jar:\
+$GPHD_HOME/accumulo/lib/accumulo-server.jar:\
+$GPHD_HOME/accumulo/lib/accumulo-start.jar:\
+$GPHD_HOME/accumulo/lib/accumulo-test.jar:\
+$GPHD_HOME/accumulo/lib/accumulo-trace.jar:\
+$GPHD_HOME/accumulo/lib/libthrift.jar:\
+$GPHD_HOME/accumulo/lib/jline.jar:\
+$GPHD_HOME/accumulo/conf
+</code>
+<br/><br/>
+<h3>Column Specification</h3>
+
+<p>Each column is named after the <i>recordkey</i> (row ID) or a column <i>family:column</i> qualifier quoted string.  The Value associated with the Key  (row ID, column family, column qualifier) is the value in the cell of the HAWQ table.  All key/value pairs with a matching row ID are collected to generate a single row of the HAWQ table.  See below example for clarity.</p>
+
+<h3>Table Specification Parameters</h3>
+
+<p>The table name follows the NameNode REST address.</p>
+
+<table id="tfhover" class="tftable" border="1">
+<tr><th>Parameter</th><th>Value</th></tr>
+<tr><td>FRAGMENTER</td><td>AccumuloFragmenter</td></tr>
+<tr><td>ACCESSOR</td><td>AccumuloAccessor</td></tr>
+<tr><td>RESOLVER</td><td>AccumuloResolver</td></tr>
+<tr><td>INSTANCE</td><td>The Accumulo instance name</td></tr>
+<tr><td>QUORUM</td><td>The ZooKeeper quorum for the Accumulo instance</td></tr>
+<tr><td>USER</td><td>The Accumulo user name to read the table.  Must have authorization to read the table</td></tr>
+<tr><td>PASSWORD</td><td>The USER's password</td></tr>
+<tr><td>AUTHS</td><td>The authorizations used by Accumulo to scan data. The user must have these authorizations to scan.</td></tr>
+</table>
+
+<br/>
+<h3>Example</h3>
+
+<p>The following creates an external HAWQ table that will read data from the Accumulo table called mytesttable.</p>
+
+<p><b>Accumulo Shell</b></p>
+
+<p>The data in Accumulo, read via the Accumulo shell.</p>
+
+<p>
+<code>
+[gpadmin@phd6 ~]$ accumulo shell -u root -p secret<br/>
+<br/>
+root@pivotalhd> table mytesttable<br/>
+root@pivotalhd mytesttable> scan<br/>
+row1 cf:a []    1<br/>
+row1 cf:b []    2<br/>
+row2 cf:b []    3<br/>
+row2 cf:c []    4<br/>
+row3 cf:a []    5<br/>
+row3 cf:c []    6<br/>
+root@pivotalhd mytesttable><br/>
+</code>
+</p>
+<p><b>PSQL Prompt</b></p>
+
+<p>The data read via HAWQ using an Accumulo extension.</p>
+
+<code>
+CREATE EXTERNAL TABLE ext_acc_mytesttable (<br/>
+recordkey TEXT,<br/>
+"cf:a" INTEGER,<br/>
+"cf:b" INTEGER,<br/>
+"cf:c" INTEGER<br/>
+) LOCATION ('pxf://phd2:50070/mytesttable?FRAGMENTER=AccumuloFragmenter&ACCESSOR=AccumuloAccessor&<br/>
+RESOLVER=AccumuloResolver&INSTANCE=pivotalhd<br/>
+&QUORUM=phd2:2181,phd3:2181,phd4:2181&USER=root&PASSWORD=secret<br/>
+&AUTHS=public')<br/>
+FORMAT 'CUSTOM' (FORMATTER='gpxfwritable_import');<br/>
+<br/>
+SELECT * FROM ext_acc_mytesttable;<br/>
+<br/>
+ recordkey | cf:a | cf:b | cf:c <br/>
+-----------+------+------+------<br/>
+ row1      |    1 |    2 |     <br/>
+ row2      |      |    3 |    4<br/>
+ row3      |    5 |      |    6<br/>
+</code>
+		
+		
+		
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/Pivotal-Field-Engineering">Pivotal-Field-Engineering</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>

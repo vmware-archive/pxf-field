@@ -1,0 +1,233 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>PXF by Pivotal-Field-Engineering</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>PXF</h1>
+        <p>Prototype PXF extensions for HAWQ</p>
+
+        <p class="view"><a href="https://github.com/Pivotal-Field-Engineering/pxf-field">View the Project on GitHub <small>Pivotal-Field-Engineering/pxf-field</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/Pivotal-Field-Engineering/pxf-field/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/Pivotal-Field-Engineering/pxf-field/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/Pivotal-Field-Engineering/pxf-field">View On <strong>GitHub</strong></a></li>
+        </ul>
+		<br/><br/>
+        <p><a href="index.html">Home</a></p>
+      </header>
+      <section>
+        
+<h2>JSON</h2>
+<h3>Overview</h3>
+<p>The JSON PXF extension will read native JSON data stored in HDFS.  It supports basic projections into JSON objects.  Indexing into JSON arrays is under development.  See Installing an Extension for installation details.
+
+<p>There are two types of ways this extension can read data.  The default expects one full JSON block per line, much like how the Twitter feed operates.  It also supports "pretty print" of JSON -- one full JSON file that contains a single root record and then an array of records that have some root identifier.  See examples below.
+
+
+<h3>Required HADOOP_CLASSPATH Additions</h3>
+
+<code>
+# Required only for PXF with JSON<br/>
+HADOOP_CLASSPATH=$HADOOP_CLASSPATH:\<br/>
+$GPHD_HOME/gpxf/json-pxf-ext-1.0.0.jar<br/>
+</code>
+<br/>
+<h3>Column Specification</h3>
+
+<p>Each column is named after the JSON object, complete with projects and array indices, if applicable.  For nested objects, used quoted column names and a period to project into the nested objects.  See below for an example.</p>
+
+<h3>Table Specification Parameters</h3>
+<table id="tfhover" class="tftable" border="1">
+<tr><th>Parameter</th><th>Required?</th><th>Value</th></tr>
+<tr><td>FRAGMENTER</td><td>Yes</td><td>HdfsDataFragmenter</td></tr>
+<tr><td>ACCESSOR</td><td>Yes</td><td>JsonAccessor</td></tr>
+<tr><td>RESOLVER</td><td>Yes</td><td>JsonResolver</td></tr>
+<tr><td>ANALYZER</td><td>No</td><td>HdfsAnalyzer</td></tr>
+<tr><td>IDENTIFIER</td><td>No</td><td>Use this when ONERECORDPERLINE is set to "true".  This identifies a single record of JSON</td></tr>
+<tr><td>ONERECORDPERLINE</td><td>No</td><td>Default is "true",  Boolean value indicating if a single JSON record is compacted on one line</td></tr>
+</table>
+<br/>
+
+<h3>One Record Per Line Example</h3>
+
+<p>The following creates an external HAWQ table that will read data from a JSON file in HDFS table called mytestfile.json that has one record per line.</p>
+
+<p><b>JSON Data</b></p>
+
+<pre><code>
+{"created_at":"Fri Jun 07 22:45:02 +0000 2013","id_str":"343136547115253761","text":"REPAIR THE TRUST: REMOVE OBAMA\/BIDEN FROM OFFICE. #IRS #DOJ","source":"web","user":{"id":26643566,"screen_name":"SpreadButter","location":"Austin, Texas"},"entities":{"hashtags":["IRS","DOJ"]}}
+{"created_at":"Fri Jun 07 22:45:02 +0000 2013","id_str":"343136547123646465","text":"@marshafitrie dibagi 1000 aja sha :P","source":"web","user":{"id":102904200,"screen_name":"patronusdeadly","location":"Bekasi-Surabaya"},"entities":{"hashtags":[]}}
+{"created_at":"Fri Jun 07 22:45:02 +0000 2013","id_str":"343136547136233472","text":"Vaga: Supervisor de Almoxarifado. Confira em http:\/\/t.co\/hK5cy5B2oS","source":"web","user":{"id":287819058,"screen_name":"NoSecrets_Vagas","location":""},"entities":{"hashtags":[]}}
+{"created_at":"Fri Jun 07 22:45:03 +0000 2013","id_str":"343136551322136576","text":"It's Jun 7, 2013 @ 11pm ; Wind = NNE (30,0) 14.0 knots; Swell = 2.6 ft @ 5 seconds....","source":"web","user":{"id":395504494,"screen_name":"SevenStonesBuoy","location":"Near Cornwall"},"coordinates":{"type":"Point","coordinates":[-6.100,50.103]},"entities":{"hashtags":[]}}
+</pre></code>
+
+<p><b>PSQL Prompt</b></p>
+
+<p>The data read via HAWQ using a JSON extension.</p>
+
+<pre><code>
+CREATE EXTERNAL TABLE ext_json_mytestfile (
+created_at TEXT,
+id_str TEXT,
+text TEXT,
+source TEXT,
+"user.id" INTEGER,
+"user.screen_name" TEXT,
+"user.location" TEXT
+)
+LOCATION('pxf://phd2:50070/user/gpadmin/mytestfile.json?FRAGMENTER=HdfsDataFragmenter&
+ACCESSOR=JsonAccessor&RESOLVER=JsonResolver')
+FORMAT 'CUSTOM'
+(FORMATTER='gpxfwritable_import');
+
+SELECT * FROM ext_json_mytestfile;
+
+           created_at           |       id_str       |                                          text                                          | source |  user.id  | user.screen_name |  user.location 
+--------------------------------+--------------------+----------------------------------------------------------------------------------------+--------+-----------+------------------+-----------------
+ Fri Jun 07 22:45:02 +0000 2013 | 343136547115253761 | REPAIR THE TRUST: REMOVE OBAMA/BIDEN FROM OFFICE. #IRS #DOJ                            | web    |  26643566 | SpreadButter     | Austin, Texas
+ Fri Jun 07 22:45:02 +0000 2013 | 343136547123646465 | @marshafitrie dibagi 1000 aja sha :P                                                   | web    | 102904200 | patronusdeadly   | Bekasi-Surabaya
+ Fri Jun 07 22:45:02 +0000 2013 | 343136547136233472 | Vaga: Supervisor de Almoxarifado. Confira em http://t.co/hK5cy5B2oS                    | web    | 287819058 | NoSecrets_Vagas  |
+ Fri Jun 07 22:45:03 +0000 2013 | 343136551322136576 | It's Jun 7, 2013 @ 11pm ; Wind = NNE (30,0) 14.0 knots; Swell = 2.6 ft @ 5 seconds.... | web    | 395504494 | SevenStonesBuoy  | Near Cornwall
+</code></pre>
+
+<br/>
+<h3>Pretty Print Example  -- currently not working...</h3>
+
+<p>The following creates an external HAWQ table that will read data from a JSON file in HDFS table called mypptestfile.json that has one record per line.</p>
+
+<p><b>JSON Data</b></p>
+
+<pre><code>
+{
+   "root":[
+      {
+         "record":{
+            "created_at":"Fri Jun 07 22:45:02 +0000 2013",
+            "id_str":"343136547115253761",
+            "text":"REPAIR THE TRUST: REMOVE OBAMA\/BIDEN FROM OFFICE. #IRS #DOJ",
+            "source":"web",
+            "user":{
+               "id":26643566,
+               "screen_name":"SpreadButter",
+               "location":"Austin, Texas"
+            },
+            "entities":{
+               "hashtags":[
+                  "IRS",
+                  "DOJ"
+               ]
+            }
+         }
+      },
+      {
+         "record":{
+            "created_at":"Fri Jun 07 22:45:02 +0000 2013",
+            "id_str":"343136547123646465",
+            "text":"@marshafitrie dibagi 1000 aja sha :P",
+            "source":"web",
+            "user":{
+               "id":102904200,
+               "screen_name":"patronusdeadly",
+               "location":"Bekasi-Surabaya"
+            },
+            "entities":{
+               "hashtags":[
+
+               ]
+            }
+         }
+      },
+      {
+         "record":{
+            "created_at":"Fri Jun 07 22:45:02 +0000 2013",
+            "id_str":"343136547136233472",
+            "text":"Vaga: Supervisor de Almoxarifado. Confira em http:\/\/t.co\/hK5cy5B2oS",
+            "source":"web",
+            "user":{
+               "id":287819058,
+               "screen_name":"NoSecrets_Vagas",
+               "location":""
+            },
+            "entities":{
+               "hashtags":[
+
+               ]
+            }
+         }
+      },
+      {
+         "record":{
+            "created_at":"Fri Jun 07 22:45:03 +0000 2013",
+            "id_str":"343136551322136576",
+            "text":"It's Jun 7, 2013 @ 11pm ; Wind = NNE (30,0) 14.0 knots; Swell = 2.6 ft @ 5 seconds....",
+            "source":"web",
+            "user":{
+               "id":395504494,
+               "screen_name":"SevenStonesBuoy",
+               "location":"Near Cornwall"
+            },
+            "coordinates":{
+               "type":"Point",
+               "coordinates":[
+                  -6.100,
+                  50.103
+               ]
+            },
+            "entities":{
+               "hashtags":[
+
+               ]
+            }
+         }
+      }
+   ]
+}
+</code></pre>
+
+<p><b>PSQL Prompt</b></p>
+
+<p>The data read via HAWQ using a JSON extension.</p>
+
+<code>
+CREATE EXTERNAL TABLE ext_json_mypptestfile (<br/>
+created_at TEXT,<br/>
+id_str TEXT,<br/>
+text TEXT,<br/>
+source TEXT,<br/>
+"user.id" INTEGER,<br/>
+"user.screen_name" TEXT,<br/>
+"user.location" TEXT<br/>
+)<br/>
+LOCATION('pxf://phd2:50070/user/gpadmin/mypptestfile.json?FRAGMENTER=HdfsDataFragmenter&<br/>
+ACCESSOR=JsonAccessor&RESOLVER=JsonResolver&<br/>
+ONERECORDPERLINE=true&IDENTIFER=record')<br/>
+FORMAT 'CUSTOM'<br/>
+(FORMATTER='gpxfwritable_import');<br/>
+<br/>
+SELECT * FROM ext_json_mypptestfile;<br/>
+</code>
+
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/Pivotal-Field-Engineering">Pivotal-Field-Engineering</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>

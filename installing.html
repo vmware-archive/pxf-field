@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>PXF by Pivotal-Field-Engineering</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>PXF</h1>
+        <p>Prototype PXF extensions for HAWQ</p>
+
+        <p class="view"><a href="https://github.com/Pivotal-Field-Engineering/pxf-field">View the Project on GitHub <small>Pivotal-Field-Engineering/pxf-field</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/Pivotal-Field-Engineering/pxf-field/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/Pivotal-Field-Engineering/pxf-field/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/Pivotal-Field-Engineering/pxf-field">View On <strong>GitHub</strong></a></li>
+        </ul>
+		<br/><br/>
+        <p><a href="index.html">Home</a></p>
+      </header>
+      <section>
+        
+<h2>Installing an Extension</h2>
+<h3>Overview</h3>
+
+<p>
+A PXF extension is relatively simple to install.  The steps break down to:
+<ol>
+<li>Package extension into a JAR file</li>
+<li>Put the JAR file in the /usr/lib/gphd/gpxf directory on each cluster node</li>
+<li>Add this JAR file and any dependencies to the the HADOOP_CLASSPATH in /etc/gphd/hadoop/conf/hadoop-env.sh on each cluster node</li>
+<li>Restart the cluster using ICM</li>
+<li>Create an external table and query data</li>
+<li>If unsuccessful with classpath related errors, go back to 3 and add any missing JAR files</li>
+</ol>
+<b>WARNING</b> Modifying the hadoop-env.sh file can damage the cluster.  Make sure you have backups and know what you're up to in there!
+</p>
+
+<h3>Example Installation</h3>
+
+<p>
+<b>Note</b> This guide was built against the Pivotal HD GA release.
+</p>
+<p>
+For example, the following steps will install the <a href="accumulo.html">Accumulo extension</a>.
+</p>
+
+<ol>
+<p><li>Place the extension JAR file in gpadmin's home directory on the HAWQ master node from your local machine.  If the master node doesn't have an external address, SCP to a node that does and then the master node.</li></p>
+
+<p><code>scp ~/accumulo-gpxf-ext-0.0.1.jar gpadmin@<hawq_master_ip>:~</code></p>
+
+<p><li>Create a file called <code>HostFile.txt</code> that contains the hostname of every Hadoop node and HAWQ Segment Server in your Pivotal HD cluster.</li></p>
+
+<p><li>As gpadmin (from here on out), use the gpscp utility to SCP this jar file from the HAWQ master to the GPXF directory on every Hadoop node on the cluster.</p>
+
+<p>
+<code>source /usr/lib/gphd/hawq/greenplum_path.sh
+gpscp -f ~/HostFile.txt ~/accumulo-gpxf-ext-0.0.1.jar =:/usr/lib/gphd/gpxf</code>
+</li></p>
+
+<p><li>Modify hadoop-env.sh to add the extension and any additional JAR files.</p>
+
+<p><code>
+vi /etc/gphd/hadoop/conf/hadoop-env.sh
+
+# Required only for GPXF with Accumulo
+HADOOP_CLASSPATH=$HADOOP_CLASSPATH:\
+$GPHD_HOME/gpxf/accumulo-gpxf-ext-0.0.1.jar:\
+$GPHD_HOME/accumulo/lib/accumulo-core.jar:\
+$GPHD_HOME/accumulo/lib/accumulo-core.jar:\
+$GPHD_HOME/accumulo/lib/accumulo-fate.jar:\
+$GPHD_HOME/accumulo/lib/accumulo-minicluster.jar:\
+$GPHD_HOME/accumulo/lib/accumulo-proxy.jar:\
+$GPHD_HOME/accumulo/lib/accumulo-server.jar:\
+$GPHD_HOME/accumulo/lib/accumulo-start.jar:\
+$GPHD_HOME/accumulo/lib/accumulo-test.jar:\
+$GPHD_HOME/accumulo/lib/accumulo-trace.jar:\
+$GPHD_HOME/accumulo/lib/libthrift.jar:\
+$GPHD_HOME/accumulo/lib/jline.jar:\
+$GPHD_HOME/accumulo/conf
+</code></p></li>
+
+<p><li>Again, using the <code>HostFile.txt</code> and gpscp, copy this updated file to each Hadoop node.</p>
+
+<p><code>gpscp -f ~/HostFile.txt /etc/gphd/hadoop/conf/hadoop-env.sh =:/etc/gphd/hadoop/conf</code></p></li>
+
+<p><li>Restart Pivotal HD and HAWQ via the Admin Node per the instructions in the Pivotal HD admin guide.</li></p>
+</ol>
+
+<h3>Troubleshooting</h3>
+
+<p>After creating an external table, the most common error when creating and querying an external table using your extension is a CLASSPATH issue -- Class not found, no such method, etc.  You'll need to add the missing JAR files to the HADOOP_CLASSPATH.  Note that, as in the Accumulo extension, libthrift and jline are outside of the Accumulo-related JAR files but are added the Hadoop classpath here.  This is because the versions that come packaged with Hadoop are not up to date with Accumulo and will not work until removed from the /usr/lib/gphd/hadoop/lib directory and the Accumulo ones are added.  This can cause all sorts of problems... so be careful.  The fun is in the danger!</p>
+
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/Pivotal-Field-Engineering">Pivotal-Field-Engineering</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>

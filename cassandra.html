@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>PXF by Pivotal-Field-Engineering</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>PXF</h1>
+        <p>Prototype PXF extensions for HAWQ</p>
+
+        <p class="view"><a href="https://github.com/Pivotal-Field-Engineering/pxf-field">View the Project on GitHub <small>Pivotal-Field-Engineering/pxf-field</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/Pivotal-Field-Engineering/pxf-field/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/Pivotal-Field-Engineering/pxf-field/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/Pivotal-Field-Engineering/pxf-field">View On <strong>GitHub</strong></a></li>
+        </ul>
+		<br/><br/>
+        <p><a href="index.html">Home</a></p>
+      </header>
+      <section>
+	  
+	  
+
+<h2>Cassandra</h2>
+<h3>Overview</h3>
+<p>The Cassandra PXF extension is similar to the HBase extension, in both functionality and usage.  Note that Cassandra is not currently a supported product with Pivotal HD.  See Installing an Extension for details on doing just that.</p>
+
+<p>The current version, version 1.0.0, does not support any push-down filters for scans.  This feature is possible, but some engineering needs to go into it.</p>
+
+<h3>Required Hadoop Classpath Additions</h3>
+
+<p>Note the version number in these jar files.  May be different depending on the Cassandra installation.</p>
+
+<code>
+# Required only for GPXF with Cassandra<br/>
+HADOOP_CLASSPATH=$HADOOP_CLASSPATH:\<br/>
+$GPHD_HOME/gpxf/cassandra-pxf-ext-1.0.0.jar:\<br/>
+$GPHD_HOME/apache-cassandra/lib/apache-cassandra-1.2.6.jar:\<br/>
+$GPHD_HOME/apache-cassandra/lib/apache-cassandra-clientutil-1.2.6.jar:\<br/>
+$GPHD_HOME/apache-cassandra/lib/apache-cassandra-thrift-1.2.6.jar:\<br/>
+$GPHD_HOME/apache-cassandra/conf<br/>
+</code>
+<br/>
+<h3>Column Specification</h3>
+
+Each HAWQ table is given a Cassandra keyspace and a column family within each keyspace.  Unlike the HBase and Accumulo extensions, the Cassandra extension does not allow for multiple column families in each table definition.  If you would like multiple column families in the same keyspace, create external tables that point to different families.</p>
+
+Each column is named after the recordkey (row ID) or a column string.  The value associated with the key (row ID, column family, column qualifier) is the value in the cell of the HAWQ table.  All key/value pairs with a matching row ID are collected to generate a single row of the HAWQ table.  See below example for clarity.</p>
+
+<h3>Table Specification Parameters</h3>
+
+<p>The keyspace name follows the NameNode REST address.</p>
+
+<table id="tfhover" class="tftable" border="1">
+<tr><th>Parameter</th><th>Value</th></tr>
+<tr><td>FRAGMENTER</td><td>CassandraFragmenter</td></tr>
+<tr><td>ACCESSOR</td><td>CassandraAccessor</td></tr>
+<tr><td>RESOLVER</td><td>CassandraResolver</td></tr>
+<tr><td>ADDRESS</td><td>A Cassandra seed server to locate the ring</td></tr>
+<tr><td>COLUMN-FAMILY</td><td>A valid column family in the keyspace</td></tr>
+<tr><td>PARTITIONER</td><td>The configured partitioner class for the Cassandra instance.  Default for 1.2.6 is "Murmur3Partitioner"</td></tr>
+</table>
+<br/>
+<h3>Example</h3>
+
+<p>The following creates an external HAWQ table that will read data from the Cassandra keyspace called mytesttable, with column family Users.</p>
+
+<p><b>Cassandra Shell</b></p>
+
+<p>The data in Cassandra, read via the Cassandra shell.</p>
+
+<code>
+[gpadmin@phd7 ~]$ cassandra-cli -h 192.168.0.107<br/>
+[default@unknown] use mytesttable;<br/>
+[default@mytesttable] list Users;<br/>
+Using default limit of 100<br/>
+Using default cell limit of 100<br/>
+-------------------<br/>
+RowKey: 2<br/>
+=> (name=fname, value=Clark, timestamp=1373385475314000)<br/>
+=> (name=lname, value=Kent, timestamp=1373385481489000)<br/>
+=> (name=location, value=Metropolis, timestamp=1373385421062000)<br/>
+-------------------<br/>
+RowKey: 1<br/>
+=> (name=fname, value=Bruce, timestamp=1373385501217000)<br/>
+=> (name=lname, value=Wayne, timestamp=1373385495474000)<br/>
+=> (name=location, value=Gotham, timestamp=1373385507145000)<br/>
+<br/>
+2 Rows Returned.<br/>
+Elapsed time: 26 msec(s).<br/>
+</code>
+<br/>
+<p><b>PSQL Prompt</b></p>
+
+<p>The data read via HAWQ using a Cassandra extension.</p>
+
+<code>
+CREATE EXTERNAL TABLE ext_cass_mytesttable (<br/>
+recordkey TEXT,<br/>
+fname TEXT,<br/>
+lname TEXT,<br/>
+location TEXT<br/>
+) LOCATION ('pxf://phd2:50070/mytesttable?FRAGMENTER=CassandraFragmenter&ACCESSOR=CassandraAccessor&
+<br/>RESOLVER=CassandraResolver&ADDRESS=192.168.0.107&COLUMN-FAMILY=Users
+<br/>&PARTITIONER=Murmur3Partitioner') <br/>
+FORMAT 'CUSTOM' (FORMATTER='gpxfwritable_import');<br/>
+<br/>
+CREATE EXTERNAL TABLE<br/>
+<br/>
+SELECT * FROM ext_cass_mytesttable;<br/>
+ recordkey | fname | lname |  location  <br/>
+-----------+-------+-------+------------<br/>
+ 2         | Clark | Kent  | Metropolis<br/>
+ 1         | Bruce | Wayne | Gotham<br/>
+(2 rows)<br/>
+</code>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/Pivotal-Field-Engineering">Pivotal-Field-Engineering</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
