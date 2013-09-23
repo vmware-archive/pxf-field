@@ -27,7 +27,17 @@
           <li><a href="https://github.com/Pivotal-Field-Engineering/pxf-field">View On <strong>GitHub</strong></a></li>
         </ul>
 		<br/><br/>
-        <p><a href="index.html">Home</a></p>
+		<p><a href="index.html">Home</a><br/>
+		<br/>
+		Getting Started<br/>
+		<a href="installing.html">Installing an Extension</a><br/>
+		<a href="developing.html">Developing and Testing Extensions</a><br/>
+		<br/>
+		Prototype Extensions<br/>
+		<a href="accumulo.html">Accumulo</a><br/>
+		<a href="cassandra.html">Cassandra</a><br/>
+		<a href="json.html">JSON</a><br/>
+		</p>
       </header>
       <section>
         
@@ -38,12 +48,14 @@
 <p>There are two types of ways this extension can read data.  The default expects one full JSON block per line, much like how the Twitter feed operates.  It also supports "pretty print" of JSON -- one full JSON file that contains a single root record and then an array of records that have some root identifier.  See examples below.
 
 
-<h3>Required HADOOP_CLASSPATH Additions</h3>
+<h3>Required Hadoop Classpath Additions</h3>
+
+<p><b>Note</b> the version numbers of these jar files.  Make sure you are using the proper version of the extension as well as any dependencies.</p>
 
 <code>
 # Required only for PXF with JSON<br/>
 HADOOP_CLASSPATH=$HADOOP_CLASSPATH:\<br/>
-$GPHD_HOME/gpxf/json-pxf-ext-1.0.0.jar<br/>
+$GPHD_HOME/gpxf/json-pxf-ext-&ltversion&gt.jar<br/>
 </code>
 <br/>
 <h3>Column Specification</h3>

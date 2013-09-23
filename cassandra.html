@@ -27,7 +27,17 @@
           <li><a href="https://github.com/Pivotal-Field-Engineering/pxf-field">View On <strong>GitHub</strong></a></li>
         </ul>
 		<br/><br/>
-        <p><a href="index.html">Home</a></p>
+		<p><a href="index.html">Home</a><br/>
+		<br/>
+		Getting Started<br/>
+		<a href="installing.html">Installing an Extension</a><br/>
+		<a href="developing.html">Developing and Testing Extensions</a><br/>
+		<br/>
+		Prototype Extensions<br/>
+		<a href="accumulo.html">Accumulo</a><br/>
+		<a href="cassandra.html">Cassandra</a><br/>
+		<a href="json.html">JSON</a><br/>
+		</p>
       </header>
       <section>
 	  
@@ -41,12 +51,12 @@
 
 <h3>Required Hadoop Classpath Additions</h3>
 
-<p>Note the version number in these jar files.  May be different depending on the Cassandra installation.</p>
+<p><b>Note</b> the version numbers of these jar files.  Make sure you are using the proper version of the extension as well as any dependencies.</p>
 
 <code>
 # Required only for GPXF with Cassandra<br/>
 HADOOP_CLASSPATH=$HADOOP_CLASSPATH:\<br/>
-$GPHD_HOME/gpxf/cassandra-pxf-ext-1.0.0.jar:\<br/>
+$GPHD_HOME/gpxf/cassandra-pxf-ext-&ltversion&gt.jar:\<br/>
 $GPHD_HOME/apache-cassandra/lib/apache-cassandra-1.2.6.jar:\<br/>
 $GPHD_HOME/apache-cassandra/lib/apache-cassandra-clientutil-1.2.6.jar:\<br/>
 $GPHD_HOME/apache-cassandra/lib/apache-cassandra-thrift-1.2.6.jar:\<br/>

@@ -27,7 +27,17 @@
           <li><a href="https://github.com/Pivotal-Field-Engineering/pxf-field">View On <strong>GitHub</strong></a></li>
         </ul>
 		<br/><br/>
-        <p><a href="index.html">Home</a></p>
+		<p><a href="index.html">Home</a><br/>
+		<br/>
+		Getting Started<br/>
+		<a href="installing.html">Installing an Extension</a><br/>
+		<a href="developing.html">Developing and Testing Extensions</a><br/>
+		<br/>
+		Prototype Extensions<br/>
+		<a href="accumulo.html">Accumulo</a><br/>
+		<a href="cassandra.html">Cassandra</a><br/>
+		<a href="json.html">JSON</a><br/>
+		</p>
       </header>
       <section>
         
@@ -40,12 +50,14 @@
 
 <p>The current version, version 1.0.0, does <b>not</b> support any push-down range scans.  This feature is possible, but some engineering needs to go into it.</p>
 
-<h3>Required HADOOP_CLASSPATH Additions</h3>
+<h3>Required Hadoop Classpath Additions</h3>
+
+<p><b>Note</b> the version numbers of these jar files.  Make sure you are using the proper version of the extension as well as any dependencies.</p>
 
 <code>
 # Required only for GPXF with Accumulo
 HADOOP_CLASSPATH=$HADOOP_CLASSPATH:\
-$GPHD_HOME/gpxf/accumulo-pxf-ext-1.0.0.jar:\
+$GPHD_HOME/gpxf/accumulo-pxf-ext-&ltversion&gt.jar:\
 $GPHD_HOME/accumulo/lib/accumulo-core.jar:\
 $GPHD_HOME/accumulo/lib/accumulo-core.jar:\
 $GPHD_HOME/accumulo/lib/accumulo-fate.jar:\

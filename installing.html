@@ -27,7 +27,17 @@
           <li><a href="https://github.com/Pivotal-Field-Engineering/pxf-field">View On <strong>GitHub</strong></a></li>
         </ul>
 		<br/><br/>
-        <p><a href="index.html">Home</a></p>
+		<p><a href="index.html">Home</a><br/>
+		<br/>
+		Getting Started<br/>
+		<a href="installing.html">Installing an Extension</a><br/>
+		<a href="developing.html">Developing and Testing Extensions</a><br/>
+		<br/>
+		Prototype Extensions<br/>
+		<a href="accumulo.html">Accumulo</a><br/>
+		<a href="cassandra.html">Cassandra</a><br/>
+		<a href="json.html">JSON</a><br/>
+		</p>
       </header>
       <section>
         
@@ -66,35 +76,39 @@ For example, the following steps will install the <a href="accumulo.html">Accumu
 <p><li>As gpadmin (from here on out), use the gpscp utility to SCP this jar file from the HAWQ master to the GPXF directory on every Hadoop node on the cluster.</p>
 
 <p>
-<code>source /usr/lib/gphd/hawq/greenplum_path.sh
-gpscp -f ~/HostFile.txt ~/accumulo-gpxf-ext-0.0.1.jar =:/usr/lib/gphd/gpxf</code>
+<code>
+source /usr/lib/gphd/hawq/greenplum_path.sh<br/>
+gpscp -f ~/HostFile.txt ~/accumulo-gpxf-ext-0.0.1.jar \<br/>
+=:/usr/lib/gphd/gpxf
+</code>
 </li></p>
 
 <p><li>Modify hadoop-env.sh to add the extension and any additional JAR files.</p>
 
-<p><code>
-vi /etc/gphd/hadoop/conf/hadoop-env.sh
-
-# Required only for GPXF with Accumulo
-HADOOP_CLASSPATH=$HADOOP_CLASSPATH:\
-$GPHD_HOME/gpxf/accumulo-gpxf-ext-0.0.1.jar:\
-$GPHD_HOME/accumulo/lib/accumulo-core.jar:\
-$GPHD_HOME/accumulo/lib/accumulo-core.jar:\
-$GPHD_HOME/accumulo/lib/accumulo-fate.jar:\
-$GPHD_HOME/accumulo/lib/accumulo-minicluster.jar:\
-$GPHD_HOME/accumulo/lib/accumulo-proxy.jar:\
-$GPHD_HOME/accumulo/lib/accumulo-server.jar:\
-$GPHD_HOME/accumulo/lib/accumulo-start.jar:\
-$GPHD_HOME/accumulo/lib/accumulo-test.jar:\
-$GPHD_HOME/accumulo/lib/accumulo-trace.jar:\
-$GPHD_HOME/accumulo/lib/libthrift.jar:\
-$GPHD_HOME/accumulo/lib/jline.jar:\
-$GPHD_HOME/accumulo/conf
-</code></p></li>
+<code>
+vi /etc/gphd/hadoop/conf/hadoop-env.sh<br/>
+<br/>
+# Required only for GPXF with Accumulo<br/>
+HADOOP_CLASSPATH=$HADOOP_CLASSPATH:\<br/>
+$GPHD_HOME/gpxf/accumulo-gpxf-ext-0.0.1.jar:\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-core.jar:\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-core.jar:\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-fate.jar:\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-minicluster.jar:\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-proxy.jar:\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-server.jar:\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-start.jar:\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-test.jar:\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-trace.jar:\<br/>
+$GPHD_HOME/accumulo/lib/libthrift.jar:\<br/>
+$GPHD_HOME/accumulo/lib/jline.jar:\<br/>
+$GPHD_HOME/accumulo/conf<br/>
+</code></li>
 
 <p><li>Again, using the <code>HostFile.txt</code> and gpscp, copy this updated file to each Hadoop node.</p>
 
-<p><code>gpscp -f ~/HostFile.txt /etc/gphd/hadoop/conf/hadoop-env.sh =:/etc/gphd/hadoop/conf</code></p></li>
+<p><code>gpscp -f ~/HostFile.txt /etc/gphd/hadoop/conf/hadoop-env.sh \<br/>
+=:/etc/gphd/hadoop/conf</code></p></li>
 
 <p><li>Restart Pivotal HD and HAWQ via the Admin Node per the instructions in the Pivotal HD admin guide.</li></p>
 </ol>
