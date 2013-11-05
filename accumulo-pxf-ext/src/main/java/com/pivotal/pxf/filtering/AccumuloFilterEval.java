@@ -16,7 +16,7 @@ import com.pivotal.pxf.filtering.FilterParser.Operation;
 import com.pivotal.pxf.utilities.ColumnDescriptor;
 import com.pivotal.pxf.utilities.InputData;
 
-public class AccumuloFilterEval implements FilterParser.IFilterEvaluator {
+public class AccumuloFilterEval implements FilterParser.IFilterBuilder {
 	private PrintWriter wrtr = null;
 	private List<ColumnDescriptor> columns = null;
 
@@ -59,33 +59,29 @@ public class AccumuloFilterEval implements FilterParser.IFilterEvaluator {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object evaluate(FilterParser.Operation opId, Object leftOperand,
-			Object rightOperand) throws Exception {
+	public Object build(Operation operation, Object left, Object right)
+			throws Exception {
 
-		wrtr.println("opId:\t" + opId + "\tLeft:\t" + leftOperand
-				+ "\tRight:\t" + rightOperand);
+		wrtr.println("operation:\t" + operation + "\tLeft:\t" + left
+				+ "\tRight:\t" + right);
 		wrtr.flush();
 
 		List<Range> ranges = null;
-		if (leftOperand instanceof ColumnIndex
-				&& rightOperand instanceof Constant) {
+		if (left instanceof ColumnIndex && right instanceof Constant) {
 			ranges = new ArrayList<Range>();
 
-			columnConstantRange(ranges, opId,
-					columns.get(((ColumnIndex) leftOperand).index()),
-					(Constant) rightOperand);
+			columnConstantRange(ranges, operation,
+					columns.get(((ColumnIndex) left).index()), (Constant) right);
 
-		} else if (rightOperand instanceof ColumnIndex
-				&& leftOperand instanceof Constant) {
+		} else if (right instanceof ColumnIndex && left instanceof Constant) {
 			ranges = new ArrayList<Range>();
-			constantColumnRange(ranges, opId,
-					columns.get(((ColumnIndex) rightOperand).index()),
-					(Constant) leftOperand);
-		} else if (leftOperand instanceof List
-				&& opId == FilterParser.Operation.HDOP_AND
-				&& rightOperand instanceof List) {
-			ranges = handleCompoundOperations((List<Range>) leftOperand,
-					(List<Range>) rightOperand);
+			constantColumnRange(ranges, operation,
+					columns.get(((ColumnIndex) right).index()), (Constant) left);
+		} else if (left instanceof List
+				&& operation == FilterParser.Operation.HDOP_AND
+				&& right instanceof List) {
+			ranges = handleCompoundOperations((List<Range>) left,
+					(List<Range>) right);
 		} else {
 			wrtr.println("Unhandled filter statement");
 			wrtr.flush();
@@ -95,23 +91,23 @@ public class AccumuloFilterEval implements FilterParser.IFilterEvaluator {
 		return ranges;
 	}
 
-	private List<Range> handleCompoundOperations(List<Range> leftOperand,
-			List<Range> rightOperand) {
+	private List<Range> handleCompoundOperations(List<Range> left,
+			List<Range> right) {
 
 		wrtr.println("handleCompoundOperations called");
 		wrtr.flush();
 
-		leftOperand.addAll(rightOperand);
-		return leftOperand;
+		left.addAll(right);
+		return left;
 	}
 
-	private void constantColumnRange(List<Range> ranges, Operation opId,
+	private void constantColumnRange(List<Range> ranges, Operation operation,
 			ColumnDescriptor desc, Constant constant) {
 
 		if (desc.columnName().equals("recordkey")) {
 			Range r = null;
 
-			switch (opId) {
+			switch (operation) {
 			case HDOP_GE:
 				r = new Range(null, true, new Text(constant.constant()
 						.toString()), true);
@@ -144,13 +140,13 @@ public class AccumuloFilterEval implements FilterParser.IFilterEvaluator {
 		}
 	}
 
-	private void columnConstantRange(List<Range> ranges, Operation opId,
+	private void columnConstantRange(List<Range> ranges, Operation operation,
 			ColumnDescriptor desc, Constant constant) throws IOException {
 
 		if (desc.columnName().equals("recordkey")) {
 			Range r = null;
 
-			switch (opId) {
+			switch (operation) {
 			case HDOP_GE:
 				r = new Range(new Text(constant.constant().toString()), true,
 						null, true);

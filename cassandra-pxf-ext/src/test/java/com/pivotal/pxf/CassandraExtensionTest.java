@@ -15,9 +15,9 @@ import com.pivotal.pxf.fragmenters.CassandraFragmenter;
 import com.pivotal.pxf.fragmenters.Fragmenter;
 import com.pivotal.pxf.hadoop.io.GPDBWritable;
 import com.pivotal.pxf.resolvers.CassandraResolver;
-import com.pivotal.pxf.resolvers.Resolver;
+import com.pivotal.pxf.resolvers.IReadResolver;
 import com.pivotal.pxf.PxfUnit;
-import com.pivotal.pxf.accessors.Accessor;
+import com.pivotal.pxf.accessors.IReadAccessor;
 import com.pivotal.pxf.accessors.CassandraAccessor;
 
 public class CassandraExtensionTest extends PxfUnit {
@@ -89,12 +89,12 @@ public class CassandraExtensionTest extends PxfUnit {
 	}
 
 	@Override
-	public Class<? extends Accessor> getAccessorClass() {
+	public Class<? extends IReadAccessor> getReadAccessorClass() {
 		return CassandraAccessor.class;
 	}
 
 	@Override
-	public Class<? extends Resolver> getResolverClass() {
+	public Class<? extends IReadResolver> getReadResolverClass() {
 		return CassandraResolver.class;
 	}
 

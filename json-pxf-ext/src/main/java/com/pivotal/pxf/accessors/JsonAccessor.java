@@ -33,7 +33,7 @@ public class JsonAccessor extends HdfsSplittableDataAccessor {
 	}
 
 	@Override
-	public OneRow LoadNextObject() throws IOException {
+	public OneRow readNextObject() throws IOException {
 
 		if (this.reader.next(key, value)) {
 			return new OneRow(null, key);

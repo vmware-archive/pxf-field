@@ -12,22 +12,21 @@ import com.gopivotal.mapred.input.JsonInputFormat;
 import com.pivotal.pxf.format.OneField;
 import com.pivotal.pxf.format.OneRow;
 import com.pivotal.pxf.hadoop.io.GPDBWritable;
-import com.pivotal.pxf.resolvers.Resolver;
 import com.pivotal.pxf.utilities.ColumnDescriptor;
 import com.pivotal.pxf.utilities.InputData;
 
-public class JsonResolver extends Resolver {
+public class JsonResolver extends StringPassResolver {
 
 	private ArrayList<OneField> list = new ArrayList<OneField>();
 	private InputData meta = null;
 
-	public JsonResolver(InputData meta) throws IOException {
+	public JsonResolver(InputData meta) throws Exception {
 		super(meta);
 		this.meta = meta;
 	}
 
 	@Override
-	public List<OneField> GetFields(OneRow row) throws Exception {
+	public List<OneField> getFields(OneRow row) throws Exception {
 		list.clear();
 
 		// key is a Text object
@@ -59,7 +58,7 @@ public class JsonResolver extends Resolver {
 					node = node.get(token);
 
 					if (node == null || node.isMissingNode()) {
-						list.add(new OneField(cd.columnType(), null));
+						list.add(new OneField(cd.columnTypeCode(), null));
 					} else if (node.isArray()) {
 						int count = 0;
 						boolean added = false;
@@ -69,7 +68,7 @@ public class JsonResolver extends Resolver {
 
 							if (count == arrayIndex) {
 								added = true;
-								addOneFieldToRecord(list, cd.columnType(),
+								addOneFieldToRecord(list, cd.columnTypeCode(),
 										arrayNode);
 								break;
 							}
@@ -80,7 +79,7 @@ public class JsonResolver extends Resolver {
 						// if we reached the end of the array without adding a
 						// field, add null
 						if (!added) {
-							list.add(new OneField(cd.columnType(), null));
+							list.add(new OneField(cd.columnTypeCode(), null));
 						}
 
 					} else {
@@ -91,9 +90,9 @@ public class JsonResolver extends Resolver {
 				} else {
 					node = node.get(tokens[tokens.length - 1]);
 					if (node == null || node.isMissingNode()) {
-						list.add(new OneField(cd.columnType(), null));
+						list.add(new OneField(cd.columnTypeCode(), null));
 					} else {
-						addOneFieldToRecord(list, cd.columnType(), node);
+						addOneFieldToRecord(list, cd.columnTypeCode(), node);
 					}
 				}
 			}

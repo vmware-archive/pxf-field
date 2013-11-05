@@ -1,0 +1,12 @@
+
+<profile>
+	<name>CASSANDRA</name>
+	<description>A profile for data stored in Cassandra. Must specify
+		ADDRESS, COLUMN-FAMILY, and an optional PARTITIONER in DDL.
+	</description>
+	<plugins>
+		<fragmenter>CassandraFragmenter</fragmenter>
+		<accessor>CassandraAccessor</accessor>
+		<resolver>CassandraResolver</resolver>
+	</plugins>
+</profile>

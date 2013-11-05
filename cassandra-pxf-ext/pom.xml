@@ -2,8 +2,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gopivotal</groupId>
-	<artifactId>accumulo-pxf-ext</artifactId>
-	<version>1.0.0</version>
+	<artifactId>cassandra-pxf-ext</artifactId>
+	<version>1.1.0</version>
 	<repositories>
 		<repository>
 			<id>org.springsource.maven.milestone</id>
@@ -57,13 +57,13 @@
 		</dependency>
 		<dependency>
 			<groupId>com.gopivotal</groupId>
-			<artifactId>gpxf</artifactId>
-			<version>2.0.1</version>
+			<artifactId>pxf</artifactId>
+			<version>2.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.gopivotal</groupId>
 			<artifactId>pxf-test</artifactId>
-			<version>1.0.0</version>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>

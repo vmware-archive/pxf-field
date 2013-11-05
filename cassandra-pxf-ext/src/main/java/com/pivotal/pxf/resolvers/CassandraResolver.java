@@ -14,18 +14,17 @@ import com.pivotal.pxf.format.OneRow;
 import com.pivotal.pxf.utilities.ColumnDescriptor;
 import com.pivotal.pxf.utilities.InputData;
 
-public class CassandraResolver extends Resolver {
+public class CassandraResolver implements IReadResolver {
 
-	private InputData conf;
+	private InputData inputData;
 
-	public CassandraResolver(InputData meta) {
-		super(meta);
-		conf = meta;
+	public CassandraResolver(InputData inputData) {
+		this.inputData = inputData;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<OneField> GetFields(OneRow onerow) throws Exception {
+	public List<OneField> getFields(OneRow onerow) throws Exception {
 		System.out.println("GetFields");
 
 		List<OneField> fields = new ArrayList<OneField>();
@@ -34,12 +33,12 @@ public class CassandraResolver extends Resolver {
 		SortedMap<ByteBuffer, IColumn> keyValues = (SortedMap<ByteBuffer, IColumn>) onerow
 				.getData();
 
-		for (int i = 0; i < this.conf.columns(); ++i) {
-			ColumnDescriptor column = (ColumnDescriptor) this.conf.getColumn(i);
+		for (int i = 0; i < this.inputData.columns(); ++i) {
+			ColumnDescriptor column = (ColumnDescriptor) this.inputData.getColumn(i);
 
 			if (column.columnName().equals("recordkey")) {
 				OneField oneField = new OneField();
-				oneField.type = column.columnType();
+				oneField.type = column.columnTypeCode();
 				oneField.val = convertToJavaObject(oneField.type, keyBuffer);
 				fields.add(oneField);
 			} else {
@@ -49,13 +48,13 @@ public class CassandraResolver extends Resolver {
 				if (value != null) {
 
 					OneField oneField = new OneField();
-					oneField.type = column.columnType();
+					oneField.type = column.columnTypeCode();
 					oneField.val = convertToJavaObject(oneField.type,
 							value.value());
 					fields.add(oneField);
 				} else {
 					OneField oneField = new OneField();
-					oneField.type = column.columnType();
+					oneField.type = column.columnTypeCode();
 					oneField.val = null;
 					fields.add(oneField);
 				}

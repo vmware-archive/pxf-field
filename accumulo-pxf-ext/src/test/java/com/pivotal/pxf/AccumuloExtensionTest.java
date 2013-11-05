@@ -21,13 +21,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.pivotal.pxf.PxfUnit;
-import com.pivotal.pxf.accessors.Accessor;
+import com.pivotal.pxf.accessors.IReadAccessor;
 import com.pivotal.pxf.accessors.AccumuloAccessor;
 import com.pivotal.pxf.fragmenters.AccumuloFragmenter;
 import com.pivotal.pxf.fragmenters.Fragmenter;
 import com.pivotal.pxf.hadoop.io.GPDBWritable;
 import com.pivotal.pxf.resolvers.AccumuloResolver;
-import com.pivotal.pxf.resolvers.Resolver;
+import com.pivotal.pxf.resolvers.IReadResolver;
 
 public class AccumuloExtensionTest extends PxfUnit {
 
@@ -212,12 +212,12 @@ public class AccumuloExtensionTest extends PxfUnit {
 	}
 
 	@Override
-	public Class<? extends Accessor> getAccessorClass() {
+	public Class<? extends IReadAccessor> getReadAccessorClass() {
 		return AccumuloAccessor.class;
 	}
 
 	@Override
-	public Class<? extends Resolver> getResolverClass() {
+	public Class<? extends IReadResolver> getReadResolverClass() {
 		return AccumuloResolver.class;
 	}
 
