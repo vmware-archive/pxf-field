@@ -48,28 +48,28 @@
 
 <p>The Accumulo user name, password, and authorizations are included in the table definition.  This is clearly a security hole and should be addressed.  This extension is a functional prototype only.</p>
 
-<p>The current version, version 1.0.0, does <b>not</b> support any push-down range scans.  This feature is possible, but some engineering needs to go into it.</p>
+<p>The current version, version 1.1.0, does <b>not</b> support any push-down range scans.  This feature is possible, but some engineering needs to go into it.</p>
 
 <h3>Required Hadoop Classpath Additions</h3>
 
 <p><b>Note</b> the version numbers of these jar files.  Make sure you are using the proper version of the extension as well as any dependencies.</p>
 
 <code>
-# Required only for GPXF with Accumulo
-HADOOP_CLASSPATH=$HADOOP_CLASSPATH:\
-$GPHD_HOME/gpxf/accumulo-pxf-ext-&ltversion&gt.jar:\
-$GPHD_HOME/accumulo/lib/accumulo-core.jar:\
-$GPHD_HOME/accumulo/lib/accumulo-core.jar:\
-$GPHD_HOME/accumulo/lib/accumulo-fate.jar:\
-$GPHD_HOME/accumulo/lib/accumulo-minicluster.jar:\
-$GPHD_HOME/accumulo/lib/accumulo-proxy.jar:\
-$GPHD_HOME/accumulo/lib/accumulo-server.jar:\
-$GPHD_HOME/accumulo/lib/accumulo-start.jar:\
-$GPHD_HOME/accumulo/lib/accumulo-test.jar:\
-$GPHD_HOME/accumulo/lib/accumulo-trace.jar:\
-$GPHD_HOME/accumulo/lib/libthrift.jar:\
-$GPHD_HOME/accumulo/lib/jline.jar:\
-$GPHD_HOME/accumulo/conf
+# Required only for PXF with Accumulo<br/>
+HADOOP_CLASSPATH=$HADOOP_CLASSPATH:\<br/>
+$GPHD_HOME/gpxf/accumulo-pxf-ext-&ltversion&gt.jar:\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-core.jar:\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-core.jar:\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-fate.jar:\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-minicluster.jar:\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-proxy.jar:\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-server.jar:\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-start.jar:\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-test.jar:\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-trace.jar:\<br/>
+$GPHD_HOME/accumulo/lib/libthrift.jar:\<br/>
+$GPHD_HOME/accumulo/lib/jline.jar:\<br/>
+$GPHD_HOME/accumulo/conf<br/>
 </code>
 <br/><br/>
 <h3>Column Specification</h3>
