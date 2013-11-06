@@ -13,13 +13,12 @@ import com.pivotal.pxf.format.OneField;
 import com.pivotal.pxf.format.OneRow;
 import com.pivotal.pxf.utilities.ColumnDescriptor;
 import com.pivotal.pxf.utilities.InputData;
+import com.pivotal.pxf.utilities.Plugin;
 
-public class CassandraResolver implements IReadResolver {
-
-	private InputData inputData;
+public class CassandraResolver extends Plugin implements IReadResolver {
 
 	public CassandraResolver(InputData inputData) {
-		this.inputData = inputData;
+		super(inputData);
 	}
 
 	@Override

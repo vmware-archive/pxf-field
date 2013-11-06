@@ -9,19 +9,17 @@ import com.pivotal.pxf.format.OneField;
 import com.pivotal.pxf.format.OneRow;
 import com.pivotal.pxf.utilities.ColumnDescriptor;
 import com.pivotal.pxf.utilities.InputData;
+import com.pivotal.pxf.utilities.Plugin;
 
-public class AccumuloResolver implements IReadResolver {
-
-	private InputData inputData;
+public class AccumuloResolver extends Plugin implements IReadResolver {
 
 	public AccumuloResolver(InputData inputData) {
-		this.inputData = inputData;
+		super(inputData);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<OneField> getFields(OneRow paramOneRow) throws Exception {
-		System.out.println("GetFields");
 
 		List<OneField> fields = new ArrayList<OneField>();
 

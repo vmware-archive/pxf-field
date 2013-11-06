@@ -1,9 +1,6 @@
 package com.pivotal.pxf.accessors;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.LinkedList;
-import java.util.ListIterator;
 import java.util.SortedMap;
 
 import org.apache.cassandra.db.IColumn;
@@ -18,8 +15,9 @@ import org.apache.hadoop.mapred.RecordReader;
 import com.gopivotal.cassandra.ColumnFamilyInputFormat;
 import com.pivotal.pxf.format.OneRow;
 import com.pivotal.pxf.utilities.InputData;
+import com.pivotal.pxf.utilities.Plugin;
 
-public class CassandraAccessor implements IReadAccessor {
+public class CassandraAccessor extends Plugin implements IReadAccessor {
 
 	private Configuration conf = new Configuration();
 	private JobConf jobConf = null;
@@ -33,10 +31,9 @@ public class CassandraAccessor implements IReadAccessor {
 
 	private ColumnFamilyInputFormat format = null;
 	private RecordReader<ByteBuffer, SortedMap<ByteBuffer, IColumn>> reader = null;
-	private InputData inputData = null;
 
 	public CassandraAccessor(InputData inputData) throws Exception {
-		this.inputData = inputData;
+		super(inputData);
 
 		keyspaceName = inputData.getProperty("X-GP-DATA-DIR");
 		address = inputData.getProperty("X-GP-ADDRESS");

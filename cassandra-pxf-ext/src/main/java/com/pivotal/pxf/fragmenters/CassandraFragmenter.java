@@ -15,14 +15,12 @@ import com.pivotal.pxf.utilities.InputData;
 public class CassandraFragmenter extends Fragmenter {
 
 	private JobConf jobConf = null;
-	private InputData inputData = null;
 
 	// Connecting to Cassandra
 	private String address, keyspaceName, columnFamily, partitioner;
 
 	public CassandraFragmenter(InputData meta) throws Exception {
 		super(meta);
-		this.inputData = meta;
 
 		address = meta.getProperty("X-GP-ADDRESS");
 		columnFamily = meta.getProperty("X-GP-COLUMN-FAMILY");

@@ -17,12 +17,9 @@ public class AccumuloFragmenter extends Fragmenter {
 	private PasswordToken token = null;
 	private JobConf jobConf = null;
 	private Authorizations auths = null;
-	private InputData inputData = null;
 
 	public AccumuloFragmenter(InputData meta) throws Exception {
 		super(meta);
-
-		this.inputData = meta;
 
 		instanceName = meta.getProperty("X-GP-INSTANCE");
 		zooKeepers = meta.getProperty("X-GP-QUORUM");

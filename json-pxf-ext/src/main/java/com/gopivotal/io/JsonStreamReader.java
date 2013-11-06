@@ -27,10 +27,10 @@ public class JsonStreamReader extends BufferedReader {
 			if (!foundRecord) {
 				bldr.append((char) c);
 
-				if (bldr.toString().contains(identifier)) {					
+				if (bldr.toString().contains(identifier)) {
 					forwardToBrace();
 					foundRecord = true;
-					
+
 					bldr.delete(0, bldr.length());
 					bldr.append('{');
 				}

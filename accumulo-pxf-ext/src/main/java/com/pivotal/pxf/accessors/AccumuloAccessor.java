@@ -1,6 +1,7 @@
 package com.pivotal.pxf.accessors;
 
 import java.util.HashMap;
+
 import org.apache.accumulo.core.client.mapred.AccumuloInputFormat;
 import org.apache.accumulo.core.client.security.tokens.PasswordToken;
 import org.apache.accumulo.core.data.Key;
@@ -15,8 +16,9 @@ import com.pivotal.pxf.PxfUnit.Pair;
 import com.pivotal.pxf.accessors.IReadAccessor;
 import com.pivotal.pxf.format.OneRow;
 import com.pivotal.pxf.utilities.InputData;
+import com.pivotal.pxf.utilities.Plugin;
 
-public class AccumuloAccessor implements IReadAccessor {
+public class AccumuloAccessor extends Plugin implements IReadAccessor {
 
 	private Configuration conf = new Configuration();
 	private JobConf jobConf = null;
@@ -31,12 +33,11 @@ public class AccumuloAccessor implements IReadAccessor {
 
 	private AccumuloInputFormat format = null;
 	private RecordReader<Key, Value> reader = null;
-	private InputData inputData = null;
 	private Pair<Key, Value> previousResult = null;
 	private boolean hasNext = true;
 
 	public AccumuloAccessor(InputData inputData) throws Exception {
-		this.inputData = inputData;
+		super(inputData);
 
 		tableName = inputData.getProperty("X-GP-DATA-DIR");
 		instanceName = inputData.getProperty("X-GP-INSTANCE");
