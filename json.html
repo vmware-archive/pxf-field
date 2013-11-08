@@ -57,10 +57,10 @@ $GPHD_HOME/gpxf/json-pxf-ext-&ltversion&gt.jar<br/>
 <p><b>JSON Data</b></p>
 
 <pre><code>
-{"created_at":"Fri Jun 07 22:45:02 +0000 2013","id_str":"343136547115253761","text":"REPAIR THE TRUST: REMOVE OBAMA\/BIDEN FROM OFFICE. #IRS #DOJ","source":"web","user":{"id":26643566,"screen_name":"SpreadButter","location":"Austin, Texas"},"entities":{"hashtags":["IRS","DOJ"]}}
-{"created_at":"Fri Jun 07 22:45:02 +0000 2013","id_str":"343136547123646465","text":"@marshafitrie dibagi 1000 aja sha :P","source":"web","user":{"id":102904200,"screen_name":"patronusdeadly","location":"Bekasi-Surabaya"},"entities":{"hashtags":[]}}
-{"created_at":"Fri Jun 07 22:45:02 +0000 2013","id_str":"343136547136233472","text":"Vaga: Supervisor de Almoxarifado. Confira em http:\/\/t.co\/hK5cy5B2oS","source":"web","user":{"id":287819058,"screen_name":"NoSecrets_Vagas","location":""},"entities":{"hashtags":[]}}
-{"created_at":"Fri Jun 07 22:45:03 +0000 2013","id_str":"343136551322136576","text":"It's Jun 7, 2013 @ 11pm ; Wind = NNE (30,0) 14.0 knots; Swell = 2.6 ft @ 5 seconds....","source":"web","user":{"id":395504494,"screen_name":"SevenStonesBuoy","location":"Near Cornwall"},"coordinates":{"type":"Point","coordinates":[-6.100,50.103]},"entities":{"hashtags":[]}}
+{"created_at":"Mon Sep 30 04:04:53 +0000 2013","id_str":"384529256681725952","text":"sigh, who knows.","source":"web","user":{"id":31424214,"location":"COLUMBUS"},"coordinates":{"type":"Point","coordinates":[-6.100,50.103]}}
+{"created_at":"Mon Sep 30 04:04:54 +0000 2013","id_str":"384529260872228864","text":"I did that 12 years ago..\n\nT.T","source":"web","user":{"id":67600981,"location":"KryberWorld"},"coordinates":{"type":"Point","coordinates":[-8.100,52.104]}}
+{"created_at":"Mon Sep 30 04:04:54 +0000 2013","id_str":"384529260892786688","text":"Welp guess I'll have anxiety for another week","source":"web","user":{"id":122795713,"location":"California"},"coordinates":null}
+{"created_at":"Mon Sep 30 04:04:55 +0000 2013","id_str":"384529265099689984","text":"I'm craving breadsticks","source":"web","user":{"id":633364307,"location":""},"coordinates":null}
 </pre></code>
 
 <p><b>PSQL Prompt</b></p>
@@ -74,8 +74,9 @@ id_str TEXT,
 text TEXT,
 source TEXT,
 "user.id" INTEGER,
-"user.screen_name" TEXT,
-"user.location" TEXT
+"user.location" TEXT,
+"coordinates.coordinates[0]" DOUBLE PRECISION,
+"coordinates.coordinates[1]" DOUBLE PRECISION
 )
 LOCATION('pxf://phd2:50070/user/gpadmin/mytestfile.json?FRAGMENTER=HdfsDataFragmenter&
 ACCESSOR=JsonAccessor&RESOLVER=JsonResolver')
@@ -84,12 +85,12 @@ FORMAT 'CUSTOM'
 
 SELECT * FROM ext_json_mytestfile;
 
-           created_at           |       id_str       |                                          text                                          | source |  user.id  | user.screen_name |  user.location 
---------------------------------+--------------------+----------------------------------------------------------------------------------------+--------+-----------+------------------+-----------------
- Fri Jun 07 22:45:02 +0000 2013 | 343136547115253761 | REPAIR THE TRUST: REMOVE OBAMA/BIDEN FROM OFFICE. #IRS #DOJ                            | web    |  26643566 | SpreadButter     | Austin, Texas
- Fri Jun 07 22:45:02 +0000 2013 | 343136547123646465 | @marshafitrie dibagi 1000 aja sha :P                                                   | web    | 102904200 | patronusdeadly   | Bekasi-Surabaya
- Fri Jun 07 22:45:02 +0000 2013 | 343136547136233472 | Vaga: Supervisor de Almoxarifado. Confira em http://t.co/hK5cy5B2oS                    | web    | 287819058 | NoSecrets_Vagas  |
- Fri Jun 07 22:45:03 +0000 2013 | 343136551322136576 | It's Jun 7, 2013 @ 11pm ; Wind = NNE (30,0) 14.0 knots; Swell = 2.6 ft @ 5 seconds.... | web    | 395504494 | SevenStonesBuoy  | Near Cornwall
+           created_at           |       id_str       |                     text                      | source |  user.id  | user.location | coordinates.coordinates[0] | coordinates.coordinates[1] 
+--------------------------------+--------------------+-----------------------------------------------+--------+-----------+---------------+---------------------------------------------------------
+ Mon Sep 30 04:04:53 +0000 2013 | 384529256681725952 | sigh, who knows.                              | web    |  31424214 | COLUMBUS      |                       -6.1 |                     50.103
+ Mon Sep 30 04:04:54 +0000 2013 | 384529260872228864 | I did that 12 years ago..\n\nT.T              | web    |  67600981 | KryberWorld   |                       -8.1 |                     52.104
+ Mon Sep 30 04:04:54 +0000 2013 | 384529260892786688 | Welp guess I'll have anxiety for another week | web    | 122795713 | California    |                            |                            
+ Mon Sep 30 04:04:55 +0000 2013 | 384529265099689984 | I'm craving breadsticks                       | web    | 633364307 |               |                            |                            
 </code></pre>
 
 <br/>
