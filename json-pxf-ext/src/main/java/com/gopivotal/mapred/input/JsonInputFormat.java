@@ -151,6 +151,11 @@ public class JsonInputFormat extends FileInputFormat<Text, NullWritable> {
 			boolean retval = false;
 			boolean keepGoing = false;
 			do {
+				// Exit condition (end of block/file)
+				if (rdr.getBytesRead() >= (end - start)) {
+					return false;
+				}
+
 				keepGoing = false;
 				String record = rdr.getJsonRecord();
 				if (record != null) {
