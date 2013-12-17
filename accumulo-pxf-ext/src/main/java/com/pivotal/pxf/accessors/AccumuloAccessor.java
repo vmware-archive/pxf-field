@@ -1,9 +1,7 @@
 package com.pivotal.pxf.accessors;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.ListIterator;
+
 import org.apache.accumulo.core.client.mapred.AccumuloInputFormat;
 import org.apache.accumulo.core.client.security.tokens.PasswordToken;
 import org.apache.accumulo.core.data.Key;
@@ -15,11 +13,12 @@ import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.RecordReader;
 
 import com.pivotal.pxf.PxfUnit.Pair;
-import com.pivotal.pxf.accessors.Accessor;
+import com.pivotal.pxf.accessors.IReadAccessor;
 import com.pivotal.pxf.format.OneRow;
 import com.pivotal.pxf.utilities.InputData;
+import com.pivotal.pxf.utilities.Plugin;
 
-public class AccumuloAccessor extends Accessor {
+public class AccumuloAccessor extends Plugin implements IReadAccessor {
 
 	private Configuration conf = new Configuration();
 	private JobConf jobConf = null;
@@ -32,34 +31,28 @@ public class AccumuloAccessor extends Accessor {
 	private Key key = new Key();
 	private Value value = new Value();
 
-	private InputSplit currSplit = null;
-	private LinkedList<InputSplit> segSplits = null;
-	private ListIterator<InputSplit> iter = null;
-
 	private AccumuloInputFormat format = null;
 	private RecordReader<Key, Value> reader = null;
-	private InputData metaData = null;
 	private Pair<Key, Value> previousResult = null;
 	private boolean hasNext = true;
 
-	public AccumuloAccessor(InputData meta) throws Exception {
-		super(meta);
-		
-		this.metaData = meta;
+	public AccumuloAccessor(InputData inputData) throws Exception {
+		super(inputData);
 
-		tableName = meta.getProperty("X-GP-DATA-DIR");
-		instanceName = meta.getProperty("X-GP-INSTANCE");
-		zooKeepers = meta.getProperty("X-GP-QUORUM");
-		principal = meta.getProperty("X-GP-USER");
-		token = new PasswordToken(meta.getProperty("X-GP-PASSWORD"));
+		tableName = inputData.getProperty("X-GP-DATA-DIR");
+		instanceName = inputData.getProperty("X-GP-INSTANCE");
+		zooKeepers = inputData.getProperty("X-GP-QUORUM");
+		principal = inputData.getProperty("X-GP-USER");
+		token = new PasswordToken(inputData.getProperty("X-GP-PASSWORD"));
 		jobConf = new JobConf(conf, AccumuloAccessor.class);
 
-		/*if (meta.getBoolProperty("X-GP-HAS-FILTER")) {
-			String filterString = meta.getProperty("X-GP-FILTER");
-			AccumuloFilterEval eval = new AccumuloFilterEval(meta);
-			List<Range> ranges = eval.getRanges(filterString);
-			AccumuloInputFormat.setRanges(jobConf, ranges);
-		}*/
+		/*
+		 * if (meta.getBoolProperty("X-GP-HAS-FILTER")) { String filterString =
+		 * meta.getProperty("X-GP-FILTER"); AccumuloFilterEval eval = new
+		 * AccumuloFilterEval(meta); List<Range> ranges =
+		 * eval.getRanges(filterString); AccumuloInputFormat.setRanges(jobConf,
+		 * ranges); }
+		 */
 
 		AccumuloInputFormat.setConnectorInfo(jobConf, principal, token);
 		AccumuloInputFormat.setScanAuthorizations(jobConf, auths);
@@ -70,28 +63,28 @@ public class AccumuloAccessor extends Accessor {
 		format = new AccumuloInputFormat();
 	}
 
-	public boolean Open() throws Exception {
+	@Override
+	public boolean openForRead() throws Exception {
 
-		InputSplit[] splits = format.getSplits(this.jobConf, 0);
+		InputSplit[] splits = format.getSplits(this.jobConf, 1);
+		int actual_num_of_splits = splits.length;
 
-		int actual_splits_size = splits.length;
-		int allocated_splits_size = this.metaData.dataFragmentsSize();
+		int needed_split_idx = this.inputData.getDataFragment();
 
-		this.segSplits = new LinkedList<InputSplit>();
-		for (int i = 0; i < allocated_splits_size; ++i) {
-			int alloc_split_idx = this.metaData.getDataFragment(i);
-
-			if (alloc_split_idx < actual_splits_size) {
-				this.segSplits.add(splits[alloc_split_idx]);
-			}
+		if ((needed_split_idx != -1)
+				&& (needed_split_idx < actual_num_of_splits)) {
+			reader = format.getRecordReader(splits[needed_split_idx], jobConf,
+					null);
+			key = this.reader.createKey();
+			value = this.reader.createValue();
+			return true;
+		} else {
+			return false;
 		}
-
-		this.iter = this.segSplits.listIterator(0);
-
-		return getNextSplit();
 	}
 
-	public OneRow LoadNextObject() throws IOException {
+	@Override
+	public OneRow readNextObject() throws Exception {
 
 		// early out if we don't have a next value
 		if (!hasNext) {
@@ -119,15 +112,9 @@ public class AccumuloAccessor extends Accessor {
 		do {
 			// advance reader to next key
 			if (!(this.reader.next(this.key, this.value))) {
-
-				// if we exhausted this split, go to the next one and continue
-				if (getNextSplit()) {
-					continue;
-				} else {
-					// no more splits, return the final key
-					hasNext = false;
-					break;
-				}
+				// no more splits, return the final key
+				hasNext = false;
+				break;
 			} else {
 
 				// create a result out of the read key/value pair
@@ -164,21 +151,8 @@ public class AccumuloAccessor extends Accessor {
 		}
 	}
 
-	private boolean getNextSplit() throws IOException {
-
-		if (!(this.iter.hasNext())) {
-			return false;
-		}
-
-		currSplit = ((InputSplit) this.iter.next());
-		reader = format.getRecordReader(this.currSplit, jobConf, null);
-		key = this.reader.createKey();
-		value = this.reader.createValue();
-
-		return true;
-	}
-
-	public void Close() throws Exception {
+	@Override
+	public void closeForRead() throws Exception {
 		if (this.reader != null) {
 			this.reader.close();
 		}

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gopivotal</groupId>
 	<artifactId>pxf-test</artifactId>
-	<version>1.0.0</version>
+	<version>1.1.0</version>
 	<repositories>
 		<repository>
 			<id>org.springsource.maven.milestone</id>
@@ -32,13 +32,28 @@
 		</dependency>
 		<dependency>
 			<groupId>com.gopivotal</groupId>
-			<artifactId>gpxf</artifactId>
-			<version>2.0.1</version>
+			<artifactId>pxf</artifactId>
+			<version>2.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.collections</groupId>
+			<artifactId>google-collections</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>1.8.8</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-core-asl</artifactId>
+			<version>1.8.8</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -7,43 +7,40 @@ import java.util.Map;
 import com.pivotal.pxf.exception.BadRecordException;
 import com.pivotal.pxf.format.OneField;
 import com.pivotal.pxf.format.OneRow;
-import com.pivotal.pxf.resolvers.Resolver;
 import com.pivotal.pxf.utilities.ColumnDescriptor;
 import com.pivotal.pxf.utilities.InputData;
+import com.pivotal.pxf.utilities.Plugin;
 
-public class AccumuloResolver extends Resolver {
+public class AccumuloResolver extends Plugin implements IReadResolver {
 
-	private InputData conf;
-
-	public AccumuloResolver(InputData meta) {
-		super(meta);
-		conf = meta;
+	public AccumuloResolver(InputData inputData) {
+		super(inputData);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<OneField> GetFields(OneRow paramOneRow) throws Exception {
-		System.out.println("GetFields");
+	public List<OneField> getFields(OneRow paramOneRow) throws Exception {
 
 		List<OneField> fields = new ArrayList<OneField>();
 
 		Map<String, byte[]> keyValues = (Map<String, byte[]>) paramOneRow
 				.getData();
 
-		for (int i = 0; i < this.conf.columns(); ++i) {
-			ColumnDescriptor column = (ColumnDescriptor) this.conf.getColumn(i);
+		for (int i = 0; i < this.inputData.columns(); ++i) {
+			ColumnDescriptor column = (ColumnDescriptor) this.inputData
+					.getColumn(i);
 
 			byte[] value = keyValues.get(column.columnName());
 			if (value != null) {
 
 				OneField oneField = new OneField();
-				oneField.type = column.columnType();
+				oneField.type = column.columnTypeCode();
 				oneField.val = convertToJavaObject(oneField.type, value);
 
 				fields.add(oneField);
 			} else {
 				OneField oneField = new OneField();
-				oneField.type = column.columnType();
+				oneField.type = column.columnTypeCode();
 				oneField.val = null;
 				fields.add(oneField);
 			}

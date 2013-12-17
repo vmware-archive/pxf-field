@@ -1,9 +1,6 @@
 package com.pivotal.pxf.accessors;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.LinkedList;
-import java.util.ListIterator;
 import java.util.SortedMap;
 
 import org.apache.cassandra.db.IColumn;
@@ -18,8 +15,9 @@ import org.apache.hadoop.mapred.RecordReader;
 import com.gopivotal.cassandra.ColumnFamilyInputFormat;
 import com.pivotal.pxf.format.OneRow;
 import com.pivotal.pxf.utilities.InputData;
+import com.pivotal.pxf.utilities.Plugin;
 
-public class CassandraAccessor extends Accessor {
+public class CassandraAccessor extends Plugin implements IReadAccessor {
 
 	private Configuration conf = new Configuration();
 	private JobConf jobConf = null;
@@ -27,26 +25,20 @@ public class CassandraAccessor extends Accessor {
 	// Connecting to Cassandra
 	private String address, keyspaceName, columnFamily, partitioner;
 
-	private InputSplit currSplit = null;
-	private LinkedList<InputSplit> segSplits = null;
-	private ListIterator<InputSplit> iter = null;
 
 	private ByteBuffer key;
 	private SortedMap<ByteBuffer, IColumn> value;
 
 	private ColumnFamilyInputFormat format = null;
 	private RecordReader<ByteBuffer, SortedMap<ByteBuffer, IColumn>> reader = null;
-	private InputData metaData = null;
 
-	public CassandraAccessor(InputData meta) throws Exception {
-		super(meta);
+	public CassandraAccessor(InputData inputData) throws Exception {
+		super(inputData);
 
-		this.metaData = meta;
-
-		keyspaceName = meta.getProperty("X-GP-DATA-DIR");
-		address = meta.getProperty("X-GP-ADDRESS");
-		columnFamily = meta.getProperty("X-GP-COLUMN-FAMILY");
-		partitioner = meta.getProperty("X-GP-PARTITIONER");
+		keyspaceName = inputData.getProperty("X-GP-DATA-DIR");
+		address = inputData.getProperty("X-GP-ADDRESS");
+		columnFamily = inputData.getProperty("X-GP-COLUMN-FAMILY");
+		partitioner = inputData.getProperty("X-GP-PARTITIONER");
 		jobConf = new JobConf(conf, CassandraAccessor.class);
 
 		ConfigHelper.setInputColumnFamily(jobConf, keyspaceName, columnFamily);
@@ -64,60 +56,40 @@ public class CassandraAccessor extends Accessor {
 		format = new ColumnFamilyInputFormat();
 	}
 
-	public boolean Open() throws Exception {
+	@Override
+	public boolean openForRead() throws Exception {
 
-		InputSplit[] splits = format.getSplits(this.jobConf, 0);
+		InputSplit[] splits = format.getSplits(this.jobConf, 1);
+		int actual_num_of_splits = splits.length;
 
-		int actual_splits_size = splits.length;
-		int allocated_splits_size = this.metaData.dataFragmentsSize();
+		int needed_split_idx = this.inputData.getDataFragment();
 
-		this.segSplits = new LinkedList<InputSplit>();
-		for (int i = 0; i < allocated_splits_size; ++i) {
-			int alloc_split_idx = this.metaData.getDataFragment(i);
+		if ((needed_split_idx != -1)
+				&& (needed_split_idx < actual_num_of_splits)) {
 
-			if (alloc_split_idx < actual_splits_size) {
-				this.segSplits.add(splits[alloc_split_idx]);
-			}
+			reader = format.getRecordReader(splits[needed_split_idx], jobConf, null);
+			key = this.reader.createKey();
+			value = this.reader.createValue();
+
+			return true;
+		} else {
+			return false;
 		}
-
-		this.iter = this.segSplits.listIterator(0);
-
-		return getNextSplit();
 	}
 
-	public OneRow LoadNextObject() throws IOException {
-
+	@Override
+	public OneRow readNextObject() throws Exception {
 		OneRow retval = null;
-		do {
-			if ((this.reader.next(this.key, this.value))) {
-				retval = new OneRow(this.key, this.value);
-				break;
-			} else if (getNextSplit()) {
-				continue;
-			} else {
-				break;
-			}
-
-		} while (true);
+		
+		if ((this.reader.next(this.key, this.value))) {
+			retval = new OneRow(this.key, this.value);
+		}
 
 		return retval;
 	}
 
-	private boolean getNextSplit() throws IOException {
-
-		if (!(this.iter.hasNext())) {
-			return false;
-		}
-
-		currSplit = ((InputSplit) this.iter.next());
-		reader = format.getRecordReader(this.currSplit, jobConf, null);
-		key = this.reader.createKey();
-		value = this.reader.createValue();
-
-		return true;
-	}
-
-	public void Close() throws Exception {
+	@Override
+	public void closeForRead() throws Exception {
 		if (this.reader != null) {
 			this.reader.close();
 		}

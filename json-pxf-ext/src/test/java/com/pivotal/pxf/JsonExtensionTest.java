@@ -7,13 +7,13 @@ import org.apache.hadoop.fs.Path;
 import org.junit.After;
 import org.junit.Test;
 
-import com.pivotal.pxf.accessors.Accessor;
+import com.pivotal.pxf.accessors.IReadAccessor;
 import com.pivotal.pxf.accessors.JsonAccessor;
 import com.pivotal.pxf.fragmenters.Fragmenter;
 import com.pivotal.pxf.fragmenters.HdfsDataFragmenter;
 import com.pivotal.pxf.hadoop.io.GPDBWritable;
 import com.pivotal.pxf.resolvers.JsonResolver;
-import com.pivotal.pxf.resolvers.Resolver;
+import com.pivotal.pxf.resolvers.IReadResolver;
 import com.pivotal.pxf.PxfUnit;
 
 public class JsonExtensionTest extends PxfUnit {
@@ -146,12 +146,12 @@ public class JsonExtensionTest extends PxfUnit {
 	}
 
 	@Override
-	public Class<? extends Accessor> getAccessorClass() {
+	public Class<? extends IReadAccessor> getReadAccessorClass() {
 		return JsonAccessor.class;
 	}
 
 	@Override
-	public Class<? extends Resolver> getResolverClass() {
+	public Class<? extends IReadResolver> getReadResolverClass() {
 		return JsonResolver.class;
 	}
 

@@ -2,51 +2,39 @@ package com.pivotal.pxf.accessors;
 
 import java.io.IOException;
 
-import org.apache.hadoop.io.NullWritable;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.FileSplit;
 import org.apache.hadoop.mapred.InputSplit;
 import org.apache.hadoop.mapred.JobConf;
 
 import com.gopivotal.mapred.input.JsonInputFormat;
-import com.pivotal.pxf.format.OneRow;
 import com.pivotal.pxf.utilities.InputData;
 
+/**
+ * This JSON accessor for PXF will read JSON data and pass it to a
+ * {@link JsonResolver}.
+ * 
+ * This accessor supports a single JSON record per line, or a more
+ * "pretty print" format.
+ */
 public class JsonAccessor extends HdfsSplittableDataAccessor {
 
-	private Text key = new Text();
-	private NullWritable value = NullWritable.get();
+	public static final String IDENTIFIER_PARAM = "X-GP-IDENTIFIER";
+	public static final String ONERECORDPERLINE_PARAM = "X-GP-ONERECORDPERLINE";
+
 	private String identifier = "";
 	private boolean oneRecordPerLine = true;
 
-	public JsonAccessor(InputData meta) throws Exception {
-		super(meta, new JsonInputFormat());
+	public JsonAccessor(InputData inputData) throws Exception {
+		super(inputData, new JsonInputFormat());
 
-		if (meta.getParametersMap().containsKey("X-GP-IDENTIFIER")) {
-			identifier = meta.getProperty("X-GP-IDENTIFIER");
+		if (inputData.getParametersMap().containsKey(IDENTIFIER_PARAM)) {
+			identifier = inputData.getProperty(IDENTIFIER_PARAM);
 		}
 
-		if (meta.getParametersMap().containsKey("X-GP-ONERECORDPERLINE")) {
-			oneRecordPerLine = Boolean.parseBoolean(meta
-					.getProperty("X-GP-ONERECORDPERLINE"));
+		if (inputData.getParametersMap().containsKey(ONERECORDPERLINE_PARAM)) {
+			oneRecordPerLine = Boolean.parseBoolean(inputData
+					.getProperty(ONERECORDPERLINE_PARAM));
 		}
-	}
-
-	@Override
-	public OneRow LoadNextObject() throws IOException {
-
-		if (this.reader.next(key, value)) {
-			return new OneRow(null, key);
-		}
-
-		if (getNextSplit()) {
-			if (this.reader.next(key, value)) {
-				return new OneRow(null, key);
-			}
-			return null;
-		}
-
-		return null;
 	}
 
 	@Override

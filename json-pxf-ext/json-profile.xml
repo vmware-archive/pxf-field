@@ -1,0 +1,25 @@
+
+<profile>
+	<name>JSON</name>
+	<description>A profile for JSON data, one JSON record per line
+	</description>
+	<plugins>
+		<fragmenter>HdfsDataFragmenter</fragmenter>
+		<accessor>JsonAccessor</accessor>
+		<resolver>JsonResolver</resolver>
+		<analyzer>HdfsAnalyzer</analyzer>
+	</plugins>
+</profile>
+<profile>
+	<name>JSON-PP</name>
+	<description>A profile for JSON data, where a single JSON record spans
+		multiple lines. Must specify the IDENTIFIER parameter in DDL.
+	</description>
+	<plugins>
+		<fragmenter>HdfsDataFragmenter</fragmenter>
+		<accessor>JsonAccessor</accessor>
+		<resolver>JsonResolver</resolver>
+		<analyzer>HdfsAnalyzer</analyzer>
+		<onerecordperline>false</onerecordperline>
+	</plugins>
+</profile>
