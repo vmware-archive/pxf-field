@@ -51,6 +51,8 @@ public class AccumuloFragmenter extends Fragmenter {
 
 		String datapath = this.inputData.path();
 
+		datapath = datapath.replaceFirst("^/", "");
+
 		AccumuloInputFormat.setInputTableName(jobConf, datapath);
 
 		AccumuloInputFormat format = new AccumuloInputFormat();

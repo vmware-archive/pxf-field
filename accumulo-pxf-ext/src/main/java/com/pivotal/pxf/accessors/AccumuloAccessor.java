@@ -7,12 +7,12 @@ import org.apache.accumulo.core.client.security.tokens.PasswordToken;
 import org.apache.accumulo.core.data.Key;
 import org.apache.accumulo.core.data.Value;
 import org.apache.accumulo.core.security.Authorizations;
+import org.apache.accumulo.core.util.Pair;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapred.InputSplit;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.RecordReader;
 
-import com.pivotal.pxf.PxfUnit.Pair;
 import com.pivotal.pxf.accessors.IReadAccessor;
 import com.pivotal.pxf.format.OneRow;
 import com.pivotal.pxf.utilities.InputData;
@@ -97,13 +97,14 @@ public class AccumuloAccessor extends Plugin implements IReadAccessor {
 		// pair from the last time we read
 		if (previousResult != null) {
 
-			keyValuePairs.put("recordkey", previousResult.first.getRow()
+			keyValuePairs.put("recordkey", previousResult.getFirst().getRow()
 					.toString().getBytes());
 
-			keyValuePairs.put(previousResult.first.getColumnFamily().toString()
+			keyValuePairs.put(previousResult.getFirst().getColumnFamily()
+					.toString()
 					+ ":"
-					+ previousResult.first.getColumnQualifierData().toString(),
-					previousResult.second.get());
+					+ previousResult.getFirst().getColumnQualifierData()
+							.toString(), previousResult.getSecond().get());
 
 		}
 
@@ -123,16 +124,17 @@ public class AccumuloAccessor extends Plugin implements IReadAccessor {
 
 				// check if this new result is equal to the last
 				if (previousResult == null
-						|| previousResult.first.getRow().equals(
-								result.first.getRow())) {
+						|| previousResult.getFirst().getRow()
+								.equals(result.getFirst().getRow())) {
 
-					keyValuePairs.put("recordkey", result.first.getRow()
+					keyValuePairs.put("recordkey", result.getFirst().getRow()
 							.toString().getBytes());
 
-					keyValuePairs.put(result.first.getColumnFamily().toString()
+					keyValuePairs.put(result.getFirst().getColumnFamily()
+							.toString()
 							+ ":"
-							+ result.first.getColumnQualifierData().toString(),
-							result.second.get());
+							+ result.getFirst().getColumnQualifierData()
+									.toString(), result.getSecond().get());
 				} else {
 					// if it is, then it is time to return
 					ret = true;
