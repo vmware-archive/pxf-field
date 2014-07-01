@@ -1,0 +1,13 @@
+
+<profile>
+	<name>Hive</name>
+	<description>This profile is suitable for using when connecting to Hive
+		and supports TINYINT with no limit on the number of partitions
+	</description>
+	<plugins>
+		<fragmenter>com.pivotal.pxf.plugins.hive.HiveDataFragmenterNoPartitionLimit
+		</fragmenter>
+		<accessor>com.pivotal.pxf.plugins.hive.HiveAccessor</accessor>
+		<resolver>com.pivotal.pxf.plugins.hive.HiveTinyIntResolver</resolver>
+	</plugins>
+</profile>
