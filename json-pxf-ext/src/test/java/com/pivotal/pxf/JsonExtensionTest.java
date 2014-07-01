@@ -7,36 +7,35 @@ import org.apache.hadoop.fs.Path;
 import org.junit.After;
 import org.junit.Test;
 
-import com.pivotal.pxf.accessors.IReadAccessor;
-import com.pivotal.pxf.accessors.JsonAccessor;
-import com.pivotal.pxf.fragmenters.Fragmenter;
-import com.pivotal.pxf.fragmenters.HdfsDataFragmenter;
-import com.pivotal.pxf.hadoop.io.GPDBWritable;
-import com.pivotal.pxf.resolvers.JsonResolver;
-import com.pivotal.pxf.resolvers.IReadResolver;
-import com.pivotal.pxf.PxfUnit;
+import com.pivotal.pxf.api.Fragmenter;
+import com.pivotal.pxf.api.ReadAccessor;
+import com.pivotal.pxf.api.ReadResolver;
+import com.pivotal.pxf.api.io.DataType;
+import com.pivotal.pxf.plugins.hdfs.HdfsDataFragmenter;
+import com.pivotal.pxf.plugins.json.JsonAccessor;
+import com.pivotal.pxf.plugins.json.JsonResolver;
 
 public class JsonExtensionTest extends PxfUnit {
 
-	private static List<Pair<String, Integer>> columnDefs = null;
+	private static List<Pair<String, DataType>> columnDefs = null;
 	private static List<Pair<String, String>> extraParams = new ArrayList<Pair<String, String>>();
 
 	static {
 
-		columnDefs = new ArrayList<Pair<String, Integer>>();
+		columnDefs = new ArrayList<Pair<String, DataType>>();
 
-		columnDefs.add(new Pair<String, Integer>("created_at",
-				GPDBWritable.TEXT));
-		columnDefs.add(new Pair<String, Integer>("id", GPDBWritable.BIGINT));
-		columnDefs.add(new Pair<String, Integer>("text", GPDBWritable.TEXT));
-		columnDefs.add(new Pair<String, Integer>("user.screen_name",
-				GPDBWritable.TEXT));
-		columnDefs.add(new Pair<String, Integer>("entities.hashtags[0]",
-				GPDBWritable.TEXT));
-		columnDefs.add(new Pair<String, Integer>("coordinates.coordinates[0]",
-				GPDBWritable.FLOAT8));
-		columnDefs.add(new Pair<String, Integer>("coordinates.coordinates[1]",
-				GPDBWritable.FLOAT8));
+		columnDefs.add(new Pair<String, DataType>("created_at",
+				DataType.TEXT));
+		columnDefs.add(new Pair<String, DataType>("id", DataType.BIGINT));
+		columnDefs.add(new Pair<String, DataType>("text", DataType.TEXT));
+		columnDefs.add(new Pair<String, DataType>("user.screen_name",
+				DataType.TEXT));
+		columnDefs.add(new Pair<String, DataType>("entities.hashtags[0]",
+				DataType.TEXT));
+		columnDefs.add(new Pair<String, DataType>("coordinates.coordinates[0]",
+				DataType.FLOAT8));
+		columnDefs.add(new Pair<String, DataType>("coordinates.coordinates[1]",
+				DataType.FLOAT8));
 	}
 
 	@After
@@ -146,17 +145,17 @@ public class JsonExtensionTest extends PxfUnit {
 	}
 
 	@Override
-	public Class<? extends IReadAccessor> getReadAccessorClass() {
+	public Class<? extends ReadAccessor> getReadAccessorClass() {
 		return JsonAccessor.class;
 	}
 
 	@Override
-	public Class<? extends IReadResolver> getReadResolverClass() {
+	public Class<? extends ReadResolver> getReadResolverClass() {
 		return JsonResolver.class;
 	}
 
 	@Override
-	public List<Pair<String, Integer>> getColumnDefinitions() {
+	public List<Pair<String, DataType>> getColumnDefinitions() {
 		return columnDefs;
 	}
 }

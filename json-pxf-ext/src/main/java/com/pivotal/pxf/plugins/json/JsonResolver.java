@@ -1,4 +1,4 @@
-package com.pivotal.pxf.resolvers;
+package com.pivotal.pxf.plugins.json;
 
 import java.io.IOException;
 import java.security.InvalidParameterException;
@@ -9,12 +9,13 @@ import java.util.List;
 import org.codehaus.jackson.JsonNode;
 
 import com.gopivotal.mapred.input.JsonInputFormat;
-import com.pivotal.pxf.format.OneField;
-import com.pivotal.pxf.format.OneRow;
-import com.pivotal.pxf.hadoop.io.GPDBWritable;
-import com.pivotal.pxf.utilities.ColumnDescriptor;
-import com.pivotal.pxf.utilities.InputData;
-import com.pivotal.pxf.utilities.Plugin;
+import com.pivotal.pxf.api.OneField;
+import com.pivotal.pxf.api.OneRow;
+import com.pivotal.pxf.api.ReadResolver;
+import com.pivotal.pxf.api.io.DataType;
+import com.pivotal.pxf.api.utilities.ColumnDescriptor;
+import com.pivotal.pxf.api.utilities.InputData;
+import com.pivotal.pxf.api.utilities.Plugin;
 
 /**
  * This JSON resolver for PXF will decode a given object from the
@@ -22,7 +23,7 @@ import com.pivotal.pxf.utilities.Plugin;
  * JsonNode and walk the tree for each column. It supports normal value mapping
  * via projections and JSON array indexing.
  */
-public class JsonResolver extends Plugin implements IReadResolver {
+public class JsonResolver extends Plugin implements ReadResolver {
 
 	private ArrayList<OneField> list = new ArrayList<OneField>();
 
@@ -45,7 +46,7 @@ public class JsonResolver extends Plugin implements IReadResolver {
 
 				// Get the current column description
 				ColumnDescriptor cd = inputData.getColumn(i);
-				int columnType = cd.columnTypeCode();
+				DataType columnType = DataType.valueOf(cd.columnName());
 
 				// Get the JSON projections from the column name
 				// For example, "user.name" turns into ["user","name"]
@@ -156,14 +157,14 @@ public class JsonResolver extends Plugin implements IReadResolver {
 	 * field of corresponding type
 	 * 
 	 * @param type
-	 *            The GPDBWritable type
+	 *            The {@link DataType} type
 	 * @param node
 	 *            The JSON array node
 	 * @param index
 	 *            The array index to iterate to
 	 * @throws IOException
 	 */
-	private void addFieldFromJsonArray(int type, JsonNode node, int index)
+	private void addFieldFromJsonArray(DataType type, JsonNode node, int index)
 			throws IOException {
 
 		int count = 0;
@@ -189,46 +190,47 @@ public class JsonResolver extends Plugin implements IReadResolver {
 	}
 
 	/**
-	 * Adds a field from a given JSON node value based on the GPDBWritable type.
+	 * Adds a field from a given JSON node value based on the {@link DataType}
+	 * type.
 	 * 
 	 * @param type
-	 *            The GPDBWritable type
+	 *            The DataType type
 	 * @param val
 	 *            The JSON node to extract the value.
 	 * @throws IOException
 	 */
-	private void addFieldFromJsonNode(int type, JsonNode val)
+	private void addFieldFromJsonNode(DataType type, JsonNode val)
 			throws IOException {
 		OneField oneField = new OneField();
-		oneField.type = type;
+		oneField.type = type.getOID();
 
 		if (val.isNull()) {
 			oneField.val = null;
 		} else {
 			switch (type) {
-			case GPDBWritable.BIGINT:
+			case BIGINT:
 				oneField.val = val.getValueAsLong();
 				break;
-			case GPDBWritable.BOOLEAN:
+			case BOOLEAN:
 				oneField.val = val.getValueAsBoolean();
 				break;
-			case GPDBWritable.BPCHAR:
-			case GPDBWritable.CHAR:
+			case BPCHAR:
+			case CHAR:
 				oneField.val = val.getValueAsText().charAt(0);
 				break;
-			case GPDBWritable.BYTEA:
+			case BYTEA:
 				oneField.val = val.getValueAsText().getBytes();
 				break;
-			case GPDBWritable.FLOAT8:
-			case GPDBWritable.REAL:
+			case FLOAT8:
+			case REAL:
 				oneField.val = val.getValueAsDouble();
 				break;
-			case GPDBWritable.INTEGER:
-			case GPDBWritable.SMALLINT:
+			case INTEGER:
+			case SMALLINT:
 				oneField.val = val.getValueAsInt();
 				break;
-			case GPDBWritable.TEXT:
-			case GPDBWritable.VARCHAR:
+			case TEXT:
+			case VARCHAR:
 				oneField.val = val.getValueAsText();
 				break;
 			default:
@@ -243,10 +245,10 @@ public class JsonResolver extends Plugin implements IReadResolver {
 	 * Adds a null field of the given type.
 	 * 
 	 * @param type
-	 *            The GPDBWritable type
+	 *            The {@link DataType} type
 	 */
-	private void addNullField(int type) {
+	private void addNullField(DataType type) {
 
-		list.add(new OneField(type, null));
+		list.add(new OneField(type.getOID(), null));
 	}
 }

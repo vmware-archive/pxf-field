@@ -4,6 +4,13 @@
 	<groupId>com.gopivotal</groupId>
 	<artifactId>json-pxf-ext</artifactId>
 	<version>1.1.0</version>
+
+	<properties>
+		<hadoop-version>2.2.0-gphd-3.0.1.0</hadoop-version>
+		<pxf-version>2.2.0.0</pxf-version>
+		<pxf-test-version>2.0.1</pxf-test-version>
+	</properties>
+	
 	<repositories>
 		<repository>
 			<id>org.springsource.maven.milestone</id>
@@ -18,8 +25,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.0</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -28,29 +35,32 @@
 		<dependency>
 			<groupId>org.apache.hadoop</groupId>
 			<artifactId>hadoop-auth</artifactId>
-			<version>2.0.2-alpha-gphd-2.0.1.0</version>
+			<version>${hadoop-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.hadoop</groupId>
 			<artifactId>hadoop-common</artifactId>
-			<version>2.0.2-alpha-gphd-2.0.1.0</version>
+			<version>${hadoop-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.hadoop</groupId>
 			<artifactId>hadoop-mapreduce-client-common</artifactId>
-			<version>2.0.2-alpha-gphd-2.0.1.0</version>
+			<version>${hadoop-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.hadoop</groupId>
 			<artifactId>hadoop-mapreduce-client-core</artifactId>
-			<version>2.0.2-alpha-gphd-2.0.1.0</version>
+			<version>${hadoop-version}</version>
 		</dependency>
-		<!-- dependency> <groupId>com.google.guava</groupId> <artifactId>guava</artifactId> 
-			<version>r05</version> </dependency -->
+		<dependency>
+			<groupId>com.gopivotal</groupId>
+			<artifactId>pxf-hdfs</artifactId>
+			<version>${pxf-version}</version>
+		</dependency>
 		<dependency>
 			<groupId>com.gopivotal</groupId>
 			<artifactId>pxf-test</artifactId>
-			<version>1.1.0</version>
+			<version>${pxf-test-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>

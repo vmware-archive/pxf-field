@@ -22,15 +22,15 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Assert;
 
-import com.pivotal.pxf.accessors.IReadAccessor;
-import com.pivotal.pxf.format.OneField;
-import com.pivotal.pxf.format.OneRow;
-import com.pivotal.pxf.fragmenters.Fragmenter;
-import com.pivotal.pxf.fragmenters.FragmentsOutput;
-import com.pivotal.pxf.fragmenters.FragmentsResponseFormatter;
-import com.pivotal.pxf.hadoop.io.GPDBWritable;
-import com.pivotal.pxf.resolvers.IReadResolver;
-import com.pivotal.pxf.utilities.InputData;
+import com.pivotal.pxf.api.Fragment;
+import com.pivotal.pxf.api.Fragmenter;
+import com.pivotal.pxf.api.OneField;
+import com.pivotal.pxf.api.OneRow;
+import com.pivotal.pxf.api.ReadAccessor;
+import com.pivotal.pxf.api.ReadResolver;
+import com.pivotal.pxf.api.io.DataType;
+import com.pivotal.pxf.api.utilities.InputData;
+import com.pivotal.pxf.core.FragmentsResponseFormatter;
 
 /**
  * This abstract class contains a number of helpful utilities in developing a
@@ -85,8 +85,8 @@ public abstract class PxfUnit {
 		setup(input);
 		List<String> actualOutput = new ArrayList<String>();
 		for (InputData data : inputs) {
-			IReadAccessor accessor = getReadAccessor(data);
-			IReadResolver resolver = getReadResolver(data);
+			ReadAccessor accessor = getReadAccessor(data);
+			ReadResolver resolver = getReadResolver(data);
 
 			actualOutput.addAll(getAllOutput(accessor, resolver));
 
@@ -145,8 +145,8 @@ public abstract class PxfUnit {
 
 		List<String> actualOutput = new ArrayList<String>();
 		for (InputData data : inputs) {
-			IReadAccessor accessor = getReadAccessor(data);
-			IReadResolver resolver = getReadResolver(data);
+			ReadAccessor accessor = getReadAccessor(data);
+			ReadResolver resolver = getReadResolver(data);
 
 			actualOutput.addAll(getAllOutput(accessor, resolver));
 
@@ -174,8 +174,8 @@ public abstract class PxfUnit {
 		setup(input);
 
 		for (InputData data : inputs) {
-			IReadAccessor accessor = getReadAccessor(data);
-			IReadResolver resolver = getReadResolver(data);
+			ReadAccessor accessor = getReadAccessor(data);
+			ReadResolver resolver = getReadResolver(data);
 
 			for (String line : getAllOutput(accessor, resolver)) {
 				output.write((line + "\n").getBytes());
@@ -197,14 +197,14 @@ public abstract class PxfUnit {
 	 * 
 	 * @return The class
 	 */
-	public abstract Class<? extends IReadAccessor> getReadAccessorClass();
+	public abstract Class<? extends ReadAccessor> getReadAccessorClass();
 
 	/**
 	 * Get the class of the implementation of {@link Resolver} to be tested.
 	 * 
 	 * @return The class
 	 */
-	public abstract Class<? extends IReadResolver> getReadResolverClass();
+	public abstract Class<? extends ReadResolver> getReadResolverClass();
 
 	/**
 	 * Get any extra parameters that are meant to be specified for the "pxf"
@@ -217,12 +217,12 @@ public abstract class PxfUnit {
 	}
 
 	/**
-	 * Gets the column definition names and data types. Types are integer values
-	 * in {@link GPDBWritable}.
+	 * Gets the column definition names and data types. Types are
+	 * {@link DataType} objects
 	 * 
 	 * @return A list of column definition name value pairs
 	 */
-	public abstract List<Pair<String, Integer>> getColumnDefinitions();
+	public abstract List<Pair<String, DataType>> getColumnDefinitions();
 
 	/**
 	 * Set all necessary parameters for GPXF framework to function. Uses the
@@ -249,14 +249,14 @@ public abstract class PxfUnit {
 
 		paramsMap.put("X-GP-DATA-DIR", input.toString());
 
-		List<Pair<String, Integer>> params = getColumnDefinitions();
+		List<Pair<String, DataType>> params = getColumnDefinitions();
 		paramsMap.put("X-GP-ATTRS", Integer.toString(params.size()));
 		for (int i = 0; i < params.size(); ++i) {
 			paramsMap.put("X-GP-ATTR-NAME" + i, params.get(i).first);
-			paramsMap.put("X-GP-ATTR-TYPENAME" + i,
-					getTypeName(params.get(i).second));
+			paramsMap
+					.put("X-GP-ATTR-TYPENAME" + i, params.get(i).second.name());
 			paramsMap.put("X-GP-ATTR-TYPECODE" + i,
-					Integer.toString(params.get(i).second));
+					Integer.toString(params.get(i).second.getOID()));
 		}
 
 		// HDFSMetaData properties
@@ -271,8 +271,8 @@ public abstract class PxfUnit {
 
 		LocalInputData fragmentInputData = new LocalInputData(paramsMap);
 
-		FragmentsOutput fragments = getFragmenter(fragmentInputData)
-				.GetFragments();
+		List<Fragment> fragments = getFragmenter(fragmentInputData)
+				.getFragments();
 
 		String jsonOutput = FragmentsResponseFormatter.formatResponseString(
 				fragments, input.toString());
@@ -423,8 +423,8 @@ public abstract class PxfUnit {
 	 * @return
 	 * @throws Exception
 	 */
-	protected List<String> getAllOutput(IReadAccessor accessor,
-			IReadResolver resolver) throws Exception {
+	protected List<String> getAllOutput(ReadAccessor accessor,
+			ReadResolver resolver) throws Exception {
 
 		Assert.assertTrue("Accessor failed to open", accessor.openForRead());
 
@@ -489,18 +489,18 @@ public abstract class PxfUnit {
 	}
 
 	/**
-	 * Gets an instance of {@link IReadAccessor} via reflection.
+	 * Gets an instance of {@link ReadAccessor} via reflection.
 	 * 
 	 * Searches for a constructor that has a single parameter of some InputData
 	 * type
 	 * 
-	 * @return An IReadAccessor instance
+	 * @return An ReadAccessor instance
 	 * @throws Exception
 	 *             If something bad happens
 	 */
-	protected IReadAccessor getReadAccessor(InputData data) throws Exception {
+	protected ReadAccessor getReadAccessor(InputData data) throws Exception {
 
-		IReadAccessor accessor = null;
+		ReadAccessor accessor = null;
 
 		for (Constructor<?> c : getReadAccessorClass().getConstructors()) {
 			System.out.println(c);
@@ -510,7 +510,7 @@ public abstract class PxfUnit {
 					System.out.println(clazz);
 
 					if (InputData.class.isAssignableFrom(clazz)) {
-						accessor = (IReadAccessor) c.newInstance(data);
+						accessor = (ReadAccessor) c.newInstance(data);
 					}
 				}
 			}
@@ -535,9 +535,9 @@ public abstract class PxfUnit {
 	 * @throws Exception
 	 *             If something bad happens
 	 */
-	protected IReadResolver getReadResolver(InputData data) throws Exception {
+	protected ReadResolver getReadResolver(InputData data) throws Exception {
 
-		IReadResolver resolver = null;
+		ReadResolver resolver = null;
 
 		// search for a constructor that has a single parameter of a type of
 		// BaseMetaData to create the accessor instance
@@ -549,7 +549,7 @@ public abstract class PxfUnit {
 					System.out.println(clazz);
 
 					if (InputData.class.isAssignableFrom(clazz)) {
-						resolver = (IReadResolver) c.newInstance(data);
+						resolver = (ReadResolver) c.newInstance(data);
 					}
 				}
 			}
@@ -561,42 +561,6 @@ public abstract class PxfUnit {
 		}
 
 		return resolver;
-	}
-
-	private String getTypeName(int oid) {
-		switch (oid) {
-		case 16:
-			return "BOOLEAN";
-		case 17:
-			return "BYTEA";
-		case 18:
-			return "CHAR";
-		case 20:
-			return "BIGINT";
-		case 21:
-			return "SMALLINT";
-		case 23:
-			return "INTEGER";
-		case 25:
-			return "TEXT";
-		case 700:
-			return "REAL";
-		case 701:
-			return "FLOAT8";
-		case 1042:
-			return "BPCHAR";
-		case 1043:
-			return "VARCHAR";
-		case 1082:
-			return "DATE";
-		case 1083:
-			return "TIME";
-		case 1114:
-			return "TIMESTAMP";
-		case 1700:
-			return "NUMERIC";
-		}
-		return "TEXT";
 	}
 
 	public static class Pair<FIRST, SECOND> {

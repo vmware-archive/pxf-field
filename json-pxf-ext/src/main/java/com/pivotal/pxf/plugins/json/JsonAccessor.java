@@ -1,4 +1,4 @@
-package com.pivotal.pxf.accessors;
+package com.pivotal.pxf.plugins.json;
 
 import java.io.IOException;
 
@@ -7,7 +7,8 @@ import org.apache.hadoop.mapred.InputSplit;
 import org.apache.hadoop.mapred.JobConf;
 
 import com.gopivotal.mapred.input.JsonInputFormat;
-import com.pivotal.pxf.utilities.InputData;
+import com.pivotal.pxf.api.utilities.InputData;
+import com.pivotal.pxf.plugins.hdfs.HdfsSplittableDataAccessor;
 
 /**
  * This JSON accessor for PXF will read JSON data and pass it to a
