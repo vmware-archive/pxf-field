@@ -4,9 +4,9 @@
 	<description>A profile for Redis hash data
 	</description>
 	<plugins>
-		<fragmenter>com.pivotal.pxf.fragmenters.RedisFragmenter</fragmenter>
-		<accessor>RedisHashAccessor</accessor>
-		<resolver>RedisHashResolver</resolver>
-		<analyzer>RedisHashAnalyzer</analyzer>
+		<fragmenter>com.pivotal.pxf.plugins.redis.RedisFragmenter</fragmenter>
+		<accessor>com.pivotal.pxf.plugins.redis.RedisHashAccessor</accessor>
+		<resolver>com.pivotal.pxf.plugins.redis.RedisHashResolver</resolver>
+		<analyzer>com.pivotal.pxf.plugins.redis.RedisHashAnalyzer</analyzer>
 	</plugins>
 </profile>

@@ -30,11 +30,11 @@ import org.apache.hadoop.mapred.InputSplit;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.TextInputFormat;
 
-public class HiveDataFragmenterNoPartitionLimitDebug extends Fragmenter {
+public class HiveDataFragmenterNoPartitionLimit extends Fragmenter {
 	private JobConf jobConf;
 	private HiveMetaStoreClient client;
 	private Log LOG = LogFactory
-			.getLog(HiveDataFragmenterNoPartitionLimitDebug.class);
+			.getLog(HiveDataFragmenterNoPartitionLimit.class);
 	private static final String HIVE_DEFAULT_DBNAME = "default";
 	static final String HIVE_UD_DELIM = "!HUDD!";
 	static final String HIVE_1_PART_DELIM = "!H1PD!";
@@ -42,10 +42,10 @@ public class HiveDataFragmenterNoPartitionLimitDebug extends Fragmenter {
 	static final String HIVE_NO_PART_TBL = "!HNPT!";
 	private static final int HIVE_MAX_PARTS = -1;
 
-	public HiveDataFragmenterNoPartitionLimitDebug(InputData md) {
+	public HiveDataFragmenterNoPartitionLimit(InputData md) {
 		super(md);
 		this.jobConf = new JobConf(new Configuration(),
-				HiveDataFragmenterNoPartitionLimitDebug.class);
+				HiveDataFragmenterNoPartitionLimit.class);
 		initHiveClient();
 	}
 

@@ -4,10 +4,10 @@
 	<description>A profile for JSON data, one JSON record per line
 	</description>
 	<plugins>
-		<fragmenter>HdfsDataFragmenter</fragmenter>
-		<accessor>JsonAccessor</accessor>
-		<resolver>JsonResolver</resolver>
-		<analyzer>HdfsAnalyzer</analyzer>
+		<fragmenter>com.pivotal.pxf.plugins.hdfs.HdfsDataFragmenter</fragmenter>
+		<accessor>com.pivotal.pxf.plugins.json.JsonAccessor</accessor>
+		<resolver>com.pivotal.pxf.plugins.json.JsonResolver</resolver>
+		<analyzer>com.pivotal.pxf.plugins.hdfs.HdfsAnalyzer</analyzer>
 	</plugins>
 </profile>
 <profile>
@@ -16,10 +16,10 @@
 		multiple lines. Must specify the IDENTIFIER parameter in DDL.
 	</description>
 	<plugins>
-		<fragmenter>HdfsDataFragmenter</fragmenter>
-		<accessor>JsonAccessor</accessor>
-		<resolver>JsonResolver</resolver>
-		<analyzer>HdfsAnalyzer</analyzer>
+		<fragmenter>com.pivotal.pxf.plugins.hdfs.HdfsDataFragmenter</fragmenter>
+		<accessor>com.pivotal.pxf.plugins.json.JsonAccessor</accessor>
+		<resolver>com.pivotal.pxf.plugins.json.JsonResolver</resolver>
+		<analyzer>com.pivotal.pxf.plugins.hdfs.HdfsAnalyzer</analyzer>
 		<onerecordperline>false</onerecordperline>
 	</plugins>
 </profile>

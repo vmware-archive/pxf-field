@@ -5,8 +5,8 @@
 		INSTANCE, QUORUM, USER, PASSWORD, and scan AUTHS in DDL.
 	</description>
 	<plugins>
-		<fragmenter>AccumuloFragmenter</fragmenter>
-		<accessor>AccumuloAccessor</accessor>
-		<resolver>AccumuloResolver</resolver>
+		<fragmenter>com.pivotal.pxf.plugins.accumulo.AccumuloFragmenter</fragmenter>
+		<accessor>com.pivotal.pxf.plugins.accumulo.AccumuloAccessor</accessor>
+		<resolver>com.pivotal.pxf.plugins.accumulo.AccumuloResolver</resolver>
 	</plugins>
 </profile>

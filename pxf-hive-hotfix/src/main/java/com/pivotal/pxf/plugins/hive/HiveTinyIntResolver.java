@@ -46,7 +46,7 @@ import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapred.JobConf;
 
 @SuppressWarnings("deprecation")
-public class HiveTinyIntResolverDebug extends Plugin implements ReadResolver {
+public class HiveTinyIntResolver extends Plugin implements ReadResolver {
 	private SerDe deserializer;
 	private List<OneField> partitionFields;
 	private String serdeName;
@@ -54,7 +54,7 @@ public class HiveTinyIntResolverDebug extends Plugin implements ReadResolver {
 	private String partitionKeys;
 	private static long timeToConvert = 0;
 
-	public HiveTinyIntResolverDebug(InputData input) throws Exception {
+	public HiveTinyIntResolver(InputData input) throws Exception {
 		super(input);
 
 		ParseUserData(input);

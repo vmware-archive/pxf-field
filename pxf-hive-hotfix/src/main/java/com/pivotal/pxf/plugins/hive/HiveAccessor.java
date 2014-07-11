@@ -15,24 +15,24 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.apache.hadoop.mapred.FileInputFormat;
 import org.apache.hadoop.mapred.FileSplit;
 import org.apache.hadoop.mapred.InputSplit;
 import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapred.RecordReader;
 import org.apache.hadoop.mapred.Reporter;
 
-public class HiveAccessorDebug2 extends HdfsSplittableDataAccessor {
+public class HiveAccessor extends HdfsSplittableDataAccessor {
+
 	private Log Log;
 	private List<Partition> partitions;
-	private Log LOG = LogFactory.getLog(HiveAccessorDebug2.class);
+	private Log LOG = LogFactory.getLog(HiveAccessor.class);
 	private long start, end;
 	private String path = null;
 	private String[] hosts = null;
-	private RecordReader rdr = null;
 	private long startBytes, endBytes, accessorTime = 0;
 
-	public HiveAccessorDebug2(InputData input) throws Exception {
+	public HiveAccessor(InputData input) throws Exception {
 		super(input, null);
 		this.fformat = createInputFormat(input);
 		this.Log = LogFactory.getLog(HiveAccessor.class);
@@ -79,15 +79,14 @@ public class HiveAccessorDebug2 extends HdfsSplittableDataAccessor {
 
 	protected Object getReader(JobConf jobConf, InputSplit split)
 			throws IOException {
-		rdr = this.fformat.getRecordReader(split, jobConf, Reporter.NULL);
-		return rdr;
+		return this.fformat.getRecordReader(split, jobConf, Reporter.NULL);
 	}
 
 	public void closeForRead() throws Exception {
 		super.closeForRead();
 		end = System.currentTimeMillis();
 
-		long resolverTime = HiveTinyIntResolverDebug.getTimeToConvert();
+		long resolverTime = HiveTinyIntResolver.getTimeToConvert();
 
 		LOG.info("STATS2 " + path + " " + (end - start) + " " + startBytes
 				+ " " + endBytes + " " + (endBytes - startBytes) + " "
