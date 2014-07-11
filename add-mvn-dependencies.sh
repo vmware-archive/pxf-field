@@ -5,8 +5,6 @@
 
 PXF_VERSION=2.2.0.0
 
-LIB_DIR=lib
-
 if [[ -z $LIB_DIR ]]; then
     PXF_ROOT=/usr/lib/gphd/pxf
 else

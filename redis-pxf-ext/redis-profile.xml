@@ -1,0 +1,12 @@
+
+<profile>
+	<name>RedisHash</name>
+	<description>A profile for Redis hash data
+	</description>
+	<plugins>
+		<fragmenter>com.pivotal.pxf.fragmenters.RedisFragmenter</fragmenter>
+		<accessor>RedisHashAccessor</accessor>
+		<resolver>RedisHashResolver</resolver>
+		<analyzer>RedisHashAnalyzer</analyzer>
+	</plugins>
+</profile>

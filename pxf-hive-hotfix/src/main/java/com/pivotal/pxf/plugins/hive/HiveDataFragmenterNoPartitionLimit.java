@@ -6,7 +6,6 @@ import com.pivotal.pxf.api.utilities.InputData;
 import com.pivotal.pxf.plugins.hdfs.utilities.HdfsUtilities;
 
 import java.io.ByteArrayOutputStream;
-
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Properties;
@@ -31,10 +30,11 @@ import org.apache.hadoop.mapred.InputSplit;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.TextInputFormat;
 
-public class HiveDataFragmenterNoPartitionLimit extends Fragmenter {
+public class HiveDataFragmenterNoPartitionLimitDebug extends Fragmenter {
 	private JobConf jobConf;
-	HiveMetaStoreClient client;
-	Log Log = LogFactory.getLog(HiveDataFragmenterNoPartitionLimit.class);
+	private HiveMetaStoreClient client;
+	private Log LOG = LogFactory
+			.getLog(HiveDataFragmenterNoPartitionLimitDebug.class);
 	private static final String HIVE_DEFAULT_DBNAME = "default";
 	static final String HIVE_UD_DELIM = "!HUDD!";
 	static final String HIVE_1_PART_DELIM = "!H1PD!";
@@ -42,11 +42,10 @@ public class HiveDataFragmenterNoPartitionLimit extends Fragmenter {
 	static final String HIVE_NO_PART_TBL = "!HNPT!";
 	private static final int HIVE_MAX_PARTS = -1;
 
-	public HiveDataFragmenterNoPartitionLimit(InputData md) {
+	public HiveDataFragmenterNoPartitionLimitDebug(InputData md) {
 		super(md);
-
 		this.jobConf = new JobConf(new Configuration(),
-				HiveDataFragmenter.class);
+				HiveDataFragmenterNoPartitionLimitDebug.class);
 		initHiveClient();
 	}
 
@@ -75,7 +74,7 @@ public class HiveDataFragmenterNoPartitionLimit extends Fragmenter {
 		}
 	}
 
-	TblDesc parseTableQualifiedName(String qualifiedName) {
+	private TblDesc parseTableQualifiedName(String qualifiedName) {
 		TblDesc tblDesc = new TblDesc();
 
 		String[] toks = qualifiedName.split("[.]");
@@ -94,10 +93,11 @@ public class HiveDataFragmenterNoPartitionLimit extends Fragmenter {
 
 	private void fetchTableMetaData(TblDesc tblDesc) throws Exception {
 		Table tbl = this.client.getTable(tblDesc.dbName, tblDesc.tableName);
+
 		String tblType = tbl.getTableType();
 
-		if (this.Log.isDebugEnabled()) {
-			this.Log.debug(new StringBuilder().append("Table: ")
+		if (this.LOG.isDebugEnabled()) {
+			this.LOG.debug(new StringBuilder().append("Table: ")
 					.append(tblDesc.dbName).append(".")
 					.append(tblDesc.tableName).append(", type: ")
 					.append(tblType).toString());
@@ -110,6 +110,7 @@ public class HiveDataFragmenterNoPartitionLimit extends Fragmenter {
 
 		List<Partition> partitions = this.client.listPartitions(tblDesc.dbName,
 				tblDesc.tableName, (short) HIVE_MAX_PARTS);
+
 		StorageDescriptor descTable = tbl.getSd();
 		List<FieldSchema> partitionKeys;
 		if (partitions.isEmpty()) {
@@ -124,7 +125,7 @@ public class HiveDataFragmenterNoPartitionLimit extends Fragmenter {
 						descTable, null, tblDesc.dbName, tblDesc.tableName,
 						partitionKeys);
 
-				fetchMetaDataForPrtitionedTable(descPartition, props,
+				fetchMetaDataForPartitionedTable(descPartition, props,
 						partition, partitionKeys);
 			}
 		}
@@ -142,7 +143,7 @@ public class HiveDataFragmenterNoPartitionLimit extends Fragmenter {
 		fetchMetaData(tablePartition);
 	}
 
-	private void fetchMetaDataForPrtitionedTable(StorageDescriptor stdsc,
+	private void fetchMetaDataForPartitionedTable(StorageDescriptor stdsc,
 			Properties props, Partition partition,
 			List<FieldSchema> partitionKeys) throws Exception {
 		HiveTablePartition tablePartition = new HiveTablePartition(stdsc,
@@ -157,7 +158,7 @@ public class HiveDataFragmenterNoPartitionLimit extends Fragmenter {
 				tablePartition.storageDesc.getInputFormat(), this.jobConf);
 		FileInputFormat.setInputPaths(this.jobConf, new Path[] { new Path(
 				tablePartition.storageDesc.getLocation()) });
-		InputSplit[] splits = fformat.getSplits(this.jobConf, 1);
+		InputSplit[] splits = fformat.getSplits(this.jobConf, 0);
 
 		for (InputSplit split : splits) {
 			FileSplit fsp = (FileSplit) split;

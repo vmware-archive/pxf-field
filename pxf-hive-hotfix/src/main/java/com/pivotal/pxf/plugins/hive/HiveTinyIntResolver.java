@@ -46,19 +46,25 @@ import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapred.JobConf;
 
 @SuppressWarnings("deprecation")
-public class HiveTinyIntResolver extends Plugin implements ReadResolver {
+public class HiveTinyIntResolverDebug extends Plugin implements ReadResolver {
 	private SerDe deserializer;
 	private List<OneField> partitionFields;
 	private String serdeName;
 	private String propsString;
 	private String partitionKeys;
+	private static long timeToConvert = 0;
 
-	public HiveTinyIntResolver(InputData input) throws Exception {
+	public HiveTinyIntResolverDebug(InputData input) throws Exception {
 		super(input);
 
 		ParseUserData(input);
 		InitSerde();
 		InitPartitionFields();
+		timeToConvert = 0;
+	}
+
+	public static long getTimeToConvert() {
+		return timeToConvert;
 	}
 
 	private void ParseUserData(InputData input) throws Exception {
@@ -76,6 +82,7 @@ public class HiveTinyIntResolver extends Plugin implements ReadResolver {
 	}
 
 	public List<OneField> getFields(OneRow onerow) throws Exception {
+		long start = System.currentTimeMillis();
 		List<OneField> record = new LinkedList<OneField>();
 
 		Object tuple = this.deserializer.deserialize((Writable) onerow
@@ -86,6 +93,9 @@ public class HiveTinyIntResolver extends Plugin implements ReadResolver {
 
 		addPartitionKeyValues(record);
 
+		long end = System.currentTimeMillis();
+
+		timeToConvert += (end - start);
 		return record;
 	}
 
