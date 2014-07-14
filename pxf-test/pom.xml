@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gopivotal</groupId>
 	<artifactId>pxf-test</artifactId>
-	<version>2.0.1</version>
+	<version>2.0.1.0-0</version>
 	<repositories>
 		<repository>
 			<id>org.springsource.maven.milestone</id>
@@ -44,6 +44,11 @@
 		<dependency>
 			<groupId>com.gopivotal</groupId>
 			<artifactId>pxf-core</artifactId>
+			<version>${pxf-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.gopivotal</groupId>
+			<artifactId>pxf-hdfs</artifactId>
 			<version>${pxf-version}</version>
 		</dependency>
 		<dependency>

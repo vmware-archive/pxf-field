@@ -46,7 +46,7 @@ public class JsonResolver extends Plugin implements ReadResolver {
 
 				// Get the current column description
 				ColumnDescriptor cd = inputData.getColumn(i);
-				DataType columnType = DataType.valueOf(cd.columnName());
+				DataType columnType = DataType.valueOf(cd.columnTypeName());
 
 				// Get the JSON projections from the column name
 				// For example, "user.name" turns into ["user","name"]

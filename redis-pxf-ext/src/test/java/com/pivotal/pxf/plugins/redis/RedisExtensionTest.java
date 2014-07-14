@@ -54,6 +54,11 @@ public class RedisExtensionTest extends PxfUnit {
 	@Test(expected = InvocationTargetException.class)
 	public void testNoHostsDefined() throws Exception {
 
+		if (!enableTests) {
+			System.out.println("Tests are disabled");
+			return;
+		}
+		
 		extraParams.add(new Pair<String, String>("HASHKEY", "test"));
 		List<String> output = new ArrayList<String>();
 
@@ -65,6 +70,12 @@ public class RedisExtensionTest extends PxfUnit {
 
 	@Test(expected = InvocationTargetException.class)
 	public void testNoHashKeyDefined() throws Exception {
+
+		if (!enableTests) {
+			System.out.println("Tests are disabled");
+			return;
+		}
+		
 		extraParams.add(new Pair<String, String>("HOSTS", "phd2"));
 		super.assertUnorderedOutput(new Path("/redis"), new ArrayList<String>());
 	}
@@ -72,6 +83,11 @@ public class RedisExtensionTest extends PxfUnit {
 	@Test(expected = JedisConnectionException.class)
 	public void testReadMultipleHostFailToConnect() throws Exception {
 
+		if (!enableTests) {
+			System.out.println("Tests are disabled");
+			return;
+		}
+		
 		extraParams.add(new Pair<String, String>("HOSTS", "phd2,phd4"));
 		extraParams.add(new Pair<String, String>("HASHKEY", "test"));
 		super.assertUnorderedOutput(new Path("/redis"), new ArrayList<String>());
@@ -80,6 +96,11 @@ public class RedisExtensionTest extends PxfUnit {
 	@Test(expected = JedisConnectionException.class)
 	public void testReadSingleHostWrongPort() throws Exception {
 
+		if (!enableTests) {
+
+			return;
+		}
+		
 		extraParams.add(new Pair<String, String>("HOSTS", "phd2:6381"));
 		extraParams.add(new Pair<String, String>("HASHKEY", "test"));
 

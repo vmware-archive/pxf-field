@@ -285,7 +285,11 @@ public abstract class PxfUnit {
 		int i = 0;
 		Iterator<JsonNode> iter = fragmentsArray.getElements();
 		while (iter.hasNext()) {
-			iter.next();
+			JsonNode fragNode = iter.next();
+			paramsMap.put("X-GP-DATA-DIR", "/"
+					+ fragNode.get("sourceName").getTextValue());
+			paramsMap.put("X-GP-FRAGMENT-METADATA", fragNode.get("metadata")
+					.getTextValue());
 			paramsMap.put("X-GP-DATA-FRAGMENT", Integer.toString(i++));
 			inputs.add(new LocalInputData(paramsMap));
 		}
@@ -466,12 +470,8 @@ public abstract class PxfUnit {
 		Fragmenter fragmenter = null;
 
 		for (Constructor<?> c : getFragmenterClass().getConstructors()) {
-			System.out.println(c);
-
 			if (c.getParameterTypes().length == 1) {
 				for (Class<?> clazz : c.getParameterTypes()) {
-					System.out.println(clazz);
-
 					if (InputData.class.isAssignableFrom(clazz)) {
 						fragmenter = (Fragmenter) c.newInstance(meta);
 					}
@@ -503,12 +503,8 @@ public abstract class PxfUnit {
 		ReadAccessor accessor = null;
 
 		for (Constructor<?> c : getReadAccessorClass().getConstructors()) {
-			System.out.println(c);
-
 			if (c.getParameterTypes().length == 1) {
 				for (Class<?> clazz : c.getParameterTypes()) {
-					System.out.println(clazz);
-
 					if (InputData.class.isAssignableFrom(clazz)) {
 						accessor = (ReadAccessor) c.newInstance(data);
 					}
@@ -542,12 +538,8 @@ public abstract class PxfUnit {
 		// search for a constructor that has a single parameter of a type of
 		// BaseMetaData to create the accessor instance
 		for (Constructor<?> c : getReadResolverClass().getConstructors()) {
-			System.out.println(c);
-
 			if (c.getParameterTypes().length == 1) {
 				for (Class<?> clazz : c.getParameterTypes()) {
-					System.out.println(clazz);
-
 					if (InputData.class.isAssignableFrom(clazz)) {
 						resolver = (ReadResolver) c.newInstance(data);
 					}
