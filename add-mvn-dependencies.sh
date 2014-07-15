@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # The default behavior of this script is to search the default PHD installation locations for JAR files.  Declare a local lib directory to look there instead.  The lib directory should only contain jar files, not any sub-directories
-LIB_DIR=lib
+#LIB_DIR=lib
 
 PXF_VERSION=2.2.0.0
 

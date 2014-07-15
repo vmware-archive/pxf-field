@@ -2,14 +2,15 @@ package com.pivotal.pxf.plugins.accumulo;
 
 import java.util.HashMap;
 
+import org.apache.accumulo.core.client.ClientConfiguration;
 import org.apache.accumulo.core.client.mapred.AccumuloInputFormat;
+import org.apache.accumulo.core.client.mapred.RangeInputSplit;
 import org.apache.accumulo.core.client.security.tokens.PasswordToken;
 import org.apache.accumulo.core.data.Key;
 import org.apache.accumulo.core.data.Value;
 import org.apache.accumulo.core.security.Authorizations;
 import org.apache.accumulo.core.util.Pair;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.mapred.InputSplit;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.RecordReader;
 
@@ -40,24 +41,21 @@ public class AccumuloAccessor extends Plugin implements ReadAccessor {
 		super(inputData);
 
 		tableName = inputData.getProperty("X-GP-DATA-DIR");
+		tableName = tableName.startsWith("/") ? tableName.substring(1)
+				: tableName;
 		instanceName = inputData.getProperty("X-GP-INSTANCE");
 		zooKeepers = inputData.getProperty("X-GP-QUORUM");
 		principal = inputData.getProperty("X-GP-USER");
 		token = new PasswordToken(inputData.getProperty("X-GP-PASSWORD"));
 		jobConf = new JobConf(conf, AccumuloAccessor.class);
 
-		/*
-		 * if (meta.getBoolProperty("X-GP-HAS-FILTER")) { String filterString =
-		 * meta.getProperty("X-GP-FILTER"); AccumuloFilterEval eval = new
-		 * AccumuloFilterEval(meta); List<Range> ranges =
-		 * eval.getRanges(filterString); AccumuloInputFormat.setRanges(jobConf,
-		 * ranges); }
-		 */
-
 		AccumuloInputFormat.setConnectorInfo(jobConf, principal, token);
 		AccumuloInputFormat.setScanAuthorizations(jobConf, auths);
-		AccumuloInputFormat.setZooKeeperInstance(jobConf, instanceName,
-				zooKeepers);
+		AccumuloInputFormat.setZooKeeperInstance(jobConf,
+				new ClientConfiguration(
+						new org.apache.commons.configuration.Configuration[0])
+						.withInstance(instanceName).withZkHosts(zooKeepers));
+
 		AccumuloInputFormat.setInputTableName(jobConf, tableName);
 
 		format = new AccumuloInputFormat();
@@ -66,21 +64,12 @@ public class AccumuloAccessor extends Plugin implements ReadAccessor {
 	@Override
 	public boolean openForRead() throws Exception {
 
-		InputSplit[] splits = format.getSplits(this.jobConf, 1);
-		int actual_num_of_splits = splits.length;
-
-		int needed_split_idx = this.inputData.getDataFragment();
-
-		if ((needed_split_idx != -1)
-				&& (needed_split_idx < actual_num_of_splits)) {
-			reader = format.getRecordReader(splits[needed_split_idx], jobConf,
-					null);
-			key = this.reader.createKey();
-			value = this.reader.createValue();
-			return true;
-		} else {
-			return false;
-		}
+		RangeInputSplit split = AccumuloFragmenter
+				.parseFragmentMetadata(super.inputData);
+		reader = format.getRecordReader(split, jobConf, null);
+		key = this.reader.createKey();
+		value = this.reader.createValue();
+		return true;
 	}
 
 	@Override

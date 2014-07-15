@@ -1,12 +1,19 @@
 package com.pivotal.pxf.plugins.accumulo;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.accumulo.core.client.ClientConfiguration;
 import org.apache.accumulo.core.client.mapred.AccumuloInputFormat;
-import org.apache.accumulo.core.client.mapred.InputFormatBase.RangeInputSplit;
+import org.apache.accumulo.core.client.mapred.RangeInputSplit;
 import org.apache.accumulo.core.client.security.tokens.PasswordToken;
 import org.apache.accumulo.core.security.Authorizations;
+import org.apache.commons.configuration.Configuration;
 import org.apache.hadoop.mapred.InputSplit;
 import org.apache.hadoop.mapred.JobConf;
 
@@ -21,6 +28,32 @@ public class AccumuloFragmenter extends Fragmenter {
 	private JobConf jobConf = null;
 	private Authorizations auths = null;
 
+	public static byte[] prepareFragmentMetadata(RangeInputSplit rs)
+			throws IOException {
+		ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
+		DataOutputStream out = new DataOutputStream(byteArrayStream);
+		rs.write(out);
+
+		return byteArrayStream.toByteArray();
+	}
+
+	public static RangeInputSplit parseFragmentMetadata(InputData inputData)
+			throws IOException {
+		byte[] serializedLocation = inputData.getFragmentMetadata();
+		if (serializedLocation == null) {
+			throw new IllegalArgumentException(
+					"Missing fragment location information");
+		}
+
+		ByteArrayInputStream bytesStream = new ByteArrayInputStream(
+				serializedLocation);
+		DataInputStream in = new DataInputStream(bytesStream);
+
+		RangeInputSplit split = new RangeInputSplit();
+		split.readFields(in);
+		return split;
+	}
+
 	public AccumuloFragmenter(InputData meta) throws Exception {
 		super(meta);
 
@@ -31,21 +64,12 @@ public class AccumuloFragmenter extends Fragmenter {
 		jobConf = new JobConf();
 		auths = new Authorizations(meta.getProperty("X-GP-AUTHS"));
 
-		/*
-		 * if (meta.getBoolProperty("X-GP-HAS-FILTER")) { String filterString =
-		 * meta.getProperty("X-GP-FILTER"); AccumuloFilterEval eval = new
-		 * AccumuloFilterEval(getColumns(meta)); List<Range> ranges =
-		 * eval.getRanges(filterString); AccumuloInputFormat.setRanges(jobConf,
-		 * ranges); }
-		 */
-
 		AccumuloInputFormat.setConnectorInfo(jobConf, principal, token);
 		AccumuloInputFormat.setScanAuthorizations(jobConf, auths);
-		AccumuloInputFormat.setZooKeeperInstance(jobConf, instanceName,
-				zooKeepers);
-	}
-
-	public void GetFragmentInfos() throws Exception {
+		AccumuloInputFormat.setZooKeeperInstance(
+				jobConf,
+				new ClientConfiguration(new Configuration[0]).withInstance(
+						instanceName).withZkHosts(zooKeepers));
 
 	}
 
@@ -67,7 +91,8 @@ public class AccumuloFragmenter extends Fragmenter {
 		for (InputSplit split : splits) {
 			RangeInputSplit fsp = (RangeInputSplit) split;
 
-			output.add(new Fragment(datapath, fsp.getLocations(), new byte[0]));
+			output.add(new Fragment(datapath, fsp.getLocations(),
+					prepareFragmentMetadata(fsp)));
 		}
 
 		return output;

@@ -89,11 +89,6 @@ public abstract class PxfUnit {
 			ReadResolver resolver = getReadResolver(data);
 
 			actualOutput.addAll(getAllOutput(accessor, resolver));
-
-			if (expectedOutput.size() != actualOutput.size()) {
-				System.err.println("Expected Records: " + expectedOutput.size()
-						+ "\tActual Records: " + actualOutput.size());
-			}
 		}
 
 		Assert.assertFalse("Output did not match expected output",
@@ -149,11 +144,6 @@ public abstract class PxfUnit {
 			ReadResolver resolver = getReadResolver(data);
 
 			actualOutput.addAll(getAllOutput(accessor, resolver));
-
-			if (expectedOutput.size() != actualOutput.size()) {
-				System.err.println("Expected Records: " + expectedOutput.size()
-						+ "\tActual Records: " + actualOutput.size());
-			}
 		}
 
 		Assert.assertFalse("Output did not match expected output",

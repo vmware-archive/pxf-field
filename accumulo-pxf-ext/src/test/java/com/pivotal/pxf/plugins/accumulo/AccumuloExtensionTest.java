@@ -152,7 +152,6 @@ public class AccumuloExtensionTest extends PxfUnit {
 
 	@Test(expected = IOException.class)
 	public void testNonexistentTable() throws Exception {
-
 		if (!enableTests) {
 			throw new IOException("Tests are disabled");
 		}
