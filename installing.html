@@ -24,9 +24,10 @@
 A PXF extension is relatively simple to install.  The steps break down to:
 <ol>
 <li>Package extension into a JAR file</li>
-<li>Put the JAR file in the /usr/lib/gphd/gpxf directory on each cluster node</li>
+<li>Put the JAR file in the /usr/lib/gphd/pxf directory on each cluster node</li>
 <li>Add this JAR file and any dependencies to the the HADOOP_CLASSPATH in /etc/gphd/hadoop/conf/hadoop-env.sh on each cluster node</li>
-<li>Restart the cluster using ICM</li>
+<li>Create a profile for your new extension, modifying pxf-profiles.xml</li>
+<li>Restart the cluster using ICM, or push out the pxf-profiles.xml file manually</li>
 <li>Create an external table and query data</li>
 <li>If unsuccessful with classpath related errors, go back to 3 and add any missing JAR files</li>
 </ol>
@@ -45,28 +46,30 @@ For example, the following steps will install the <a href="accumulo.html">Accumu
 <ol>
 <p><li>Place the extension JAR file in gpadmin's home directory on the HAWQ master node from your local machine.  If the master node doesn't have an external address, SCP to a node that does and then the master node.</li></p>
 
-<p><code>scp ~/accumulo-gpxf-ext-0.0.1.jar gpadmin@<hawq_master_ip>:~</code></p>
+<p><code>scp ~/accumulo-pxf-ext-&lt;version&gt;.jar gpadmin@&lt;hawq_master&gt;:~</code></p>
 
-<p><li>Create a file called <code>HostFile.txt</code> that contains the hostname of every Hadoop node and HAWQ Segment Server in your Pivotal HD cluster.</li></p>
+<p><li>Create a file called <code>hostfile.txt</code> that contains the hostname of every Hadoop node and HAWQ Segment Server in your Pivotal HD cluster.</li></p>
 
-<p><li>As gpadmin (from here on out), use the gpscp utility to SCP this jar file from the HAWQ master to the GPXF directory on every Hadoop node on the cluster.</p>
+<p><li>As <code>gpadmin</code> on the PCC node (from here on out), use the massh utility to copy the jar file to every HDFS and HAWQ node in the cluster (includes master and slave services).</p>
 
 <p>
 <code>
-source /usr/lib/gphd/hawq/greenplum_path.sh<br/>
-gpscp -f ~/HostFile.txt ~/accumulo-gpxf-ext-0.0.1.jar \<br/>
-=:/usr/lib/gphd/gpxf
+massh hostfile.txt push accumulo-pxf-ext-&lt;version&gt;.jar<br/>
+massh hostfile.txt verbose mv accumulo-pxf-ext-&lt;version&gt;.jar \<br/>
+/usr/lib/gphd/pxf<br/>
 </code>
 </li></p>
 
-<p><li>Modify hadoop-env.sh to add the extension and any additional JAR files.</p>
+<p><li>Check out the cluster configuration using ICM.  Modify hadoop-env.sh to add the extension and any additional JAR files.  Modify pxf-profiles.xml to add a profile for your connector.</p>
 
 <code>
-vi /etc/gphd/hadoop/conf/hadoop-env.sh<br/>
+icm_client fetch-configuration -l &lt;clustername&gt; -o &lt;configdir&gt;<br/>
 <br/>
-# Required only for GPXF with Accumulo<br/>
+vi &lt;configdir&gt;/hdfs/hadoop-env.sh<br/>
+<br/>
+# Required only for PXF with Accumulo<br/>
 HADOOP_CLASSPATH=$HADOOP_CLASSPATH:\<br/>
-$GPHD_HOME/gpxf/accumulo-gpxf-ext-0.0.1.jar:\<br/>
+$GPHD_HOME/pxf/accumulo-pxf-ext-&lt;version&gt;.jar:\<br/>
 $GPHD_HOME/accumulo/lib/accumulo-core.jar:\<br/>
 $GPHD_HOME/accumulo/lib/accumulo-core.jar:\<br/>
 $GPHD_HOME/accumulo/lib/accumulo-fate.jar:\<br/>
@@ -79,14 +82,29 @@ $GPHD_HOME/accumulo/lib/accumulo-trace.jar:\<br/>
 $GPHD_HOME/accumulo/lib/libthrift.jar:\<br/>
 $GPHD_HOME/accumulo/lib/jline.jar:\<br/>
 $GPHD_HOME/accumulo/conf<br/>
+<br/>
+vi &lt;configdir&gt;/gpxf/pxf-profiles.xml<br/>
+&lt;profile&gt;<br\><br/>
+&nbsp;&nbsp;&lt;name&gt;Accumulo&lt;/name&gt;<br\><br/>
+&nbsp;&nbsp;&lt;description&gt;A profile for data stored in Accumulo. Must specify INSTANCE, QUORUM, USER, PASSWORD, and scan AUTHS in DDL.<br\><br/>
+&nbsp;&nbsp;&lt;/description&gt;<br\><br/>
+&nbsp;&nbsp;&lt;plugins&gt;<br\><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;fragmenter&gt;com.pivotal.pxf.plugins.accumulo.AccumuloFragmenter&lt;/fragmenter&gt;<br\><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;accessor&gt;com.pivotal.pxf.plugins.accumulo.AccumuloAccessor&lt;/accessor&gt;<br\><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;resolver&gt;com.pivotal.pxf.plugins.accumulo.AccumuloResolver&lt;/resolver&gt;<br\><br/>
+&nbsp;&nbsp;&lt;/plugins&gt;<br\><br/>
+&lt;/profile&gt;<br\><br/>
 </code></li>
 
-<p><li>Again, using the <code>HostFile.txt</code> and gpscp, copy this updated file to each Hadoop node.</p>
+<p><li>Reconfigure the cluster using ICM.</p>
 
-<p><code>gpscp -f ~/HostFile.txt /etc/gphd/hadoop/conf/hadoop-env.sh \<br/>
-=:/etc/gphd/hadoop/conf</code></p></li>
-
-<p><li>Restart Pivotal HD and HAWQ via the Admin Node per the instructions in the Pivotal HD admin guide.</li></p>
+<p>
+<code>
+icm_client stop -l &lt;clustername&gt;<br/>
+icm_client reconfigure -l &lt;clustername&gt; -c &lt;configdir&gt; -s -p<br/>
+icm_client start -l &lt;clustername&gt;<br/>
+</code>
+</p></li>
 </ol>
 
 <h3>Troubleshooting</h3>

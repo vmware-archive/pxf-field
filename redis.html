@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>PXF by Pivotal-Field-Engineering</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  </head>
+  <body>
+    <div class="wrapper">      
+      <script type="text/javascript" src="header.js"> </script>
+      <section>
+        
+<h2>Redis</h2>
+<h3>Overview</h3>
+<p>The Redis PXF extension will reach out to a given number of Redis instances to read and write data.  Currently, it only supports the Redis hash data structure.  PXF will create one data fragment per Redis instance, allowing for an external table to read data distributed among a number of Redis servers.  One external table per hash key.  See Installing an Extension for installation details.
+
+<h3>Required Hadoop Classpath Additions</h3>
+
+<p><b>Note</b> the version numbers of these jar files.  Make sure you are using the proper version of the extension as well as any dependencies.</p>
+<p>Jedis v2.2.1 is a dependency for the Redis extension.  It can be downloaded from Maven <a href="http://mvnrepository.com/artifact/redis.clients/jedis/2.2.1" target="_blank">here</a>.</p>
+
+<code>
+# Required only for PXF with Redis<br/>
+HADOOP_CLASSPATH=$HADOOP_CLASSPATH:\<br/>
+$GPHD_HOME/pxf/redis-pxf-ext-&ltversion&gt.jar<br/>
+$GPHD_HOME/pxf/jedis-2.2.1.jar<br/>
+</code>
+<br/>
+
+<h3>Table Specification Parameters</h3>
+<table id="tfhover" class="tftable" border="1">
+<tr><th>Parameter</th><th>Value</th></tr>
+<tr><td>PROFILE</td><td>RedisHash</td></tr>
+<tr><td>HOSTS</td><td>A comma-delimited list of host:port pairs.  Not specifying the port will use the default of 6379.</td></tr>
+<tr><td>HASHKEY</td><td>The hash key to access the dat set.</td></tr>
+</table>
+<br/>
+
+<h3>Redis Example</h3>
+
+<p>The following creates an external HAWQ table that will read data from two Redis instances with hashes with a 'test' key.</p>
+
+<p><b>Redis Data on phd2</b></p>
+
+<pre><code>phd2:6379> HGETALL test
+1) "key1"
+2) "1"
+3) "key2"
+4) "2"
+</pre></code>
+
+<p><b>Redis Data on phd3</b></p>
+
+<pre><code>phd3:6379> HGETALL test
+1) "key5"
+2) "5"
+3) "key6"
+4) "6
+</pre></code>
+
+<p><b>PSQL Prompt</b></p>
+
+<p>The data read via HAWQ using a Redis extension.  Note here we created a two column table.  The path &quot;/redis&quot; and column names are arbitrary (as far as the extension is concerned), but the extension will convert the Redis data into the appropriate data types.</p>
+
+<pre><code>CREATE EXTERNAL TABLE ext_redis (a TEXT, b INT)
+LOCATION('pxf://phd2:50070/redis?PROFILE=RedisHash&HOSTS=phd2,phd3&HASHKEY=test')
+FORMAT 'CUSTOM'
+(FORMATTER='pxfwritable_import');
+
+SELECT * FROM ext_redis;
+  a   | b
+------+---
+ key2 | 2
+ key1 | 1
+ key6 | 6
+ key5 | 5
+(4 rows)
+</code></pre>
+
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/Pivotal-Field-Engineering">Pivotal-Field-Engineering</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>

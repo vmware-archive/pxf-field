@@ -8,9 +8,6 @@
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
   </head>
   <body>
     <div class="wrapper">      
@@ -24,7 +21,7 @@
 
 <p>The Accumulo user name, password, and authorizations are included in the table definition.  This is clearly a security hole and should be addressed.  This extension is a functional prototype only.</p>
 
-<p>The current version, version 1.1.0, does <b>not</b> support any push-down range scans.  This feature is possible, but some engineering needs to go into it.</p>
+<p>The current version, version 2.0.1.0, does <b>not</b> support any push-down range scans.  This feature is possible, but some engineering needs to go into it.</p>
 
 <h3>Required Hadoop Classpath Additions</h3>
 
@@ -33,7 +30,7 @@
 <code>
 # Required only for PXF with Accumulo<br/>
 HADOOP_CLASSPATH=$HADOOP_CLASSPATH:\<br/>
-$GPHD_HOME/gpxf/accumulo-pxf-ext-&ltversion&gt.jar:\<br/>
+$GPHD_HOME/pxf/accumulo-pxf-ext-&ltversion&gt.jar:\<br/>
 $GPHD_HOME/accumulo/lib/accumulo-core.jar:\<br/>
 $GPHD_HOME/accumulo/lib/accumulo-core.jar:\<br/>
 $GPHD_HOME/accumulo/lib/accumulo-fate.jar:\<br/>
@@ -54,13 +51,11 @@ $GPHD_HOME/accumulo/conf<br/>
 
 <h3>Table Specification Parameters</h3>
 
-<p>The table name follows the NameNode REST address.</p>
+<p>The table name follows the NameNode REST address.  All parameters are required.</p>
 
 <table id="tfhover" class="tftable" border="1">
 <tr><th>Parameter</th><th>Value</th></tr>
-<tr><td>FRAGMENTER</td><td>AccumuloFragmenter</td></tr>
-<tr><td>ACCESSOR</td><td>AccumuloAccessor</td></tr>
-<tr><td>RESOLVER</td><td>AccumuloResolver</td></tr>
+<tr><td>PROFILE</td><td>Accumulo</td></tr>
 <tr><td>INSTANCE</td><td>The Accumulo instance name</td></tr>
 <tr><td>QUORUM</td><td>The ZooKeeper quorum for the Accumulo instance</td></tr>
 <tr><td>USER</td><td>The Accumulo user name to read the table.  Must have authorization to read the table</td></tr>
@@ -102,23 +97,20 @@ recordkey TEXT,<br/>
 "cf:a" INTEGER,<br/>
 "cf:b" INTEGER,<br/>
 "cf:c" INTEGER<br/>
-) LOCATION ('pxf://phd2:50070/mytesttable?FRAGMENTER=AccumuloFragmenter&ACCESSOR=AccumuloAccessor&<br/>
-RESOLVER=AccumuloResolver&INSTANCE=pivotalhd<br/>
+) LOCATION ('pxf://phd2:50070/mytesttable?PROFILE=Accumulo&INSTANCE=pivotalhd<br/>
 &QUORUM=phd2:2181,phd3:2181,phd4:2181&USER=root&PASSWORD=secret<br/>
 &AUTHS=public')<br/>
-FORMAT 'CUSTOM' (FORMATTER='gpxfwritable_import');<br/>
+FORMAT 'CUSTOM' (FORMATTER='pxfwritable_import');<br/>
 <br/>
 SELECT * FROM ext_acc_mytesttable;<br/>
 <br/>
  recordkey | cf:a | cf:b | cf:c <br/>
------------+------+------+------<br/>
- row1      |    1 |    2 |     <br/>
- row2      |      |    3 |    4<br/>
- row3      |    5 |      |    6<br/>
+----------+------+------+------<br/>
+ row1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;|<br/>
+ row2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;3&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;4<br/>
+ row3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;5&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;6<br/>
 </code>
-		
-		
-		
+
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/Pivotal-Field-Engineering">Pivotal-Field-Engineering</a></p>

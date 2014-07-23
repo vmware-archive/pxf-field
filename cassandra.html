@@ -8,31 +8,26 @@
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
   </head>
   <body>
     <div class="wrapper">     
       <script type="text/javascript" src="header.js"> </script>
       <section>
-	  
-	  
 
 <h2>Cassandra</h2>
 <h3>Overview</h3>
 <p>The Cassandra PXF extension is similar to the HBase extension, in both functionality and usage.  Note that Cassandra is not currently a supported product with Pivotal HD.  See Installing an Extension for details on doing just that.</p>
 
-<p>The current version, version 1.1.0, does not support any push-down filters for scans.  This feature is possible, but some engineering needs to go into it.</p>
+<p>The current version, version 2.0.1.0, does not support any push-down filters for scans.  This feature is possible, but some engineering needs to go into it.</p>
 
 <h3>Required Hadoop Classpath Additions</h3>
 
 <p><b>Note</b> the version numbers of these jar files.  Make sure you are using the proper version of the extension as well as any dependencies.</p>
 
 <code>
-# Required only for GPXF with Cassandra<br/>
+# Required only for PXF with Cassandra<br/>
 HADOOP_CLASSPATH=$HADOOP_CLASSPATH:\<br/>
-$GPHD_HOME/gpxf/cassandra-pxf-ext-&ltversion&gt.jar:\<br/>
+$GPHD_HOME/pxf/cassandra-pxf-ext-&ltversion&gt.jar:\<br/>
 $GPHD_HOME/apache-cassandra/lib/apache-cassandra-1.2.6.jar:\<br/>
 $GPHD_HOME/apache-cassandra/lib/apache-cassandra-clientutil-1.2.6.jar:\<br/>
 $GPHD_HOME/apache-cassandra/lib/apache-cassandra-thrift-1.2.6.jar:\<br/>
@@ -47,13 +42,11 @@ Each column is named after the recordkey (row ID) or a column string.  The value
 
 <h3>Table Specification Parameters</h3>
 
-<p>The keyspace name follows the NameNode REST address.</p>
+<p>The keyspace name follows the NameNode REST address.  All parameters are required.</p>
 
 <table id="tfhover" class="tftable" border="1">
 <tr><th>Parameter</th><th>Value</th></tr>
-<tr><td>FRAGMENTER</td><td>CassandraFragmenter</td></tr>
-<tr><td>ACCESSOR</td><td>CassandraAccessor</td></tr>
-<tr><td>RESOLVER</td><td>CassandraResolver</td></tr>
+<tr><td>PROFILE</td><td>Cassandra</td></tr>
 <tr><td>ADDRESS</td><td>A Cassandra seed server to locate the ring</td></tr>
 <tr><td>COLUMN-FAMILY</td><td>A valid column family in the keyspace</td></tr>
 <tr><td>PARTITIONER</td><td>The configured partitioner class for the Cassandra instance.  Default for 1.2.6 is "Murmur3Partitioner"</td></tr>
@@ -61,7 +54,7 @@ Each column is named after the recordkey (row ID) or a column string.  The value
 <br/>
 <h3>Example</h3>
 
-<p>The following creates an external HAWQ table that will read data from the Cassandra keyspace called mytesttable, with column family Users.</p>
+<p>The following creates an external HAWQ table that will read data from the Cassandra keyspace called <code>mytesttable</code>, with column family <code>Users</code>.</p>
 
 <p><b>Cassandra Shell</b></p>
 
@@ -98,18 +91,16 @@ recordkey TEXT,<br/>
 fname TEXT,<br/>
 lname TEXT,<br/>
 location TEXT<br/>
-) LOCATION ('pxf://phd2:50070/mytesttable?FRAGMENTER=CassandraFragmenter&ACCESSOR=CassandraAccessor&
+) LOCATION ('pxf://phd2:50070/mytesttable?PROFILE=Cassandra&
 <br/>RESOLVER=CassandraResolver&ADDRESS=192.168.0.107&COLUMN-FAMILY=Users
 <br/>&PARTITIONER=Murmur3Partitioner') <br/>
 FORMAT 'CUSTOM' (FORMATTER='gpxfwritable_import');<br/>
 <br/>
-CREATE EXTERNAL TABLE<br/>
-<br/>
 SELECT * FROM ext_cass_mytesttable;<br/>
  recordkey | fname | lname |  location  <br/>
------------+-------+-------+------------<br/>
- 2         | Clark | Kent  | Metropolis<br/>
- 1         | Bruce | Wayne | Gotham<br/>
+----------+-------+-------+------------<br/>
+ 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Clark | Kent&nbsp; | Metropolis<br/>
+ 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Bruce | Wayne | Gotham<br/>
 (2 rows)<br/>
 </code>
       </section>

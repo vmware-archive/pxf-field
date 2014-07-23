@@ -8,16 +8,12 @@
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
   </head>
   <body>
     <div class="wrapper">      
       <script type="text/javascript" src="header.js"> </script>
       <section>        
 
-		
 <h2>Developing and Testing Extensions</h2>
 <h3>Developing an Extension</h3>
 
@@ -37,14 +33,17 @@
 
 <p><b>Analyzer</b></p>
 
-<p>The Analyzer provides PXF statistical data for the HAWQ query optimizer. For detailed explanation on HAWQ statistical data gathering, see “ANALYZE” on page 48 of the HAWQ Admin Guide.  An example is the HdfsAnalyzer.  The class needs to implement the Analyzer abstract class.</p>
+<p>The Analyzer provides PXF statistical data for the HAWQ query optimizer. For detailed explanation on HAWQ statistical data gathering, see the &quot;ANALYZER&quot; section in the PXF External Table and API Reference manual.  An example of an Analyzer is the HdfsAnalyzer.  The class needs to implement the Analyzer abstract class.</p>
 
-<p>More info is found in the HAWQ Admin Guide.</p>
+<p><b>Profiles</b></p>
+
+<p>Profiles are a means to specify the class names and other parameters for you extension.  They are a cleaner shortcut, where a user specifies a PROFILE in an external table definition instead of the FRAGMENTER, ACCESSOR, RESOLVER, etc.  Both ways will work, but one is certainly less characters to type.  You can install a profile by modifying pxf-profiles.xml in your cluster configuration and push it out to the cluster, or use ICM to reconfigure your PHD cluster.  Changes to the PXF profiles are picked up dynamically and do not necessarily require a restart of the cluster.</p>
+
+<p>More info is found in the PXF guide which can be found on the <a href="http://pivotalhd.docs.gopivotal.com/index.html" target="_blank">Pivotal HD documentation site</a>.</p>
 
 <h3>Testing Extensions</h3>
 
-<p>Why not <code><a href="doc/index.html">PxfUnit</a></code>?</p>
-
+<p>Why not <code><a href="doc/index.html?com/pivotal/pxf/PxfUnit.html" target="_blank">PxfUnit</a></code>?</p>
 
       </section>
       <footer>
