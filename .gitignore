@@ -2,9 +2,11 @@
 */.settings
 .metadata
 
+# Local files
+build
+
 # Maven build directories
 */target
 /accumulo-pxf-ext/doc
 /json-pxf-ext/doc
-
 /pxf-test/doc
