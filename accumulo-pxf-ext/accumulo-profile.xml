@@ -1,6 +1,6 @@
 
 <profile>
-	<name>ACCUMULO</name>
+	<name>Accumulo</name>
 	<description>A profile for data stored in Accumulo. Must specify
 		INSTANCE, QUORUM, USER, PASSWORD, and scan AUTHS in DDL.
 	</description>

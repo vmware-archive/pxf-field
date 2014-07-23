@@ -1,6 +1,6 @@
 
 <profile>
-	<name>Hive</name>
+	<name>HiveHotfix</name>
 	<description>This profile is suitable for using when connecting to Hive
 		and supports TINYINT with no limit on the number of partitions
 	</description>

@@ -176,21 +176,21 @@ public abstract class PxfUnit {
 	}
 
 	/**
-	 * Get the class of the implementation of {@link Fragmenter} to be tested.
+	 * Get the class of the implementation of Fragmenter to be tested.
 	 * 
 	 * @return The class
 	 */
 	public abstract Class<? extends Fragmenter> getFragmenterClass();
 
 	/**
-	 * Get the class of the implementation of {@link Accessor} to be tested.
+	 * Get the class of the implementation of Accessor to be tested.
 	 * 
 	 * @return The class
 	 */
 	public abstract Class<? extends ReadAccessor> getReadAccessorClass();
 
 	/**
-	 * Get the class of the implementation of {@link Resolver} to be tested.
+	 * Get the class of the implementation of Resolver to be tested.
 	 * 
 	 * @return The class
 	 */
@@ -208,7 +208,7 @@ public abstract class PxfUnit {
 
 	/**
 	 * Gets the column definition names and data types. Types are
-	 * {@link DataType} objects
+	 * DataType objects
 	 * 
 	 * @return A list of column definition name value pairs
 	 */
@@ -414,7 +414,7 @@ public abstract class PxfUnit {
 	 *            The accessor instance to use
 	 * @param resolver
 	 *            The resolver instance to use
-	 * @return
+	 * @return The list of output strings
 	 * @throws Exception
 	 */
 	protected List<String> getAllOutput(ReadAccessor accessor,
@@ -446,7 +446,7 @@ public abstract class PxfUnit {
 	}
 
 	/**
-	 * Gets an instance of {@link Fragmenter} via reflection.
+	 * Gets an instance of Fragmenter via reflection.
 	 * 
 	 * Searches for a constructor that has a single parameter of some
 	 * BaseMetaData type
@@ -479,7 +479,7 @@ public abstract class PxfUnit {
 	}
 
 	/**
-	 * Gets an instance of {@link ReadAccessor} via reflection.
+	 * Gets an instance of ReadAccessor via reflection.
 	 * 
 	 * Searches for a constructor that has a single parameter of some InputData
 	 * type
@@ -512,7 +512,7 @@ public abstract class PxfUnit {
 	}
 
 	/**
-	 * Gets an instance of {@link IFieldsResolver} via reflection.
+	 * Gets an instance of IFieldsResolver via reflection.
 	 * 
 	 * Searches for a constructor that has a single parameter of some
 	 * BaseMetaData type
@@ -559,6 +559,11 @@ public abstract class PxfUnit {
 		}
 	}
 
+	/**
+	 * An extension of InputData for the local file system instead of
+	 * HDFS. Leveraged by the PXFUnit framework. Do not concern yourself
+	 * with such a simple piece of code.
+	 */
 	public static class LocalInputData extends InputData {
 
 		public LocalInputData(InputData copy) {

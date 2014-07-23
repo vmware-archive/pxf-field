@@ -1,6 +1,6 @@
 
 <profile>
-	<name>CASSANDRA</name>
+	<name>Cassandra</name>
 	<description>A profile for data stored in Cassandra. Must specify
 		ADDRESS, COLUMN-FAMILY, and an optional PARTITIONER in DDL.
 	</description>
