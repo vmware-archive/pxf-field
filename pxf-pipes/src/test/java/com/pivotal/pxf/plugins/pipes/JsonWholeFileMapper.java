@@ -69,6 +69,8 @@ public class JsonWholeFileMapper extends
 				lon = "";
 			}
 
+			bldr.setLength(0);
+
 			bldr.append(created_at);
 			bldr.append(DELIMITER);
 			bldr.append(id);
@@ -82,11 +84,10 @@ public class JsonWholeFileMapper extends
 			bldr.append(lat);
 			bldr.append(DELIMITER);
 			bldr.append(lon);
-			bldr.append(NEWLINE);
-		}
 
-		outvalue.set(bldr.toString().trim());
-		context.write(NullWritable.get(), outvalue);
+			outvalue.set(bldr.toString().trim());
+			context.write(NullWritable.get(), outvalue);
+		}
 	}
 
 	private String getValueOrEmpty(JsonNode node, String key) {

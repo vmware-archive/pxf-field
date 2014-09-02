@@ -28,6 +28,8 @@ import com.pivotal.pxf.api.OneField;
 import com.pivotal.pxf.api.OneRow;
 import com.pivotal.pxf.api.ReadAccessor;
 import com.pivotal.pxf.api.ReadResolver;
+import com.pivotal.pxf.api.WriteAccessor;
+import com.pivotal.pxf.api.WriteResolver;
 import com.pivotal.pxf.api.io.DataType;
 import com.pivotal.pxf.api.utilities.InputData;
 import com.pivotal.pxf.core.FragmentsResponseFormatter;
@@ -180,21 +182,45 @@ public abstract class PxfUnit {
 	 * 
 	 * @return The class
 	 */
-	public abstract Class<? extends Fragmenter> getFragmenterClass();
+	public Class<? extends Fragmenter> getFragmenterClass() {
+		return null;
+	}
 
 	/**
-	 * Get the class of the implementation of Accessor to be tested.
+	 * Get the class of the implementation of ReadAccessor to be tested.
 	 * 
 	 * @return The class
 	 */
-	public abstract Class<? extends ReadAccessor> getReadAccessorClass();
+	public Class<? extends ReadAccessor> getReadAccessorClass() {
+		return null;
+	}
+
+	/**
+	 * Get the class of the implementation of WriteAccessor to be tested.
+	 * 
+	 * @return The class
+	 */
+	public Class<? extends WriteAccessor> getWriteAccessorClass() {
+		return null;
+	}
 
 	/**
 	 * Get the class of the implementation of Resolver to be tested.
 	 * 
 	 * @return The class
 	 */
-	public abstract Class<? extends ReadResolver> getReadResolverClass();
+	public Class<? extends ReadResolver> getReadResolverClass() {
+		return null;
+	}
+
+	/**
+	 * Get the class of the implementation of WriteResolver to be tested.
+	 * 
+	 * @return The class
+	 */
+	public Class<? extends WriteResolver> getWriteResolverClass() {
+		return null;
+	}
 
 	/**
 	 * Get any extra parameters that are meant to be specified for the "pxf"
@@ -207,12 +233,65 @@ public abstract class PxfUnit {
 	}
 
 	/**
-	 * Gets the column definition names and data types. Types are
-	 * DataType objects
+	 * Gets the column definition names and data types. Types are DataType
+	 * objects
 	 * 
-	 * @return A list of column definition name value pairs
+	 * @return A list of column definition name value pairs. Cannot be null.
 	 */
 	public abstract List<Pair<String, DataType>> getColumnDefinitions();
+
+	protected InputData getInputDataForWritableTable() {
+		return getInputDataForWritableTable(null);
+	}
+
+	protected InputData getInputDataForWritableTable(Path input) {
+
+		if (getWriteAccessorClass() == null) {
+			throw new IllegalArgumentException(
+					"getWriteAccessorClass() must be overwritten to return a non-null object");
+		}
+
+		if (getWriteResolverClass() == null) {
+			throw new IllegalArgumentException(
+					"getWriteResolverClass() must be overwritten to return a non-null object");
+		}
+
+		Map<String, String> paramsMap = new HashMap<String, String>();
+
+		paramsMap.put("X-GP-ALIGNMENT", "what");
+		paramsMap.put("X-GP-SEGMENT-ID", "1");
+		paramsMap.put("X-GP-HAS-FILTER", "0");
+		paramsMap.put("X-GP-SEGMENT-COUNT", "1");
+
+		paramsMap.put("X-GP-FORMAT", "GPDBWritable");
+		paramsMap.put("X-GP-URL-HOST", "localhost");
+		paramsMap.put("X-GP-URL-PORT", "50070");
+
+		if (input == null) {
+			paramsMap.put("X-GP-DATA-DIR", "/dummydata");
+		}
+
+		List<Pair<String, DataType>> params = getColumnDefinitions();
+		paramsMap.put("X-GP-ATTRS", Integer.toString(params.size()));
+		for (int i = 0; i < params.size(); ++i) {
+			paramsMap.put("X-GP-ATTR-NAME" + i, params.get(i).first);
+			paramsMap
+					.put("X-GP-ATTR-TYPENAME" + i, params.get(i).second.name());
+			paramsMap.put("X-GP-ATTR-TYPECODE" + i,
+					Integer.toString(params.get(i).second.getOID()));
+		}
+
+		paramsMap.put("X-GP-ACCESSOR", getWriteAccessorClass().getName());
+		paramsMap.put("X-GP-RESOLVER", getWriteResolverClass().getName());
+
+		if (getExtraParams() != null) {
+			for (Pair<String, String> param : getExtraParams()) {
+				paramsMap.put("X-GP-" + param.first, param.second);
+			}
+		}
+
+		return new InputData(paramsMap);
+	}
 
 	/**
 	 * Set all necessary parameters for GPXF framework to function. Uses the
@@ -223,6 +302,21 @@ public abstract class PxfUnit {
 	 * @throws Exception
 	 */
 	protected void setup(Path input) throws Exception {
+
+		if (getFragmenterClass() == null) {
+			throw new IllegalArgumentException(
+					"getFragmenterClass() must be overwritten to return a non-null object");
+		}
+
+		if (getReadAccessorClass() == null) {
+			throw new IllegalArgumentException(
+					"getReadAccessorClass() must be overwritten to return a non-null object");
+		}
+
+		if (getReadResolverClass() == null) {
+			throw new IllegalArgumentException(
+					"getReadResolverClass() must be overwritten to return a non-null object");
+		}
 
 		Map<String, String> paramsMap = new HashMap<String, String>();
 
@@ -560,9 +654,9 @@ public abstract class PxfUnit {
 	}
 
 	/**
-	 * An extension of InputData for the local file system instead of
-	 * HDFS. Leveraged by the PXFUnit framework. Do not concern yourself
-	 * with such a simple piece of code.
+	 * An extension of InputData for the local file system instead of HDFS.
+	 * Leveraged by the PXFUnit framework. Do not concern yourself with such a
+	 * simple piece of code.
 	 */
 	public static class LocalInputData extends InputData {
 

@@ -38,9 +38,9 @@ public class PxfPipesWholeFileMapperTest extends PxfUnit {
 
 		List<String> output = new ArrayList<String>();
 
-		output.add("Fri Jun 07 22:45:02 +0000 2013|343136547115253761|REPAIR THE TRUST: REMOVE OBAMA/BIDEN FROM OFFICE. #IRS #DOJ #NSA #tcot|SpreadButter|tweetCongress||\n"
-				+ "Fri Jun 07 22:45:02 +0000 2013|343136547123646465|@marshafitrie dibagi 1000 aja sha :P|patronusdeadly|||\n"
-				+ "Fri Jun 07 22:45:02 +0000 2013|343136547136233472|Vaga: Supervisor de Almoxarifado. Confira em http://t.co/hK5cy5B2oS|NoSecrets_Vagas|||");
+		output.add("Fri Jun 07 22:45:02 +0000 2013|343136547115253761|REPAIR THE TRUST: REMOVE OBAMA/BIDEN FROM OFFICE. #IRS #DOJ #NSA #tcot|SpreadButter|tweetCongress||");
+		output.add("Fri Jun 07 22:45:02 +0000 2013|343136547123646465|@marshafitrie dibagi 1000 aja sha :P|patronusdeadly|||");
+		output.add("Fri Jun 07 22:45:02 +0000 2013|343136547136233472|Vaga: Supervisor de Almoxarifado. Confira em http://t.co/hK5cy5B2oS|NoSecrets_Vagas|||");
 
 		super.assertOutput(new Path(System.getProperty("user.dir") + "/"
 				+ "src/test/resources/tweets-pp.json"), output);
@@ -51,14 +51,14 @@ public class PxfPipesWholeFileMapperTest extends PxfUnit {
 
 		List<String> output = new ArrayList<String>();
 
-		output.add("Fri Jun 07 22:45:02 +0000 2013|343136547115253761|REPAIR THE TRUST: REMOVE OBAMA/BIDEN FROM OFFICE. #IRS #DOJ #NSA #tcot|SpreadButter|tweetCongress||\n"
-				+ "Fri Jun 07 22:45:02 +0000 2013|343136547123646465|@marshafitrie dibagi 1000 aja sha :P|patronusdeadly|||\n"
-				+ "Fri Jun 07 22:45:02 +0000 2013|343136547136233472|Vaga: Supervisor de Almoxarifado. Confira em http://t.co/hK5cy5B2oS|NoSecrets_Vagas|||");
+		output.add("Fri Jun 07 22:45:02 +0000 2013|343136547115253761|REPAIR THE TRUST: REMOVE OBAMA/BIDEN FROM OFFICE. #IRS #DOJ #NSA #tcot|SpreadButter|tweetCongress||");
+		output.add("Fri Jun 07 22:45:02 +0000 2013|343136547123646465|@marshafitrie dibagi 1000 aja sha :P|patronusdeadly|||");
+		output.add("Fri Jun 07 22:45:02 +0000 2013|343136547136233472|Vaga: Supervisor de Almoxarifado. Confira em http://t.co/hK5cy5B2oS|NoSecrets_Vagas|||");
 
-		output.add("||||||\n"
-				+ "Fri Jun 07 22:45:02 +0000 2013|343136547115253761|REPAIR THE TRUST: REMOVE OBAMA/BIDEN FROM OFFICE. @GOPoversight @GOPLeader @SenRandPaul @SenTedCruz #tweetCongress #IRS #DOJ #NSA #tcot|SpreadButter|tweetCongress||\n"
-				+ "Fri Jun 07 22:45:02 +0000 2013|343136547123646465|@marshafitrie dibagi 1000 aja sha :P|patronusdeadly|||\n"
-				+ "Fri Jun 07 22:45:02 +0000 2013|343136547136233472|Vaga: Supervisor de Almoxarifado. Confira em http://t.co/hK5cy5B2oS|NoSecrets_Vagas|||");
+		output.add("||||||");
+		output.add("Fri Jun 07 22:45:02 +0000 2013|343136547115253761|REPAIR THE TRUST: REMOVE OBAMA/BIDEN FROM OFFICE. @GOPoversight @GOPLeader @SenRandPaul @SenTedCruz #tweetCongress #IRS #DOJ #NSA #tcot|SpreadButter|tweetCongress||");
+		output.add("Fri Jun 07 22:45:02 +0000 2013|343136547123646465|@marshafitrie dibagi 1000 aja sha :P|patronusdeadly|||");
+		output.add("Fri Jun 07 22:45:02 +0000 2013|343136547136233472|Vaga: Supervisor de Almoxarifado. Confira em http://t.co/hK5cy5B2oS|NoSecrets_Vagas|||");
 
 		super.assertUnorderedOutput(new Path(System.getProperty("user.dir")
 				+ "/" + "src/test/resources/tweets-pp*.json"), output);

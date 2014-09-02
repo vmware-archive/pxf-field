@@ -3,8 +3,9 @@ package com.pivotal.pxf.plugins.pipes;
 import java.io.IOException;
 import java.net.URI;
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configuration.IntegerRanges;
@@ -34,42 +35,102 @@ import com.pivotal.pxf.plugins.pipes.PipedMapperResolver.PipedMapper.PipedMapCon
 
 public class PipedMapperResolver extends Plugin implements ReadResolver {
 
-	private Mapper<Object, Object, Object, Text> mapper = null;
-
-	private List<OneField> record = new ArrayList<>();
-	private PipedMapContextImpl context = null;
+	private MapRunner runner = null;
+	private List<OneField> record = new LinkedList<OneField>();
+	private Thread t = null;
+	private Queue<String> rows = null;
 
 	private static final Logger LOG = Logger
 			.getLogger(PipedMapperResolver.class);
 
 	public PipedMapperResolver(InputData data) throws Exception {
 		super(data);
-
-		mapper = PxfPipesUtil.getMapperClass(data);
-
-		if (mapper == null) {
-			throw new InvalidParameterException(
-					"Must set MAPPER to a Java class that is on the CLASSPATH");
-		} else {
-			LOG.debug("Mapper is " + mapper);
-		}
-
-		PipedMapper mapper = new PipedMapper();
-		context = mapper.getContext();
 	}
 
 	@Override
 	public List<OneField> getFields(OneRow row) throws Exception {
-		record.clear();
+		if (runner == null) {
+			runner = new MapRunner(super.inputData, row);
+			t = new Thread(runner);
+			t.start();
+			rows = runner.getContext().getRows();
+		}
 
-		context.reset();
-		context.setCurrentKey(row.getKey());
-		context.setCurrentValue(row.getData());
+		while (true) {
+			synchronized (rows) {
+				if (rows.peek() != null) {
+					record.clear();
+					record.add(new OneField(DataType.VARCHAR.getOID(), rows
+							.poll().trim()));
 
-		mapper.run(context);
+					if (!t.isAlive() && rows.peek() == null) {
+						LOG.info("Thread is dead w/ size zero");
+						WholeFileAccessor.unregisterKey(row.getKey());
+					}
+					return record;
+				}
+			}
 
-		record.add(new OneField(DataType.VARCHAR.getOID(), context.getRow().trim()));
-		return record;
+			if (!t.isAlive()) {
+				LOG.info("Thread is no longer alive");
+				synchronized (rows) {
+					// check if there are any more rows now
+					if (rows.peek() != null) {
+						record.clear();
+						record.add(new OneField(DataType.VARCHAR.getOID(), rows
+								.poll().trim()));
+						rows.remove(0);
+
+						if (rows.peek() != null) {
+							WholeFileAccessor.unregisterKey(row.getKey());
+						}
+						return record;
+					}
+				}
+
+				WholeFileAccessor.unregisterKey(row.getKey());
+				LOG.info("Returning an empty list...");
+				return record;
+			}
+		}
+	}
+
+	public class MapRunner implements Runnable {
+		private Mapper<Object, Object, Object, Text> mapper = null;
+		private OneRow row = null;
+		private PipedMapContextImpl context = null;
+
+		public MapRunner(InputData data, OneRow row) throws Exception {
+			mapper = PxfPipesUtil.getMapperClass(data);
+			this.row = row;
+
+			if (mapper == null) {
+				throw new InvalidParameterException(
+						"Must set MAPPER to a Java class that is on the CLASSPATH");
+			} else {
+				// LOG.debug("Mapper is " + mapper);
+			}
+
+			PipedMapper mapper = new PipedMapper();
+			context = mapper.getContext();
+		}
+
+		@Override
+		public void run() {
+			context.reset();
+			context.setCurrentKey(row.getKey());
+			context.setCurrentValue(row.getData());
+
+			try {
+				mapper.run(context);
+			} catch (IOException | InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		public PipedMapContextImpl getContext() {
+			return context;
+		}
 	}
 
 	public class PipedMapper extends Mapper<Object, Object, Object, Text> {
@@ -81,7 +142,7 @@ public class PipedMapperResolver extends Plugin implements ReadResolver {
 		public class PipedMapContextImpl extends
 				Mapper<Object, Object, Object, Text>.Context {
 
-			private String row = null;
+			private Queue<String> rows = new LinkedList<String>();
 			private boolean firstCall = true;
 			private Object key = null;
 			private Object value = null;
@@ -89,11 +150,13 @@ public class PipedMapperResolver extends Plugin implements ReadResolver {
 			@Override
 			public void write(Object key, Text value) throws IOException,
 					InterruptedException {
-				row = value.toString();
+				synchronized (rows) {
+					rows.add(value.toString());
+				}
 			}
 
-			public String getRow() {
-				return row;
+			public Queue<String> getRows() {
+				return rows;
 			}
 
 			@Override
@@ -110,7 +173,7 @@ public class PipedMapperResolver extends Plugin implements ReadResolver {
 			public void setCurrentKey(Object key) {
 				this.key = key;
 			}
-			
+
 			@Override
 			public Object getCurrentKey() throws IOException,
 					InterruptedException {
