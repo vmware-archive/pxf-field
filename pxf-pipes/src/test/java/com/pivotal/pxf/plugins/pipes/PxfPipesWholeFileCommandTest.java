@@ -94,7 +94,7 @@ public class PxfPipesWholeFileCommandTest extends PxfUnit {
 
 	@Override
 	public Class<? extends ReadAccessor> getReadAccessorClass() {
-		return WholeFileAccessor.class;
+		return PipedAccessor.class;
 	}
 
 	@Override
