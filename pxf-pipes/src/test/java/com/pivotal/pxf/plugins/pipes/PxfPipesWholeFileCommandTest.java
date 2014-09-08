@@ -57,19 +57,11 @@ public class PxfPipesWholeFileCommandTest extends PxfUnit {
 
 		output.add("file:"
 				+ System.getProperty("user.dir")
-				+ "/src/test/resources/tweets-pp.json"
-				+ "|Fri Jun 07 22:45:02 +0000 2013|343136547115253761|REPAIR THE TRUST: REMOVE OBAMA/BIDEN FROM OFFICE. #IRS #DOJ #NSA #tcot|SpreadButter|tweetCongress||");
-		output.add("file:"
-				+ System.getProperty("user.dir")
-				+ "/src/test/resources/tweets-pp.json"
-				+ "|Fri Jun 07 22:45:02 +0000 2013|343136547123646465|@marshafitrie dibagi 1000 aja sha :P|patronusdeadly|||");
-		output.add("file:"
-				+ System.getProperty("user.dir")
-				+ "/src/test/resources/tweets-pp.json"
-				+ "|Fri Jun 07 22:45:02 +0000 2013|343136547136233472|Vaga: Supervisor de Almoxarifado. Confira em http://t.co/hK5cy5B2oS|NoSecrets_Vagas|||");
+				+ "/src/test/resources/mypptestfile.json|"
+				+ "Mon Sep 30 04:04:55 +0000 2013|384529265099689984|I'm craving breadsticks|web|633364307|||");
 
 		super.assertOutput(new Path(System.getProperty("user.dir") + "/"
-				+ "src/test/resources/tweets-pp.json"), output);
+				+ "src/test/resources/mypptestfile.json"), output);
 	}
 
 	@Test
@@ -79,31 +71,15 @@ public class PxfPipesWholeFileCommandTest extends PxfUnit {
 
 		output.add("file:"
 				+ System.getProperty("user.dir")
-				+ "/src/test/resources/tweets-pp.json"
-				+ "|Fri Jun 07 22:45:02 +0000 2013|343136547115253761|REPAIR THE TRUST: REMOVE OBAMA/BIDEN FROM OFFICE. #IRS #DOJ #NSA #tcot|SpreadButter|tweetCongress||");
+				+ "/src/test/resources/mypptestfile.json|"
+				+ "Mon Sep 30 04:04:55 +0000 2013|384529265099689984|I'm craving breadsticks|web|633364307|||");
 		output.add("file:"
 				+ System.getProperty("user.dir")
-				+ "/src/test/resources/tweets-pp.json"
-				+ "|Fri Jun 07 22:45:02 +0000 2013|343136547123646465|@marshafitrie dibagi 1000 aja sha :P|patronusdeadly|||");
-		output.add("file:"
-				+ System.getProperty("user.dir")
-				+ "/src/test/resources/tweets-pp.json"
-				+ "|Fri Jun 07 22:45:02 +0000 2013|343136547136233472|Vaga: Supervisor de Almoxarifado. Confira em http://t.co/hK5cy5B2oS|NoSecrets_Vagas|||");
-
-		output.add("file:" + System.getProperty("user.dir")
-				+ "/src/test/resources/tweets-pp-with-delete.json|||||||");
-		output.add("file:"
-				+ System.getProperty("user.dir")
-				+ "/src/test/resources/tweets-pp-with-delete.json|Fri Jun 07 22:45:02 +0000 2013|343136547115253761|REPAIR THE TRUST: REMOVE OBAMA/BIDEN FROM OFFICE. @GOPoversight @GOPLeader @SenRandPaul @SenTedCruz #tweetCongress #IRS #DOJ #NSA #tcot|SpreadButter|tweetCongress||");
-		output.add("file:"
-				+ System.getProperty("user.dir")
-				+ "/src/test/resources/tweets-pp-with-delete.json|Fri Jun 07 22:45:02 +0000 2013|343136547123646465|@marshafitrie dibagi 1000 aja sha :P|patronusdeadly|||");
-		output.add("file:"
-				+ System.getProperty("user.dir")
-				+ "/src/test/resources/tweets-pp-with-delete.json|Fri Jun 07 22:45:02 +0000 2013|343136547136233472|Vaga: Supervisor de Almoxarifado. Confira em http://t.co/hK5cy5B2oS|NoSecrets_Vagas|||");
+				+ "/src/test/resources/mypptestfile2.json|"
+				+ "Mon Sep 30 04:04:55 +0000 2013|384529265099689984|I'm craving breadsticks|web|633364307|||");
 
 		super.assertUnorderedOutput(new Path(System.getProperty("user.dir")
-				+ "/" + "src/test/resources/tweets-pp*.json"), output);
+				+ "/" + "src/test/resources/mypptestfile*.json"), output);
 	}
 
 	@Override

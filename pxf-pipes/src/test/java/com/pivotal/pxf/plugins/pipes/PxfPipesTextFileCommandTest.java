@@ -29,8 +29,7 @@ public class PxfPipesTextFileCommandTest extends PxfUnit {
 		columnDefs.add(new Pair<String, DataType>("text", DataType.TEXT));
 		columnDefs
 				.add(new Pair<String, DataType>("screen_name", DataType.TEXT));
-		columnDefs
-				.add(new Pair<String, DataType>("hashtags[0]", DataType.TEXT));
+		columnDefs.add(new Pair<String, DataType>("hashtag", DataType.TEXT));
 		columnDefs.add(new Pair<String, DataType>("lat", DataType.FLOAT8));
 		columnDefs.add(new Pair<String, DataType>("long", DataType.FLOAT8));
 	}
@@ -52,14 +51,13 @@ public class PxfPipesTextFileCommandTest extends PxfUnit {
 	public void testJson() throws Exception {
 
 		List<String> output = new ArrayList<String>();
-
-		output.add("Fri Jun 07 22:45:02 +0000 2013|343136547115253761|REPAIR THE TRUST: REMOVE OBAMA/BIDEN FROM OFFICE. #IRS #DOJ #NSA #tcot|SpreadButter|tweetCongress||");
-		output.add("Fri Jun 07 22:45:02 +0000 2013|343136547123646465|@marshafitrie dibagi 1000 aja sha :P|patronusdeadly|||");
-		output.add("Fri Jun 07 22:45:02 +0000 2013|343136547136233472|Vaga: Supervisor de Almoxarifado. Confira em http://t.co/hK5cy5B2oS|NoSecrets_Vagas|||");
-		output.add("Fri Jun 07 22:45:03 +0000 2013|343136551322136576|It's Jun 7, 2013 @ 11pm ; Wind = NNE (30,0) 14.0 knots; Swell = 2.6 ft @ 5 seconds....|SevenStonesBuoy||-6.1|50.103");
+		output.add("Mon Sep 30 04:04:53 +0000 2013\t384529256681725952\tsigh, who knows.\tweb\t31424214\tCOLUMBUS\t-6.1\t50.103");
+		output.add("Mon Sep 30 04:04:54 +0000 2013\t384529260872228864\tI did that 12 years ago..T.T\tweb\t67600981\tKryberWorld\t-8.1\t52.104");
+		output.add("Mon Sep 30 04:04:54 +0000 2013\t384529260892786688\tWelp guess I'll have anxiety for another week\tweb\t122795713\tCalifornia\t\t");
+		output.add("Mon Sep 30 04:04:55 +0000 2013\t384529265099689984\tI'm craving breadsticks\tweb\t633364307\t\t\t");
 
 		super.assertOutput(new Path(System.getProperty("user.dir")
-				+ "/src/test/resources/tweets-small.json"), output);
+				+ "/src/test/resources/mytestfile.json"), output);
 	}
 
 	@Test
@@ -67,17 +65,17 @@ public class PxfPipesTextFileCommandTest extends PxfUnit {
 
 		List<String> output = new ArrayList<String>();
 
-		output.add("Fri Jun 07 22:45:02 +0000 2013|343136547115253761|REPAIR THE TRUST: REMOVE OBAMA/BIDEN FROM OFFICE. #IRS #DOJ #NSA #tcot|SpreadButter|tweetCongress||");
-		output.add("Fri Jun 07 22:45:02 +0000 2013|343136547123646465|@marshafitrie dibagi 1000 aja sha :P|patronusdeadly|||");
-		output.add("Fri Jun 07 22:45:02 +0000 2013|343136547136233472|Vaga: Supervisor de Almoxarifado. Confira em http://t.co/hK5cy5B2oS|NoSecrets_Vagas|||");
-		output.add("Fri Jun 07 22:45:03 +0000 2013|343136551322136576|It's Jun 7, 2013 @ 11pm ; Wind = NNE (30,0) 14.0 knots; Swell = 2.6 ft @ 5 seconds....|SevenStonesBuoy||-6.1|50.103");
-		output.add("||||||");
-		output.add("Fri Jun 07 22:45:02 +0000 2013|343136547115253761|REPAIR THE TRUST: REMOVE OBAMA/BIDEN FROM OFFICE. @GOPoversight @GOPLeader @SenRandPaul @SenTedCruz #tweetCongress #IRS #DOJ #NSA #tcot|SpreadButter|tweetCongress||");
-		output.add("Fri Jun 07 22:45:02 +0000 2013|343136547123646465|@marshafitrie dibagi 1000 aja sha :P|patronusdeadly|||");
-		output.add("Fri Jun 07 22:45:02 +0000 2013|343136547136233472|Vaga: Supervisor de Almoxarifado. Confira em http://t.co/hK5cy5B2oS|NoSecrets_Vagas|||");
+		output.add("Mon Sep 30 04:04:53 +0000 2013\t384529256681725952\tsigh, who knows.\tweb\t31424214\tCOLUMBUS\t-6.1\t50.103");
+		output.add("Mon Sep 30 04:04:54 +0000 2013\t384529260872228864\tI did that 12 years ago..T.T\tweb\t67600981\tKryberWorld\t-8.1\t52.104");
+		output.add("Mon Sep 30 04:04:54 +0000 2013\t384529260892786688\tWelp guess I'll have anxiety for another week\tweb\t122795713\tCalifornia\t\t");
+		output.add("Mon Sep 30 04:04:55 +0000 2013\t384529265099689984\tI'm craving breadsticks\tweb\t633364307\t\t\t");
+		output.add("Mon Sep 30 04:04:53 +0000 2013\t384529256681725952\tsigh, who knows.\tweb\t31424214\tCOLUMBUS\t-6.1\t50.103");
+		output.add("Mon Sep 30 04:04:54 +0000 2013\t384529260872228864\tI did that 12 years ago..T.T\tweb\t67600981\tKryberWorld\t-8.1\t52.104");
+		output.add("Mon Sep 30 04:04:54 +0000 2013\t384529260892786688\tWelp guess I'll have anxiety for another week\tweb\t122795713\tCalifornia\t\t");
+		output.add("Mon Sep 30 04:04:55 +0000 2013\t384529265099689984\tI'm craving breadsticks\tweb\t633364307\t\t\t");
 
 		super.assertUnorderedOutput(new Path(System.getProperty("user.dir")
-				+ "/" + "src/test/resources/tweets-small*.json"), output);
+				+ "/" + "src/test/resources/mytestfile*.json"), output);
 	}
 
 	@Override
