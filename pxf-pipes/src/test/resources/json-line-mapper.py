@@ -3,15 +3,20 @@
 import json
 import sys
 
-def getValueOrEmpty(data, key):
-    
+def getValueOrEmpty(data, key):    
     try:
         return data[key]
     except (KeyError):
         return ""
 
 for line in sys.stdin:
-    data = json.loads(line)
+    idx = line.index('\t')
+    key = line[0:idx].strip()
+    value = line[idx+1:]
+
+    data = json.loads(value)
+
+    #print value
 
     created_at = getValueOrEmpty(data, "created_at")
     id = getValueOrEmpty(data, "id")

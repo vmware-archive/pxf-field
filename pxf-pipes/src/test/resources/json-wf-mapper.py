@@ -12,7 +12,11 @@ def getValueOrEmpty(data, key):
 
 bytes = sys.stdin.read()
 
-data = json.loads(bytes)
+idx = bytes.index('\t')
+key = bytes[0:idx].strip()
+value = bytes[idx+1:]
+#print value
+data = json.loads(value)
 
 data["root"]
 for record in data["root"]:
