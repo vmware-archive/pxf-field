@@ -46,6 +46,6 @@ for record in data["root"]:
     except (KeyError, IndexError):
         lon = ""
         
-    sys.stdout.write("%s|%s|%s|%s|%s|%s|%s\n" % (created_at, id, text, screen_name, hashtag, lat, lon))
+    sys.stdout.write("%s|%s|%s|%s|%s|%s|%s|%s\n" % (key, created_at, id, text, screen_name, hashtag, lat, lon))
 
 

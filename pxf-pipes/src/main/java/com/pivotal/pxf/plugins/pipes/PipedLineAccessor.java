@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -19,14 +18,53 @@ import org.apache.hadoop.mapred.FileSplit;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.LineRecordReader;
 import org.apache.hadoop.mapred.TextInputFormat;
-import org.apache.log4j.Logger;
 
 import com.pivotal.pxf.api.OneRow;
 import com.pivotal.pxf.api.utilities.InputData;
 import com.pivotal.pxf.plugins.hdfs.HdfsSplittableDataAccessor;
 
+/**
+ * This accessor, wrapped by {@link PipedAccessor}, uses the TextInputFormat to
+ * pass the LongWritable and Text objects to an external program. The
+ * byte-offset is first passed, followed by a tab, then the line of text.<br>
+ * An example of a Python program to extract some JSON data from a single line
+ * of JSON text:
+ * 
+ * <pre>
+ * #!/usr/bin/python
+ * 
+ * import json
+ * import sys
+ * 
+ * def getValueOrEmpty(data, key):    
+ *     try:
+ *         return data[key]
+ *     except (KeyError):
+ *         return ""
+ * 
+ * for line in sys.stdin:
+ *     idx = line.index('\t')
+ *     key = line[0:idx].strip()
+ *     value = line[idx+1:]
+ * 
+ *     data = json.loads(value)
+ *     
+ *     created_at = getValueOrEmpty(data, "created_at")
+ *     id = getValueOrEmpty(data, "id")
+ *     text = getValueOrEmpty(data, "text")
+ * 
+ *     try:
+ *         screen_name = data["user"]["screen_name"]
+ *     except (KeyError):
+ *         screen_name = "" 
+ *         
+ *     sys.stdout.write("%s|%s|%s|%s" % (created_at, id, text, screen_name))
+ * </pre>
+ */
 public class PipedLineAccessor extends HdfsSplittableDataAccessor {
-	private static final Logger LOG = Logger.getLogger(PipedLineAccessor.class);
+
+	// private static final Logger LOG =
+	// Logger.getLogger(PipedLineAccessor.class);
 	private String mapCmd = null;
 	private List<String> cmdArgs = null;
 	private BlockingQueue<String> rows = null;
@@ -46,11 +84,14 @@ public class PipedLineAccessor extends HdfsSplittableDataAccessor {
 	@Override
 	public OneRow readNextObject() throws IOException {
 		if (thread == null) {
+			// if thread is null, then this is the first call and we need to
+			// start the piped program
 			OneRow superRow = super.readNextObject();
 
 			thread = new PipedCommandThread(super.inputData, superRow);
 			thread.start();
 
+			// get the container where rows are dumped
 			rows = thread.getRows();
 		}
 
@@ -87,21 +128,37 @@ public class PipedLineAccessor extends HdfsSplittableDataAccessor {
 
 	public class PipedCommandThread extends Thread {
 
-		private BlockingQueue<String> rows = new LinkedBlockingQueue<String>();
+		private BlockingQueue<String> rows;
 		private ProcessBuilder bldr = null;
 		private LongWritable key = null;
 		private Text value = null;
-		private final byte[] TAB_BYTES = "\t".getBytes();
+		private final byte[] KV_DELIMITER;
 
-		public PipedCommandThread(InputData data, OneRow row) {
+		public PipedCommandThread(InputData input, OneRow row) {
 
-			mapCmd = PxfPipesUtil.getMapperCommand(data);
+			// Initialize the queue to insert rows, based on a configurable
+			// maximum
+			int queueSize = PxfPipesUtil.getQueueSize(input);
 
-			if (mapCmd == null) {
-				throw new InvalidParameterException("Must set MAPPER");
+			if (queueSize > 0) {
+				rows = new LinkedBlockingQueue<String>(queueSize);
+			} else {
+				rows = new LinkedBlockingQueue<String>();
 			}
+
+			// get custom key/value delimiter, default tab
+			KV_DELIMITER = PxfPipesUtil.getKeyValueDelimiter(input);
+
+			// get the underlying mapper command, required -- exception thrown
+			// by utility
+			mapCmd = PxfPipesUtil.getMapperCommand(input);
+
+			// split up the command
+			// TODO support quotes
 			cmdArgs = Arrays.asList(mapCmd.split(" "));
 
+			// create the process builder object and get the key/value pair to
+			// pass in
 			bldr = new ProcessBuilder(cmdArgs);
 			key = (LongWritable) row.getKey();
 			value = (Text) row.getData();
@@ -115,8 +172,11 @@ public class PipedLineAccessor extends HdfsSplittableDataAccessor {
 		public void run() {
 			InputStream errStrm = null;
 			try {
+				// let's start our process and get the error stream
 				final Process p = bldr.start();
 				errStrm = p.getErrorStream();
+
+				// the writer process writes the key, a tab, and then the value
 				Thread writer = new Thread(new Runnable() {
 					@Override
 					public void run() {
@@ -124,11 +184,10 @@ public class PipedLineAccessor extends HdfsSplittableDataAccessor {
 							p.getOutputStream().write(
 									key.toString().getBytes(), 0,
 									key.toString().getBytes().length);
-							p.getOutputStream().write(TAB_BYTES, 0,
-									TAB_BYTES.length);
-							p.getOutputStream().write(
-									value.toString().getBytes(), 0,
-									value.toString().getBytes().length);
+							p.getOutputStream().write(KV_DELIMITER, 0,
+									KV_DELIMITER.length);
+							p.getOutputStream().write(value.getBytes(), 0,
+									value.getLength());
 							p.getOutputStream().close();
 
 						} catch (IOException e) {
@@ -137,6 +196,8 @@ public class PipedLineAccessor extends HdfsSplittableDataAccessor {
 					}
 				});
 
+				// our reader tab reads lines of data and adds them to our
+				// collection
 				Thread reader = new Thread(new Runnable() {
 					public void run() {
 
@@ -145,7 +206,11 @@ public class PipedLineAccessor extends HdfsSplittableDataAccessor {
 									new InputStreamReader(p.getInputStream()));
 							String line;
 							while ((line = rdr.readLine()) != null) {
-								rows.add(line);
+								try {
+									rows.put(line);
+								} catch (InterruptedException e) {
+									throw new RuntimeException(e);
+								}
 							}
 						} catch (IOException e) {
 							throw new RuntimeException(e);
@@ -153,15 +218,18 @@ public class PipedLineAccessor extends HdfsSplittableDataAccessor {
 					}
 				});
 
+				// start our two threads
 				writer.start();
 				reader.start();
 
+				// wait for the process to complete
 				if (p.waitFor() != 0) {
 					throw new RuntimeException(
 							"Process ended with non-zero exit code: "
 									+ p.exitValue());
 				}
 			} catch (Exception e) {
+				// if an exception occurred, log stderr if available
 				if (errStrm != null) {
 					ByteArrayOutputStream outstrm = new ByteArrayOutputStream();
 					try {

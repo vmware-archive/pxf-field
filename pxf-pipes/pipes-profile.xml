@@ -10,6 +10,7 @@
 		<accessor>com.pivotal.pxf.plugins.pipes.PipedAccessor</accessor>
 		<resolver>com.pivotal.pxf.plugins.hdfs.StringPassResolver</resolver>
 		<analyzer>com.pivotal.pxf.plugins.hdfs.HdfsAnalyzer</analyzer>
+		<linebyline>true</linebyline>
 	</plugins>
 </profile>
 <profile>
@@ -19,8 +20,9 @@
 	<plugins>
 		<fragmenter>com.pivotal.pxf.plugins.pipes.WholeFileFragmenter
 		</fragmenter>
-		<accessor>com.pivotal.pxf.plugins.pipes.WholeFileAccessor</accessor>
+		<accessor>com.pivotal.pxf.plugins.pipes.PipedAccessor</accessor>
 		<resolver>com.pivotal.pxf.plugins.hdfs.StringPassResolver</resolver>
 		<analyzer>com.pivotal.pxf.plugins.hdfs.HdfsAnalyzer</analyzer>
+		<linebyline>false</linebyline>
 	</plugins>
 </profile>

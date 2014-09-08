@@ -14,7 +14,6 @@ import com.pivotal.pxf.api.ReadAccessor;
 import com.pivotal.pxf.api.ReadResolver;
 import com.pivotal.pxf.api.io.DataType;
 import com.pivotal.pxf.plugins.hdfs.HdfsDataFragmenter;
-import com.pivotal.pxf.plugins.hdfs.LineBreakAccessor;
 import com.pivotal.pxf.plugins.hdfs.StringPassResolver;
 
 public class PxfPipesTextFileCommandTest extends PxfUnit {
@@ -24,6 +23,16 @@ public class PxfPipesTextFileCommandTest extends PxfUnit {
 
 	static {
 		columnDefs = new ArrayList<Pair<String, DataType>>();
+
+		columnDefs.add(new Pair<String, DataType>("created_at", DataType.TEXT));
+		columnDefs.add(new Pair<String, DataType>("id", DataType.BIGINT));
+		columnDefs.add(new Pair<String, DataType>("text", DataType.TEXT));
+		columnDefs
+				.add(new Pair<String, DataType>("screen_name", DataType.TEXT));
+		columnDefs
+				.add(new Pair<String, DataType>("hashtags[0]", DataType.TEXT));
+		columnDefs.add(new Pair<String, DataType>("lat", DataType.FLOAT8));
+		columnDefs.add(new Pair<String, DataType>("long", DataType.FLOAT8));
 	}
 
 	@Before

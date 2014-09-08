@@ -15,6 +15,9 @@ import com.pivotal.pxf.api.Fragmenter;
 import com.pivotal.pxf.api.utilities.InputData;
 import com.pivotal.pxf.plugins.hdfs.utilities.HdfsUtilities;
 
+/**
+ * A WholeFileFragmenter, which creates a single Fragment for every input file
+ */
 public class WholeFileFragmenter extends Fragmenter {
 
 	private Path inputPath = null;
