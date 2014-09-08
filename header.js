@@ -21,6 +21,7 @@ document.write("<header>"
 + "		<a href=\"accumulo.html\">Accumulo</a><br/>"
 + "		<a href=\"cassandra.html\">Cassandra</a><br/>"
 + "		<a href=\"json.html\">JSON</a><br/>"
++ "		<a href=\"pxf-pipes.html\">Pipes</a><br/>"
 + "		<a href=\"redis.html\">Redis</a><br/>"
 + "		</p>"		
 + "      </header>");

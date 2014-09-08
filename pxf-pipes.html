@@ -1,0 +1,249 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>PXF by Pivotal-Field-Engineering</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">      
+      <script type="text/javascript" src="header.js"> </script>
+      <section>
+        
+<h2>PXF Pipes</h2>
+<h3>Overview</h3>
+<p>This PXF connector is an attempt to mimic the functionality of Hadoop Streaming, effectively enabling end-users unfamiliar with Java and the PXF internals to write connectors for PXF.  It enables end users to specify external programs to convert lines of text or the contents of a file to a HAWQ row, using virtually any language that can read from stdin.</p>
+
+<p>There are two types of input files allowed, newline delimited text files (aka TextInputFormat) and the entire contents of a file (generally for use with unstructured data or data that spans multiple lines).  There are two profiles for this, <b>TextFilePipes</b> and <b>WholeFilePipes</b>.</p>
+
+<p>For TextFilePipes, the byte-offset of the line is written to the external program, followed by a delimiter (default: tab), followed by the line of data.  The external program then writes rows of delimited data to stdout, ending with a new line character to signify the end of a row.  The process is executed once per line of input, i.e. multiple times for each file.</p>
+
+<p>For WholeFilePipes, the filename is written to the external program, followed by a delimiter (default: tab), followed by the entire contents of the file.  The external program then writes rows of delimited data to stdout, ending with a new line character to signify the end of a row.  This input format reads the entire contents of the file into memory before writing it to the external program, so be aware that this will not work with large files.  The external process is executed once for the entire file.</p>
+
+<p>The key-value delimiter is configurable, as well as the delimiter of your data.  The key-value delimiter is the delimiter written by PXF Pipes to stdin to separate the input key (byte offset or filename ) and the value (line or file data).  The default is a tab and should be sufficient for filenames and line counts.  The key must be parsed by your program, even if it is simply ignored.</p>
+
+<p>Your custom code will write delimited-strings of data to stdout, one field per column in your DDL.  You can configure this delimiter as the value of DELIMITER in the FORMAT class.  You can write zero or more rows of data for each input.  See the below examples for more detail.
+</p>
+
+<h3>Required Additions to /usr/lib/gphd/pxf</h3>
+
+<p><b>Note</b> the version numbers of these jar files.  Make sure you are using the proper version of the extension as well as any dependencies.
+
+Push the following to the /usr/lib/gphd/pxf to all HDFS nodes (NameNodes and DataNodes):</p>
+<p><code>
+pxf-pipes-&lt;version&gt;.jar
+</code></p>
+<p>
+While this jar file is the only PXF Pipes requirement, <B>your third-party commands and any dependencies must also be installed on these hosts.</b>  Note any programs and dependencies must be executable by gpadmin, or any scripts can be dropped into /usr/lib/gphd/pxf.</p>
+
+<h3>Table Specification Parameters</h3>
+<table id="tfhover" class="tftable" border="1">
+<tr><th>Parameter</th><th>Required?</th><th>Value</th></tr>
+<tr><td>PROFILE</td><td>Yes</td><td>TextFilePipes or WholeFilePipes</td></tr>
+<tr><td>MAPPER</td><td>Yes</td><td>The command line tool that will read in data and output rows for HAWQ</td></tr>
+<tr><td>LINEBYLINE</td><td>No</td><td>This is set for you in the profile based on TextFilePipes or WholeFilePipes</td>
+<tr><td>QUEUESIZE</td><td>No</td><td>The size of the underlying queue that moves rows between your program and HAWQ.  May be helpful to set this if you are getting OutOfMemoryErrors.  Default is -1, which is effectively an unbounded queue</td></tr>
+<tr><td>KEYVALUEDELIMITER</td><td>No</td><td>The delimiter for separating the key and value. Default is tab '\t'</td></tr>
+</table>
+<br/>
+
+<h3>TextFilePipes Example</h3>
+
+<p>The following creates an external HAWQ table that will read data from a JSON file in HDFS table called mytestfile.json that has one record per line.  The external program /usr/lib/gphd/pxf/json-line-mapper.py is below as well.  Note the DELIMITER in the FORMAT clause and the Python code emitting tab-delimited fields.</p>
+
+<p><b>JSON Data</b></p>
+
+<pre><code>{"created_at":"Mon Sep 30 04:04:53 +0000 2013","id_str":"384529256681725952","text":"sigh, who knows.","source":"web","user":{"id":31424214,"location":"COLUMBUS"},"coordinates":{"type":"Point","coordinates":[-6.100,50.103]}}
+{"created_at":"Mon Sep 30 04:04:54 +0000 2013","id_str":"384529260872228864","text":"I did that 12 years ago..\n\nT.T","source":"web","user":{"id":67600981,"location":"KryberWorld"},"coordinates":{"type":"Point","coordinates":[-8.100,52.104]}}
+{"created_at":"Mon Sep 30 04:04:54 +0000 2013","id_str":"384529260892786688","text":"Welp guess I'll have anxiety for another week","source":"web","user":{"id":122795713,"location":"California"},"coordinates":null}
+{"created_at":"Mon Sep 30 04:04:55 +0000 2013","id_str":"384529265099689984","text":"I'm craving breadsticks","source":"web","user":{"id":633364307,"location":""},"coordinates":null}
+</pre></code>
+
+<p><b>PSQL Prompt</b></p>
+
+<pre><code>CREATE EXTERNAL TABLE ext_json_mytestfile (
+created_at TEXT,
+id_str TEXT,
+text TEXT,
+source TEXT,
+user_id INTEGER,
+user_location TEXT,
+lat REAL,
+lon REAL
+)
+LOCATION('pxf://shookshack/user/ashook/mytestfile.json?PROFILE=TextFilePipes&MAPPER=/usr/lib/gphd/pxf/json-line-mapper.py')
+FORMAT 'TEXT'
+(DELIMITER E'\t' NULL '');
+
+SELECT * FROM ext_json_mytestfile;
+
+           created_at           |       id_str       |                     text                      | source |  user_id  | user_location | lat  |  lon   
+--------------------------------+--------------------+-----------------------------------------------+--------+-----------+---------------+------+--------
+ Mon Sep 30 04:04:53 +0000 2013 | 384529256681725952 | sigh, who knows.                              | web    |  31424214 | COLUMBUS      | -6.1 | 50.103
+ Mon Sep 30 04:04:54 +0000 2013 | 384529260872228864 | I did that 12 years ago..T.T                  | web    |  67600981 | KryberWorld   | -8.1 | 52.104
+ Mon Sep 30 04:04:54 +0000 2013 | 384529260892786688 | Welp guess I'll have anxiety for another week | web    | 122795713 | California    |      |       
+ Mon Sep 30 04:04:55 +0000 2013 | 384529265099689984 | I'm craving breadsticks                       | web    | 633364307 |               |      |       
+(4 rows)
+
+Time: 456.814 ms                 
+</code></pre>
+
+<p><b>/usr/lib/gphd/pxf/json-line-mapper.py</b></p>
+<pre></code>#!/usr/bin/python
+
+import json
+import sys
+
+def getValueOrEmpty(data, key):    
+    try:
+        return data[key]
+    except (KeyError):
+        return ""
+
+for line in sys.stdin:
+    idx = line.index('\t')
+    key = line[0:idx].strip()
+    value = line[idx+1:]
+
+    data = json.loads(value)
+
+    created_at = getValueOrEmpty(data, "created_at")
+    id_str = getValueOrEmpty(data, "id_str")
+    text = getValueOrEmpty(data, "text")
+    source = getValueOrEmpty(data, "source")
+
+    try:
+        user_id = data["user"]["id"]
+    except:
+        screen_name = ""
+
+    try:
+        user_location = data["user"]["location"]
+    except:
+        hashtag = ""
+
+    try:
+        lat = data["coordinates"]["coordinates"][0]
+    except:
+        lat = ""
+
+    try:
+        lon = data["coordinates"]["coordinates"][1]
+    except:
+        lon = ""
+        
+    print "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (created_at, id_str, text, source, user_id, user_location, lat, lon)
+</code></pre>
+
+<br/>
+
+<h3>WholeFilePipes Example</h3>
+
+<p>The following creates an external HAWQ table that will read data from a JSON file in HDFS table called mypptestfile.json that has one JSON record in the entire contents of the file.  The external program /usr/lib/gphd/pxf/json-wf-mapper.py is below as well.  Note the DELIMITER in the FORMAT clause and the Python code emitting pipe-delimited fields.</p>
+
+<p><b>JSON Data</b></p>
+
+<pre><code>{
+   "created_at":"Mon Sep 30 04:04:55 +0000 2013",
+   "id_str":"384529265099689984",
+   "text":"I'm craving breadsticks",
+   "source":"web",
+   "user":{
+      "id":633364307,
+      "location":""
+   },
+   "coordinates":null
+}
+</code></pre>
+
+<p><b>PSQL Prompt</b></p>
+
+<pre><code>CREATE EXTERNAL TABLE ext_json_mypptestfile (
+filename TEXT,
+created_at TEXT,
+id_str TEXT,
+text TEXT,
+source TEXT,
+user_id INTEGER,
+user_location TEXT,
+lat REAL,
+lon REAL
+)
+LOCATION('pxf://shookshack/user/ashook/mypptestfile.json?PROFILE=WholeFilePipes&MAPPER=/usr/lib/gphd/pxf/json-wf-mapper.py')
+FORMAT 'TEXT'
+(DELIMITER '|' NULL '');
+SELECT * FROM ext_json_mypptestfile;
+
+                    filename                     |           created_at           |       id_str       |          text           | source |  user_id  | user_location | lat | lon 
+-------------------------------------------------+--------------------------------+--------------------+-------------------------+--------+-----------+---------------+-----+-----
+ hdfs://shookshack/user/ashook/mypptestfile.json | Mon Sep 30 04:04:55 +0000 2013 | 384529265099689984 | I'm craving breadsticks | web    | 633364307 |               |     |    
+(1 row)
+
+Time: 317.013 ms
+</code></pre>
+
+<p><b>/usr/lib/gphd/pxf/json-line-mapper.py</b></p>
+<code><pre>
+#!/usr/bin/python
+
+import json
+import sys
+
+def getValueOrEmpty(data, key):
+    try:
+        return data[key]
+    except (KeyError):
+        return ""
+
+bytes = sys.stdin.read()
+
+idx = bytes.index('\t')
+key = bytes[0:idx].strip()
+value = bytes[idx+1:]
+
+data = json.loads(value)
+
+created_at = getValueOrEmpty(data, "created_at")
+id_str = getValueOrEmpty(data, "id_str")
+text = getValueOrEmpty(data, "text")
+source = getValueOrEmpty(data, "source")
+
+try:
+    user_id = data["user"]["id"]
+except:
+    user_id = ""
+
+try:
+    user_location = data["user"]["location"]
+except:
+    user_location = ""
+
+try:
+    lat = data["coordinates"]["coordinates"][0]
+except:
+    lat = ""
+
+try:
+    lon = data["coordinates"]["coordinates"][1]
+except:
+    lon = ""
+
+print "%s|%s|%s|%s|%s|%s|%s|%s|%s" % (key, created_at, id_str, text, source, user_id, user_location, lat, lon)
+</pre></code>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/Pivotal-Field-Engineering">Pivotal-Field-Engineering</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
