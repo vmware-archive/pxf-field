@@ -15,7 +15,7 @@ public class Parameters {
 	public Parameters(InputData inputData) throws MissingArgumentException {
 
 		if (inputData.getParametersMap().containsKey(Parameters.HOSTS_PARAM)) {
-			hostString = inputData.getProperty(Parameters.HOSTS_PARAM);
+			hostString = inputData.getParametersMap().get(Parameters.HOSTS_PARAM);
 			hosts = hostString.split(",");
 		} else {
 			throw new MissingArgumentException(Parameters.HOSTS_PARAM
@@ -23,7 +23,7 @@ public class Parameters {
 		}
 
 		if (inputData.getParametersMap().containsKey(Parameters.HASHKEY_PARAM)) {
-			hashKey = inputData.getProperty(Parameters.HASHKEY_PARAM);
+			hashKey = inputData.getParametersMap().get(Parameters.HASHKEY_PARAM);
 		} else {
 			throw new MissingArgumentException(Parameters.HASHKEY_PARAM
 					+ " is not defined.");

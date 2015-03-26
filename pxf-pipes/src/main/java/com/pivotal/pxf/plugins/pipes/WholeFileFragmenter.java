@@ -28,7 +28,7 @@ public class WholeFileFragmenter extends Fragmenter {
 			IllegalAccessException {
 		super(data);
 
-		inputPath = new Path(data.path());
+		inputPath = new Path(data.getDataSource());
 
 		format = new WholeFileInputFormat();
 	}

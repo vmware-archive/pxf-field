@@ -27,7 +27,7 @@ public class AccumuloResolver extends Plugin implements ReadResolver {
 		Map<String, byte[]> keyValues = (Map<String, byte[]>) paramOneRow
 				.getData();
 
-		for (int i = 0; i < this.inputData.columns(); ++i) {
+		for (int i = 0; i < this.inputData.getColumns(); ++i) {
 			ColumnDescriptor column = (ColumnDescriptor) this.inputData
 					.getColumn(i);
 

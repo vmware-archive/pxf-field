@@ -35,10 +35,10 @@ public class CassandraAccessor extends Plugin implements ReadAccessor {
 	public CassandraAccessor(InputData inputData) throws Exception {
 		super(inputData);
 
-		keyspaceName = inputData.getProperty("X-GP-DATA-DIR");
-		address = inputData.getProperty("X-GP-ADDRESS");
-		columnFamily = inputData.getProperty("X-GP-COLUMN-FAMILY");
-		partitioner = inputData.getProperty("X-GP-PARTITIONER");
+		keyspaceName = inputData.getParametersMap().get("X-GP-DATA-DIR");
+		address = inputData.getParametersMap().get("X-GP-ADDRESS");
+		columnFamily = inputData.getParametersMap().get("X-GP-COLUMN-FAMILY");
+		partitioner = inputData.getParametersMap().get("X-GP-PARTITIONER");
 		jobConf = new JobConf(conf, CassandraAccessor.class);
 
 		ConfigHelper.setInputColumnFamily(jobConf, keyspaceName, columnFamily);

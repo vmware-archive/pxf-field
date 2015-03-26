@@ -40,13 +40,13 @@ public class AccumuloAccessor extends Plugin implements ReadAccessor {
 	public AccumuloAccessor(InputData inputData) throws Exception {
 		super(inputData);
 
-		tableName = inputData.getProperty("X-GP-DATA-DIR");
+		tableName = inputData.getParametersMap().get("X-GP-DATA-DIR");
 		tableName = tableName.startsWith("/") ? tableName.substring(1)
 				: tableName;
-		instanceName = inputData.getProperty("X-GP-INSTANCE");
-		zooKeepers = inputData.getProperty("X-GP-QUORUM");
-		principal = inputData.getProperty("X-GP-USER");
-		token = new PasswordToken(inputData.getProperty("X-GP-PASSWORD"));
+		instanceName = inputData.getParametersMap().get("X-GP-INSTANCE");
+		zooKeepers = inputData.getParametersMap().get("X-GP-QUORUM");
+		principal = inputData.getParametersMap().get("X-GP-USER");
+		token = new PasswordToken(inputData.getParametersMap().get("X-GP-PASSWORD"));
 		jobConf = new JobConf(conf, AccumuloAccessor.class);
 
 		AccumuloInputFormat.setConnectorInfo(jobConf, principal, token);

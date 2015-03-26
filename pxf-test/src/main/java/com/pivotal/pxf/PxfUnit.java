@@ -32,7 +32,8 @@ import com.pivotal.pxf.api.WriteAccessor;
 import com.pivotal.pxf.api.WriteResolver;
 import com.pivotal.pxf.api.io.DataType;
 import com.pivotal.pxf.api.utilities.InputData;
-import com.pivotal.pxf.core.FragmentsResponseFormatter;
+import com.pivotal.pxf.service.FragmentsResponseFormatter;
+import com.pivotal.pxf.service.utilities.ProtocolData;
 
 /**
  * This abstract class contains a number of helpful utilities in developing a
@@ -290,7 +291,7 @@ public abstract class PxfUnit {
 			}
 		}
 
-		return new InputData(paramsMap);
+		return new ProtocolData(paramsMap);
 	}
 
 	/**
@@ -658,16 +659,16 @@ public abstract class PxfUnit {
 	 * Leveraged by the PXFUnit framework. Do not concern yourself with such a
 	 * simple piece of code.
 	 */
-	public static class LocalInputData extends InputData {
+	public static class LocalInputData extends ProtocolData {
 
-		public LocalInputData(InputData copy) {
+		public LocalInputData(ProtocolData copy) {
 			super(copy);
-			super.path = super.path().substring(1);
+			super.setDataSource(super.getDataSource().substring(1));
 		}
 
 		public LocalInputData(Map<String, String> paramsMap) {
 			super(paramsMap);
-			super.path = super.path().substring(1);
+			super.setDataSource(super.getDataSource().substring(1));
 		}
 	}
 }

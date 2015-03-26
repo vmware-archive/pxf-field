@@ -29,12 +29,12 @@ public class JsonAccessor extends HdfsSplittableDataAccessor {
 		super(inputData, new JsonInputFormat());
 
 		if (inputData.getParametersMap().containsKey(IDENTIFIER_PARAM)) {
-			identifier = inputData.getProperty(IDENTIFIER_PARAM);
+			identifier = inputData.getParametersMap().get(IDENTIFIER_PARAM);
 		}
 
 		if (inputData.getParametersMap().containsKey(ONERECORDPERLINE_PARAM)) {
 			oneRecordPerLine = Boolean.parseBoolean(inputData
-					.getProperty(ONERECORDPERLINE_PARAM));
+					.getParametersMap().get(ONERECORDPERLINE_PARAM));
 		}
 	}
 

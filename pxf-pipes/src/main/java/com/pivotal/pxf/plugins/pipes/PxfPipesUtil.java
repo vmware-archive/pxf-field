@@ -11,7 +11,7 @@ public class PxfPipesUtil {
 	public static Configuration conf = new Configuration();
 
 	public static String getMapperCommand(InputData input) {
-		return input.getProperty("X-GP-MAPPER");
+		return input.getParametersMap().get("X-GP-MAPPER");
 	}
 
 	public static boolean isLineByLine(InputData input) {
