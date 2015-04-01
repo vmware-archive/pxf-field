@@ -33,7 +33,7 @@ public class CassandraResolver extends Plugin implements ReadResolver {
 		SortedMap<ByteBuffer, IColumn> keyValues = (SortedMap<ByteBuffer, IColumn>) onerow
 				.getData();
 
-		for (int i = 0; i < this.inputData.columns(); ++i) {
+		for (int i = 0; i < this.inputData.getColumns(); ++i) {
 			ColumnDescriptor column = (ColumnDescriptor) this.inputData
 					.getColumn(i);
 

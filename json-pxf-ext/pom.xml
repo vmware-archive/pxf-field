@@ -7,8 +7,8 @@
 
 	<properties>
 		<hadoop-version>2.2.0-gphd-3.0.1.0</hadoop-version>
-		<pxf-version>2.2.0.0</pxf-version>
-		<pxf-test-version>2.0.1.0-0</pxf-test-version>
+		<pxf-version>2.3.0.0</pxf-version>
+		<pxf-test-version>2.0.1.0-1</pxf-test-version>
 	</properties>
 
 	<repositories>

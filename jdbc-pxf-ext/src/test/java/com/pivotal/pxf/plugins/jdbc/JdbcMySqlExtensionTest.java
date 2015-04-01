@@ -1,16 +1,13 @@
 package com.pivotal.pxf.plugins.jdbc;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -18,12 +15,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.pivotal.pxf.PxfUnit;
-import com.pivotal.pxf.PxfUnit.Pair;
-import com.pivotal.pxf.api.Fragmenter;
 import com.pivotal.pxf.api.OneField;
 import com.pivotal.pxf.api.OneRow;
-import com.pivotal.pxf.api.ReadAccessor;
-import com.pivotal.pxf.api.ReadResolver;
 import com.pivotal.pxf.api.WriteAccessor;
 import com.pivotal.pxf.api.WriteResolver;
 import com.pivotal.pxf.api.io.DataType;
@@ -34,7 +27,7 @@ public class JdbcMySqlExtensionTest extends PxfUnit {
 	private JdbcResolver resolver = null;
 	private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 	private static final String DATABASE = "PXFTEST";
-	private static final String JDBC_CONNECTION = "jdbc:mysql://localhost:3306";
+	private static final String JDBC_CONNECTION = "jdbc:mysql://pcc:3306";
 	private static final String DB_URL = JDBC_CONNECTION + "/" + DATABASE;
 	private static final String TABLE_NAME = "PXFTEST";
 	private static final String POWER_USER = "root";

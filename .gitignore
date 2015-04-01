@@ -10,3 +10,7 @@ build
 /accumulo-pxf-ext/doc
 /json-pxf-ext/doc
 /pxf-test/doc
+
+/external-jars
+/Servers
+/RemoteSystemsTempFiles

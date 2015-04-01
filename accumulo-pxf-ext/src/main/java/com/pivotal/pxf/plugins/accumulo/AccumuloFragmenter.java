@@ -57,12 +57,12 @@ public class AccumuloFragmenter extends Fragmenter {
 	public AccumuloFragmenter(InputData meta) throws Exception {
 		super(meta);
 
-		instanceName = meta.getProperty("X-GP-INSTANCE");
-		zooKeepers = meta.getProperty("X-GP-QUORUM");
-		principal = meta.getProperty("X-GP-USER");
-		token = new PasswordToken(meta.getProperty("X-GP-PASSWORD"));
+		instanceName = meta.getParametersMap().get("X-GP-INSTANCE");
+		zooKeepers = meta.getParametersMap().get("X-GP-QUORUM");
+		principal = meta.getParametersMap().get("X-GP-USER");
+		token = new PasswordToken(meta.getParametersMap().get("X-GP-PASSWORD"));
 		jobConf = new JobConf();
-		auths = new Authorizations(meta.getProperty("X-GP-AUTHS"));
+		auths = new Authorizations(meta.getParametersMap().get("X-GP-AUTHS"));
 
 		AccumuloInputFormat.setConnectorInfo(jobConf, principal, token);
 		AccumuloInputFormat.setScanAuthorizations(jobConf, auths);
@@ -76,7 +76,7 @@ public class AccumuloFragmenter extends Fragmenter {
 	@Override
 	public List<Fragment> getFragments() throws Exception {
 
-		String datapath = this.inputData.path();
+		String datapath = this.inputData.getDataSource();
 
 		datapath = datapath.replaceFirst("^/", "");
 

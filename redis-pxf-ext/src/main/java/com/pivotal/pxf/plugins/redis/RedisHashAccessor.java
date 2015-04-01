@@ -31,7 +31,7 @@ public class RedisHashAccessor extends Plugin implements ReadAccessor {
 	@Override
 	public boolean openForRead() throws Exception {
 
-		String host = inputData.path().replace("/", "");
+		String host = inputData.getDataSource().replace("/", "");
 
 		if (!host.contains(":")) {
 			readClient = new Jedis(host);

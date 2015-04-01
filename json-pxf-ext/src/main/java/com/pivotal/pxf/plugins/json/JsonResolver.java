@@ -42,7 +42,7 @@ public class JsonResolver extends Plugin implements ReadResolver {
 		// if we weren't given a null object
 		if (root != null) {
 			// Iterate through the column definition and fetch our JSON data
-			for (int i = 0; i < inputData.columns(); ++i) {
+			for (int i = 0; i < inputData.getColumns(); ++i) {
 
 				// Get the current column description
 				ColumnDescriptor cd = inputData.getColumn(i);
