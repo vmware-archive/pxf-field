@@ -155,7 +155,7 @@ public class HiveTinyIntResolver extends Plugin implements ReadResolver {
 				break;
 			case "decimal":
 				addOneFieldToRecord(this.partitionFields, DataType.NUMERIC,
-						new HiveDecimal(val).bigDecimalValue().toString());
+						 HiveDecimal.create(val).bigDecimalValue().toString());
 				break;
 			default:
 				throw new UnsupportedTypeException("Unknown type: " + type);

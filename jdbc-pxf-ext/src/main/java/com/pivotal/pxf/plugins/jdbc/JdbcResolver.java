@@ -26,7 +26,7 @@ public class JdbcResolver extends Plugin implements WriteResolver {
 
 	public JdbcResolver(InputData input) {
 		super(input);
-		TABLE_NAME = input.getParametersMap().get("X-GP-TABLE_NAME");
+		TABLE_NAME = input.getUserProperty("TABLE_NAME");
 	}
 
 	@Override

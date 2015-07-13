@@ -1,13 +1,12 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gopivotal</groupId>
 	<artifactId>cassandra-pxf-ext</artifactId>
-	<version>2.0.1.0-0</version>
+	<version>3.0.0.0-1-SNAPSHOT</version>
 
 	<properties>
-		<hadoop-version>2.2.0-gphd-3.0.1.0</hadoop-version>
-		<pxf-test-version>2.0.1.0-1</pxf-test-version>
+		<hadoop-version>2.6.0.3.0.0.0-249</hadoop-version>
+		<pxf-test-version>3.0.0.0-1-SNAPSHOT</pxf-test-version>
 	</properties>
 
 	<repositories>

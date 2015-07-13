@@ -21,7 +21,6 @@ public class CassandraMapper extends
 	@Override
 	protected void map(ByteBuffer key, SortedMap<ByteBuffer, IColumn> value,
 			Context context) throws IOException, InterruptedException {
-		System.out.println("MAP CALLED");
 
 		String strKey = new String(ByteBufferUtil.string(key));
 

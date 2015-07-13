@@ -57,12 +57,12 @@ public class AccumuloFragmenter extends Fragmenter {
 	public AccumuloFragmenter(InputData meta) throws Exception {
 		super(meta);
 
-		instanceName = meta.getParametersMap().get("X-GP-INSTANCE");
-		zooKeepers = meta.getParametersMap().get("X-GP-QUORUM");
-		principal = meta.getParametersMap().get("X-GP-USER");
-		token = new PasswordToken(meta.getParametersMap().get("X-GP-PASSWORD"));
+		instanceName = meta.getUserProperty("INSTANCE");
+		zooKeepers = meta.getUserProperty("QUORUM");
+		principal = meta.getUserProperty("USER");
+		token = new PasswordToken(meta.getUserProperty("PASSWORD"));
 		jobConf = new JobConf();
-		auths = new Authorizations(meta.getParametersMap().get("X-GP-AUTHS"));
+		auths = new Authorizations(meta.getUserProperty("AUTHS"));
 
 		AccumuloInputFormat.setConnectorInfo(jobConf, principal, token);
 		AccumuloInputFormat.setScanAuthorizations(jobConf, auths);

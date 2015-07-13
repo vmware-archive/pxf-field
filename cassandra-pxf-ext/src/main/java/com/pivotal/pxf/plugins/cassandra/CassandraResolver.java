@@ -25,7 +25,6 @@ public class CassandraResolver extends Plugin implements ReadResolver {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<OneField> getFields(OneRow onerow) throws Exception {
-		System.out.println("GetFields");
 
 		List<OneField> fields = new ArrayList<OneField>();
 
