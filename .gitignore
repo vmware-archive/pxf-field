@@ -1,6 +1,9 @@
 # Eclipse Files
 */.settings
 .metadata
+.settings
+.project
+.classpath
 
 # Local files
 build

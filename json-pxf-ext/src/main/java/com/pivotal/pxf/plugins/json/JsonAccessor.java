@@ -2,6 +2,7 @@ package com.pivotal.pxf.plugins.json;
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.mapred.FileSplit;
 import org.apache.hadoop.mapred.InputSplit;
 import org.apache.hadoop.mapred.JobConf;
@@ -19,8 +20,8 @@ import com.pivotal.pxf.plugins.hdfs.HdfsSplittableDataAccessor;
  */
 public class JsonAccessor extends HdfsSplittableDataAccessor {
 
-	public static final String IDENTIFIER_PARAM = "X-GP-IDENTIFIER";
-	public static final String ONERECORDPERLINE_PARAM = "X-GP-ONERECORDPERLINE";
+	public static final String IDENTIFIER_PARAM = "IDENTIFIER";
+	public static final String ONERECORDPERLINE_PARAM = "ONERECORDPERLINE";
 
 	private String identifier = "";
 	private boolean oneRecordPerLine = true;
@@ -28,13 +29,12 @@ public class JsonAccessor extends HdfsSplittableDataAccessor {
 	public JsonAccessor(InputData inputData) throws Exception {
 		super(inputData, new JsonInputFormat());
 
-		if (inputData.getParametersMap().containsKey(IDENTIFIER_PARAM)) {
-			identifier = inputData.getParametersMap().get(IDENTIFIER_PARAM);
+		if (!StringUtils.isEmpty(inputData.getUserProperty(IDENTIFIER_PARAM))) {
+			identifier = inputData.getUserProperty(IDENTIFIER_PARAM);
 		}
 
-		if (inputData.getParametersMap().containsKey(ONERECORDPERLINE_PARAM)) {
-			oneRecordPerLine = Boolean.parseBoolean(inputData
-					.getParametersMap().get(ONERECORDPERLINE_PARAM));
+		if (!StringUtils.isEmpty(inputData.getUserProperty(ONERECORDPERLINE_PARAM))) {
+			oneRecordPerLine = Boolean.parseBoolean(inputData.getUserProperty(ONERECORDPERLINE_PARAM));
 		}
 	}
 

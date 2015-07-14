@@ -139,6 +139,7 @@ public abstract class PxfUnit {
 	 */
 	public void assertUnorderedOutput(Path input, List<String> expectedOutput)
 			throws Exception {
+
 		setup(input);
 
 		List<String> actualOutput = new ArrayList<String>();
@@ -371,8 +372,11 @@ public abstract class PxfUnit {
 		Iterator<JsonNode> iter = fragmentsArray.getElements();
 		while (iter.hasNext()) {
 			JsonNode fragNode = iter.next();
-			paramsMap.put("X-GP-DATA-DIR", "/"
-					+ fragNode.get("sourceName").getTextValue());
+			String sourceData = fragNode.get("sourceName").getTextValue();
+			if (!sourceData.startsWith("/")) {
+				sourceData = "/" + sourceData;
+			}
+			paramsMap.put("X-GP-DATA-DIR", sourceData);
 			paramsMap.put("X-GP-FRAGMENT-METADATA", fragNode.get("metadata")
 					.getTextValue());
 			paramsMap.put("X-GP-DATA-FRAGMENT", Integer.toString(i++));
@@ -668,7 +672,6 @@ public abstract class PxfUnit {
 
 		public LocalInputData(Map<String, String> paramsMap) {
 			super(paramsMap);
-			super.setDataSource(super.getDataSource().substring(1));
 		}
 	}
 }

@@ -27,7 +27,7 @@ public class JdbcMySqlExtensionTest extends PxfUnit {
 	private JdbcResolver resolver = null;
 	private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 	private static final String DATABASE = "PXFTEST";
-	private static final String JDBC_CONNECTION = "jdbc:mysql://pcc:3306";
+	private static final String JDBC_CONNECTION = "jdbc:mysql://ambari:3306";
 	private static final String DB_URL = JDBC_CONNECTION + "/" + DATABASE;
 	private static final String TABLE_NAME = "PXFTEST";
 	private static final String POWER_USER = "root";

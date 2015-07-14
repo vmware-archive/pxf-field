@@ -15,9 +15,9 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.hadoop.mapred.FileInputFormat;
 import org.apache.hadoop.mapred.FileSplit;
+import org.apache.hadoop.mapred.InputFormat;
 import org.apache.hadoop.mapred.InputSplit;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.Reporter;
@@ -34,7 +34,7 @@ public class HiveAccessor extends HdfsSplittableDataAccessor {
 
 	public HiveAccessor(InputData input) throws Exception {
 		super(input, null);
-		this.fformat = createInputFormat(input);
+		this.inputFormat = createInputFormat(input);
 		this.Log = LogFactory.getLog(HiveAccessor.class);
 
 		accessorTime = 0;
@@ -79,7 +79,7 @@ public class HiveAccessor extends HdfsSplittableDataAccessor {
 
 	protected Object getReader(JobConf jobConf, InputSplit split)
 			throws IOException {
-		return this.fformat.getRecordReader(split, jobConf, Reporter.NULL);
+		return this.inputFormat.getRecordReader(split, jobConf, Reporter.NULL);
 	}
 
 	public void closeForRead() throws Exception {
@@ -94,7 +94,7 @@ public class HiveAccessor extends HdfsSplittableDataAccessor {
 				+ resolverTime);
 	}
 
-	private FileInputFormat<?, ?> createInputFormat(InputData input)
+	private InputFormat<?, ?> createInputFormat(InputData input)
 			throws Exception {
 		String userData = new String(input.getFragmentUserData());
 		String[] toks = userData.split("!HUDD!");
@@ -124,15 +124,15 @@ public class HiveAccessor extends HdfsSplittableDataAccessor {
 			return true;
 		}
 
-		String filterStr = this.inputData.filterString();
+		String filterStr = this.inputData.getFilterString();
 		HiveFilterBuilder eval = new HiveFilterBuilder(this.inputData);
 		Object filter = eval.getFilterObject(filterStr);
 
 		boolean returnData = isFiltered(this.partitions, filter);
 
 		if (this.Log.isDebugEnabled()) {
-			this.Log.debug("segmentId: " + this.inputData.segmentId() + " "
-					+ this.inputData.path() + "--" + filterStr + "returnData: "
+			this.Log.debug("segmentId: " + this.inputData.getSegmentId() + " "
+					+ this.inputData.getDataSource() + "--" + filterStr + "returnData: "
 					+ returnData);
 			Iterator<?> i$;
 			if ((filter instanceof List))

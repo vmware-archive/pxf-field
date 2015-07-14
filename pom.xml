@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.gopivotal</groupId>
+	<artifactId>pxf-modules</artifactId>
+	<version>3.0.0.0-1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<scm>
+	  <connection>scm:git:https://github.com/tzolov/pxf-field.git</connection>
+	  <developerConnection>scm:git:git@github.com:tzolov/pxf-field.git</developerConnection>
+	  <url>https://github.com/tzolov/pxf-field</url>
+	  <tag>pxf-modules-3.0.0.0-1</tag>
+	</scm>
+
+	<distributionManagement>
+	  <repository>
+	    <id>bintray</id>
+	    <url>https://api.bintray.com/maven/tzolov/maven/pxf-field</url>
+	  </repository>
+	</distributionManagement>
+
+	<modules>
+		<module>pxf-test</module>
+		<module>json-pxf-ext</module>
+		<module>jdbc-pxf-ext</module>
+		<module>accumulo-pxf-ext</module>
+		<module>cassandra-pxf-ext</module>
+		<module>hive-hotfix-pxf-ext</module>
+		<module>redis-pxf-ext</module>
+		<!-- <module>pxf-pipes</module> -->
+	</modules>
+	
+	<build>
+	  <plugins>
+	    <plugin>
+	      <artifactId>maven-release-plugin</artifactId>
+	      <version>2.4.1</version>
+	      <configuration>
+	        <useReleaseProfile>false</useReleaseProfile>
+	        <releaseProfiles>release</releaseProfiles>
+	        <autoVersionSubmodules>true</autoVersionSubmodules>
+	      </configuration>
+	    </plugin>
+	  </plugins>
+	</build>
+</project>

@@ -24,11 +24,11 @@ public class JdbcAccessor extends Plugin implements WriteAccessor {
 	public JdbcAccessor(InputData input) throws IOException {
 		super(input);
 
-		jdbcDriver = input.getParametersMap().get("X-GP-JDBC_DRIVER");
-		dbUrl = input.getParametersMap().get("X-GP-DB_URL");
-		user = input.getParametersMap().get("X-GP-USER");
-		pass = input.getParametersMap().get("X-GP-PASS");
-		String strBatch = input.getParametersMap().get("X-GP-BATCH_SIZE");
+		jdbcDriver = input.getUserProperty("JDBC_DRIVER");
+		dbUrl = input.getUserProperty("DB_URL");
+		user = input.getUserProperty("USER");
+		pass = input.getUserProperty("PASS");
+		String strBatch = input.getUserProperty("BATCH_SIZE");
 
 		if (strBatch != null) {
 			batchSize = Integer.parseInt(strBatch);
@@ -42,7 +42,7 @@ public class JdbcAccessor extends Plugin implements WriteAccessor {
 			throw new IllegalArgumentException("DB_URL must be set");
 		}
 
-		tblName = input.getParametersMap().get("X-GP-TABLE_NAME");
+		tblName = input.getUserProperty("TABLE_NAME");
 
 		if (tblName == null) {
 			throw new IllegalArgumentException("TABLE_NAME must be set");

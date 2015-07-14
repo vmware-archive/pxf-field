@@ -25,9 +25,9 @@ public class CassandraFragmenter extends Fragmenter {
 	public CassandraFragmenter(InputData meta) throws Exception {
 		super(meta);
 
-		address = meta.getParametersMap().get("X-GP-ADDRESS");
-		columnFamily = meta.getParametersMap().get("X-GP-COLUMN-FAMILY");
-		partitioner = meta.getParametersMap().get("X-GP-PARTITIONER");
+		address = meta.getUserProperty("ADDRESS");
+		columnFamily = meta.getUserProperty("COLUMN-FAMILY");
+		partitioner = meta.getUserProperty("PARTITIONER");
 		jobConf = new JobConf();
 
 		ConfigHelper.setInputInitialAddress(jobConf, address);

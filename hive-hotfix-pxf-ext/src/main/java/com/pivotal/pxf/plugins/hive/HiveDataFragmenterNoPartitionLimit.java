@@ -50,11 +50,11 @@ public class HiveDataFragmenterNoPartitionLimit extends Fragmenter {
 	}
 
 	public List<Fragment> getFragments() throws Exception {
-		TblDesc tblDesc = parseTableQualifiedName(this.inputData.tableName());
+		TblDesc tblDesc = parseTableQualifiedName(this.inputData.getDataSource());
 		if (tblDesc == null) {
 			throw new IllegalArgumentException(
 					new StringBuilder()
-							.append(this.inputData.tableName())
+							.append(this.inputData.getDataSource())
 							.append(" is not a valid Hive table name. Should be either <table_name> or <db_name.table_name>")
 							.toString());
 		}
