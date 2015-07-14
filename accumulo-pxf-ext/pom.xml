@@ -17,6 +17,13 @@
 		</repository>
 	</repositories>
 
+	<distributionManagement>
+	  <repository>
+	    <id>bintray-bigdata</id>
+	    <url>https://api.bintray.com/maven/big-data/maven/pxf-plugins</url>
+	  </repository>
+	</distributionManagement>
+	
 	<build>
 		<plugins>
 			<plugin>

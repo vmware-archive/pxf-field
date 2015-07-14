@@ -24,6 +24,14 @@
 			<url>https://github.com/tzolov/maven-repo/raw/master/</url>
 		</repository>		
 	</repositories>
+	
+	<distributionManagement>
+	  <repository>
+	    <id>bintray-bigdata</id>
+	    <url>https://api.bintray.com/maven/big-data/maven/pxf-plugins</url>
+	  </repository>
+	</distributionManagement>
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -47,6 +55,7 @@
 					</execution>
 				</executions>
 				<configuration>
+				    <createDependencyReducedPom>false</createDependencyReducedPom>
 					<artifactSet>
 						<includes>
 							<include>com.gopivotal:pmr-common</include>
@@ -56,6 +65,7 @@
 			</plugin>
 		</plugins>
 	</build>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.hadoop</groupId>

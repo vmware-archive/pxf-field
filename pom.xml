@@ -10,13 +10,13 @@
 	  <connection>scm:git:https://github.com/tzolov/pxf-field.git</connection>
 	  <developerConnection>scm:git:git@github.com:tzolov/pxf-field.git</developerConnection>
 	  <url>https://github.com/tzolov/pxf-field</url>
-	  <tag>pxf-modules-3.0.0.0-1</tag>
+	  <tag>HEAD</tag>
 	</scm>
 
 	<distributionManagement>
 	  <repository>
-	    <id>bintray</id>
-	    <url>https://api.bintray.com/maven/tzolov/maven/pxf-field</url>
+	    <id>bintray-bigdata</id>
+	    <url>https://api.bintray.com/maven/big-data/maven/pxf-plugins</url>
 	  </repository>
 	</distributionManagement>
 
@@ -35,7 +35,7 @@
 	  <plugins>
 	    <plugin>
 	      <artifactId>maven-release-plugin</artifactId>
-	      <version>2.4.1</version>
+	      <version>2.5.2</version>
 	      <configuration>
 	        <useReleaseProfile>false</useReleaseProfile>
 	        <releaseProfiles>release</releaseProfiles>
