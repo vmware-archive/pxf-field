@@ -28,7 +28,7 @@
 		<module>cassandra-pxf-ext</module>
 		<module>hive-hotfix-pxf-ext</module>
 		<module>redis-pxf-ext</module>
-		<!-- <module>pxf-pipes</module> -->
+		<module>pxf-pipes</module>
 	</modules>
 	
 	<build>
