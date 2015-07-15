@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gopivotal</groupId>
 	<artifactId>pxf-test</artifactId>
-	<version>3.0.0.0-14</version>
+	<version>3.0.0.0-15-SNAPSHOT</version>
 
 	<properties>
 		<hadoop-version>2.6.0.3.0.0.0-249</hadoop-version>
