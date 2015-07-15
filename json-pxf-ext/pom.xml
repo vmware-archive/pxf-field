@@ -2,12 +2,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gopivotal</groupId>
 	<artifactId>json-pxf-ext</artifactId>
-	<version>3.0.0.0-16</version>
+	<version>3.0.0.0-17-SNAPSHOT</version>
 
 	<properties>
 		<hadoop-version>2.6.0.3.0.0.0-249</hadoop-version>
 		<pxf-version>2.5.0.0</pxf-version>
-		<pxf-test-version>3.0.0.0-16</pxf-test-version>
+		<pxf-test-version>3.0.0.0-17-SNAPSHOT</pxf-test-version>
 	</properties>
 
 	<dependencies>
