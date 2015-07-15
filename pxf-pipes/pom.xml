@@ -1,61 +1,16 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gopivotal</groupId>
 	<artifactId>pxf-pipes</artifactId>
-	<version>3.0.0.0-1-SNAPSHOT</version>
+	<version>3.0.0.0-15-SNAPSHOT</version>
 
 	<properties>
 		<hadoop-version>2.6.0.3.0.0.0-249</hadoop-version>
 		<pmr-common-version>2.0.1.0-1</pmr-common-version>
 		<pxf-version>2.5.0.0</pxf-version>
-		<pxf-test-version>3.0.0.0-1-SNAPSHOT</pxf-test-version>
+		<pxf-test-version>3.0.0.0-15-SNAPSHOT</pxf-test-version>
 	</properties>
-
-	<repositories>
-		<repository>
-			<id>org.springsource.maven.milestone</id>
-			<name>SpringSource Maven Release Repository</name>
-			<url>http://repo.springsource.org/libs-release</url>
-		</repository>
-		<repository>
-			<id>git-tzolov</id>
-			<name>tzolov's Git based repo</name>
-			<url>https://github.com/tzolov/maven-repo/raw/master/</url>
-		</repository>		
-	</repositories>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.0</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>1.7.1</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<artifactSet>
-						<includes>
-							<include>com.gopivotal:pmr-common</include>
-						</includes>
-					</artifactSet>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.hadoop</groupId>
@@ -144,4 +99,91 @@
 			<version>1.8.8</version>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>1.7.1</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+				    <createDependencyReducedPom>false</createDependencyReducedPom>
+					<artifactSet>
+						<includes>
+							<include>com.gopivotal:pmr-common</include>
+						</includes>
+					</artifactSet>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
+	<repositories>
+		<repository>
+			<id>org.springsource.maven.milestone</id>
+			<name>SpringSource Maven Release Repository</name>
+			<url>http://repo.springsource.org/libs-release</url>
+		</repository>		
+		<repository>
+			<id>git-tzolov</id>
+			<name>tzolov's Git based repo</name>
+			<url>https://github.com/tzolov/maven-repo/raw/master/</url>
+		</repository>		
+	</repositories>
+
+	<distributionManagement>
+		<repository>
+			<id>bintray-bigdata</id>
+			<url>https://api.bintray.com/maven/big-data/maven/pxf-plugins</url>
+		</repository>
+	</distributionManagement>
+
+	<profiles>
+	  <profile>
+	    <id>release</id>
+	    <build>
+	      <plugins>
+	        <plugin>
+	          <artifactId>maven-source-plugin</artifactId>
+	          <executions>
+	            <execution>
+	              <id>attach-sources</id>
+	              <goals>
+	                <goal>jar</goal>
+	              </goals>
+	            </execution>
+	          </executions>
+	        </plugin>
+	        <plugin>
+	          <artifactId>maven-javadoc-plugin</artifactId>
+	          <executions>
+	            <execution>
+	              <id>attach-javadocs</id>
+	              <goals>
+	                <goal>jar</goal>
+	              </goals>
+	            </execution>
+	          </executions>
+	        </plugin>
+	      </plugins>
+	    </build>
+	  </profile>
+	</profiles>	
+	
 </project>

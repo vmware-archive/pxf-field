@@ -1,5 +1,8 @@
 package com.pivotal.pxf.plugins.pipes;
 
+import org.apache.hadoop.mapred.TextInputFormat;
+
+import com.gopivotal.mapred.input.WholeFileInputFormat;
 import com.pivotal.pxf.api.OneRow;
 import com.pivotal.pxf.api.ReadAccessor;
 import com.pivotal.pxf.api.utilities.InputData;
