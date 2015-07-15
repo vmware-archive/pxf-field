@@ -3,14 +3,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gopivotal</groupId>
 	<artifactId>pxf-modules</artifactId>
-	<version>3.0.0.0-17</version>
+	<version>3.0.0.0-18-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<scm>
 	  <connection>scm:git:https://github.com/tzolov/pxf-field.git</connection>
 	  <developerConnection>scm:git:git@github.com:tzolov/pxf-field.git</developerConnection>
 	  <url>https://github.com/tzolov/pxf-field</url>
-	  <tag>pxf-modules-3.0.0.0-17</tag>
+	  <tag>HEAD</tag>
 	</scm>
 
 	<distributionManagement>
