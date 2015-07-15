@@ -2,11 +2,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gopivotal</groupId>
 	<artifactId>accumulo-pxf-ext</artifactId>
-	<version>3.0.0.0-9-SNAPSHOT</version>
+	<version>3.0.0.0-13</version>
 
 	<properties>
 		<hadoop-version>2.6.0.3.0.0.0-249</hadoop-version>
-		<pxf-test-version>3.0.0.0-9-SNAPSHOT</pxf-test-version>
+		<pxf-test-version>3.0.0.0-13</pxf-test-version>
 	</properties>
 	
 	<dependencies>
