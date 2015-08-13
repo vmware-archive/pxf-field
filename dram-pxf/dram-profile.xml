@@ -1,6 +1,6 @@
 
 <profile>
-	<name>DramWholeFilePipes</name>
+	<name>Dram</name>
 	<description>A profile for PXF Pipes using the entire file as input
 	</description>
 	<plugins>

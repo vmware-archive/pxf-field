@@ -1,23 +1,8 @@
 
 drop external table dram;
 CREATE EXTERNAL TABLE dram ( key TEXT, serial TEXT, bits TEXT )
-LOCATION ('pxf://phd1.localdomain:51200/user/pxf/dramdata/sampledata/rawdata.txt.sample.1?FRAGMENTER=com.pivotal.pxf.plugins.dram.WholeFileFragmenter&ACCESSOR=com.pivotal.pxf.plugins.dram.DramBlobAccessor&RESOLVER=com.pivotal.pxf.plugins.dram.DramResolver&ANALYZER=com.pivotal.pxf.plugins.dummy.DummyAnalyzer' )
+LOCATION ('pxf://phd1.localdomain:51200/dramdata/sampledata/*?Profile=Dram')
 FORMAT 'custom' (Formatter='pxfwritable_import');
-
-
-drop external table dram;
-CREATE EXTERNAL TABLE dram ( key TEXT, serial TEXT, bits TEXT )
-LOCATION ('pxf://phd1.localdomain:51200/dramdata/sampledata/*?Profile=DramWholeFilePipes')
-FORMAT 'custom' (Formatter='pxfwritable_import');
-
-drop external table dram;
-CREATE EXTERNAL TABLE dram ( key TEXT, serial TEXT, bits TEXT )
-LOCATION ('pxf://phd1.localdomain:51200/dramdata/testdata/*?Profile=DramWholeFilePipes')
-FORMAT 'custom' (Formatter='pxfwritable_import');
-
-
-
-
 
 
 
