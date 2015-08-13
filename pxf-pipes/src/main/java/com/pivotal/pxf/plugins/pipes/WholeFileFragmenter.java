@@ -1,4 +1,4 @@
-package com.pivotal.pxf.plugins.dram;
+package com.pivotal.pxf.plugins.pipes;
 
 import java.io.IOException;
 import java.util.List;

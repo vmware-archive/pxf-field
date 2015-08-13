@@ -1,4 +1,4 @@
-package com.pivotal.pxf.plugins.dram;
+package com.pivotal.pxf.plugins.pipes;
 
 import java.util.ArrayList;
 import java.util.List;

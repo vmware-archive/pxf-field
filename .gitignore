@@ -4,9 +4,6 @@
 .settings
 .project
 .classpath
-.idea/*
-*.iml
-**/*.iml
 # Local files
 build
 

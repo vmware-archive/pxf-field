@@ -22,7 +22,6 @@
 
 	<modules>
 		<module>pxf-test</module>
-		<module>dram-pxf</module>
 		<module>json-pxf-ext</module>
 		<module>jdbc-pxf-ext</module>
 		<module>accumulo-pxf-ext</module>

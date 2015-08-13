@@ -1,4 +1,4 @@
-package com.pivotal.pxf.plugins.dram;
+package com.pivotal.pxf.plugins.pipes;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -11,74 +11,71 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.InputSplit;
-import org.apache.hadoop.mapred.FileSplit;
 import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapred.LineRecordReader;
-import org.apache.hadoop.mapred.TextInputFormat;
 
+import com.gopivotal.mapred.input.WholeFileInputFormat;
 import com.pivotal.pxf.api.OneRow;
 import com.pivotal.pxf.api.utilities.InputData;
 import com.pivotal.pxf.plugins.hdfs.HdfsSplittableDataAccessor;
 
 /**
- * This accessor, wrapped by {@link PipedAccessor}, uses the TextInputFormat to
- * pass the LongWritable and Text objects to an external program. The
- * byte-offset is first passed, followed by a tab, then the line of text.<br>
- * An example of a Python program to extract some JSON data from a single line
- * of JSON text:
+ * This accessor, wrapped by {@link PipedAccessor} passes the entire contents of
+ * the file to the external program. The filename is first passed into the
+ * external program, followed by a tab, and then the contents of the file.<br>
+ * An example of a Python program to extract pixel RGB values from an image:
  * 
  * <pre>
  * #!/usr/bin/python
- * 
- * import json
  * import sys
+ * import StringIO
+ * from PIL import Image
  * 
- * def getValueOrEmpty(data, key):    
- *     try:
- *         return data[key]
- *     except (KeyError):
- *         return ""
+ * s = sys.stdin.read()
  * 
- * for line in sys.stdin:
- *     idx = line.index('\t')
- *     key = line[0:idx].strip()
- *     value = line[idx+1:]
+ * idx =  s.index('\t')
+ * key = s[0:idx].strip()
+ * value = s[idx+1:]
  * 
- *     data = json.loads(value)
- *     
- *     created_at = getValueOrEmpty(data, "created_at")
- *     id = getValueOrEmpty(data, "id")
- *     text = getValueOrEmpty(data, "text")
+ * buff = StringIO.StringIO() 
+ * buff.write(value)
+ * buff.seek(0)
  * 
- *     try:
- *         screen_name = data["user"]["screen_name"]
- *     except (KeyError):
- *         screen_name = "" 
- *         
- *     sys.stdout.write("%s|%s|%s|%s" % (created_at, id, text, screen_name))
+ * im = Image.open(buff)
+ * pixels = im.load()
+ * 
+ * (width, height) = im.size
+ * for x in range(0, width):
+ * 	for y in range(0, height):
+ * 		(r, g, b) = pixels[x, y]
+ * 		print "%s|%s|%s|%s|%s|%s|%s" % (key,x,y,r,g,b)
+ * 
+ * sys.exit(0)
  * </pre>
  */
-public class PipedLineAccessor extends HdfsSplittableDataAccessor {
-
+public class PipedBlobAccessor extends HdfsSplittableDataAccessor {
 	// private static final Logger LOG =
-	// Logger.getLogger(PipedLineAccessor.class);
+	// Logger.getLogger(PipedBlobAccessor.class);
 	private String mapCmd = null;
 	private List<String> cmdArgs = null;
 	private BlockingQueue<String> rows = null;
 	private String currRow = null;
 	private PipedCommandThread thread = null;
 
-	public PipedLineAccessor(InputData input) throws Exception {
-		super(input, new TextInputFormat());
+	public PipedBlobAccessor(InputData input) throws Exception {
+		super(input, new WholeFileInputFormat());
 	}
 
 	@Override
 	protected Object getReader(JobConf conf, InputSplit split)
 			throws IOException {
-		return new LineRecordReader(conf, (FileSplit) split);
+		try {
+			return new WholeFileInputFormat.WholeFileRecordReader(split, conf);
+		} catch (Exception e) {
+			throw new IOException(e);
+		}
 	}
 
 	@Override
@@ -107,31 +104,24 @@ public class PipedLineAccessor extends HdfsSplittableDataAccessor {
 					// ha! we have a row!
 					return new OneRow(null, currRow);
 				} else {
-					// jk, let's get another row and start another thread!
-
-					OneRow superRow = super.readNextObject();
-
-					if (superRow == null) {
-						// jk again, return null for odne
-						return null;
-					}
-
-					thread = new PipedCommandThread(super.inputData, superRow);
-					thread.start();
-
-					rows = thread.getRows();
+					// jk, return null for done
+					return null;
 				}
 			}
 			// else, thread is still alive, so we'll loop back again
 		}
 	}
 
+	/**
+	 * This thread runs the actual piped program in threads, inserting rows of
+	 * data into a queue
+	 */
 	public class PipedCommandThread extends Thread {
 
-		private BlockingQueue<String> rows;
+		private BlockingQueue<String> rows = null;
 		private ProcessBuilder bldr = null;
-		private LongWritable key = null;
-		private Text value = null;
+		private Text key = null;
+		private BytesWritable value = null;
 		private final byte[] KV_DELIMITER;
 
 		public PipedCommandThread(InputData input, OneRow row) {
@@ -160,8 +150,8 @@ public class PipedLineAccessor extends HdfsSplittableDataAccessor {
 			// create the process builder object and get the key/value pair to
 			// pass in
 			bldr = new ProcessBuilder(cmdArgs);
-			key = (LongWritable) row.getKey();
-			value = (Text) row.getData();
+			key = (Text) row.getKey();
+			value = (BytesWritable) row.getData();
 		}
 
 		public BlockingQueue<String> getRows() {
@@ -181,9 +171,8 @@ public class PipedLineAccessor extends HdfsSplittableDataAccessor {
 					@Override
 					public void run() {
 						try {
-							p.getOutputStream().write(
-									key.toString().getBytes(), 0,
-									key.toString().getBytes().length);
+							p.getOutputStream().write(key.getBytes(), 0,
+									key.getLength());
 							p.getOutputStream().write(KV_DELIMITER, 0,
 									KV_DELIMITER.length);
 							p.getOutputStream().write(value.getBytes(), 0,

@@ -1,10 +1,10 @@
-package com.pivotal.pxf.plugins.dram;
+package com.pivotal.pxf.plugins.pipes;
 
 import org.apache.hadoop.conf.Configuration;
 import com.pivotal.pxf.api.utilities.InputData;
 
 /**
- * Some utilities and configuration parameters for PXF dram
+ * Some utilities and configuration parameters for PXF pipes
  */
 public class PxfPipesUtil {
 
