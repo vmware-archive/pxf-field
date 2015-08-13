@@ -1,0 +1,26 @@
+
+<profile>
+	<name>DramWholeFilePipes</name>
+	<description>A profile for PXF Pipes using the entire file as input
+	</description>
+	<plugins>
+		<fragmenter>com.pivotal.pxf.plugins.dram.WholeFileFragmenter</fragmenter>
+		<accessor>com.pivotal.pxf.plugins.dram.DramBlobAccessor</accessor>
+		<resolver>com.pivotal.pxf.plugins.dram.DramResolver</resolver>
+		<linebyline>false</linebyline>
+	</plugins>
+</profile>
+
+
+<profile>
+<name>DramWholeFilePipes</name>
+<description>A profile for PXF Pipes using the entire file as input
+</description>
+<plugins>
+	<fragmenter>com.pivotal.pxf.plugins.dummy.DummyFragmenter</fragmenter>
+	<accessor>com.pivotal.pxf.plugins.dummy.DummyAccessor</accessor>
+	<resolver>com.pivotal.pxf.plugins.dummy.DummyResolver</resolver>
+	<analyzer>com.pivotal.pxf.plugins.dummy.DummyAnalyzer</analyzer>
+	<linebyline>false</linebyline>
+</plugins>
+</profile>

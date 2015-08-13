@@ -1,4 +1,4 @@
-package com.pivotal.pxf.plugins.pipes;
+package com.pivotal.pxf.plugins.dram;
 
 import org.apache.hadoop.mapred.TextInputFormat;
 

@@ -7,7 +7,7 @@
 	<plugins>
 		<fragmenter>com.pivotal.pxf.plugins.hdfs.HdfsDataFragmenter
 		</fragmenter>
-		<accessor>com.pivotal.pxf.plugins.pipes.PipedAccessor</accessor>
+		<accessor>com.pivotal.pxf.plugins.dram.PipedAccessor</accessor>
 		<resolver>com.pivotal.pxf.plugins.hdfs.StringPassResolver</resolver>
 		<analyzer>com.pivotal.pxf.plugins.hdfs.HdfsAnalyzer</analyzer>
 		<linebyline>true</linebyline>
@@ -18,9 +18,9 @@
 	<description>A profile for PXF Pipes using the entire file as input
 	</description>
 	<plugins>
-		<fragmenter>com.pivotal.pxf.plugins.pipes.WholeFileFragmenter
+		<fragmenter>com.pivotal.pxf.plugins.dram.WholeFileFragmenter
 		</fragmenter>
-		<accessor>com.pivotal.pxf.plugins.pipes.PipedAccessor</accessor>
+		<accessor>com.pivotal.pxf.plugins.dram.PipedAccessor</accessor>
 		<resolver>com.pivotal.pxf.plugins.hdfs.StringPassResolver</resolver>
 		<analyzer>com.pivotal.pxf.plugins.hdfs.HdfsAnalyzer</analyzer>
 		<linebyline>false</linebyline>
