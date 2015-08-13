@@ -26,8 +26,8 @@ public class PxfPipesWholeFileCommandTest extends PxfUnit {
 	static {
 		columnDefs = new ArrayList<Pair<String, DataType>>();
 		columnDefs.add(new Pair<String, DataType>("key", DataType.TEXT));
-		columnDefs.add(new Pair<String, DataType>("serial", DataType.TEXT));
-		columnDefs.add(new Pair<String, DataType>("bitss", DataType.TEXT));
+		columnDefs.add(new Pair<String, DataType>("serial", DataType.BIGINT));
+		columnDefs.add(new Pair<String, DataType>("bits", DataType.TEXT));
 	}
 
 	@Before

@@ -57,12 +57,14 @@ public class DramResolver extends Plugin implements ReadResolver {
 		OneField oneField = new OneField();
 		oneField.type = type.getOID();
 
+
 		if (val == null) {
 			oneField.val = null;
 		} else {
 			switch (type) {
 			case BIGINT:
 				oneField.val = Long.parseLong(val);
+				LOG.info("type:"+type.name());
 				break;
 			case BOOLEAN:
 				oneField.val = Boolean.parseBoolean(val);
@@ -91,6 +93,7 @@ public class DramResolver extends Plugin implements ReadResolver {
 			}
 		}
 
+		//LOG.info("oneField type:"+oneField.type);
 		fields.add(oneField);
 	}
 }

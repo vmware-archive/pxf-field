@@ -73,7 +73,7 @@ public class DramBlobAccessor extends HdfsSplittableDataAccessor {
 		if(superRow==null){
 			return null;
 		}
-		if (serial % 1000000==0) {
+		if (serial % 100000==0) {
 			LOG.info(key + " " + serial);
 		}
 		return new OneRow(key, new Pair(serial, ((BytesWritable)superRow.getData()).getBytes()));
