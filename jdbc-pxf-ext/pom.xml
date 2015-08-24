@@ -6,7 +6,7 @@
 
 	<properties>
 		<hadoop-version>2.6.0.3.0.0.0-249</hadoop-version>
-		<pxf-version>2.5.0.0</pxf-version>
+		<pxf-version>2.5.1.0</pxf-version>
 		<pxf-test-version>3.0.0.0-18-SNAPSHOT</pxf-test-version>
 	</properties>
 

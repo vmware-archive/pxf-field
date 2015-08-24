@@ -1,6 +1,7 @@
 package com.pivotal.pxf;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -32,6 +33,7 @@ import com.pivotal.pxf.api.WriteAccessor;
 import com.pivotal.pxf.api.WriteResolver;
 import com.pivotal.pxf.api.io.DataType;
 import com.pivotal.pxf.api.utilities.InputData;
+import com.pivotal.pxf.service.FragmentsResponse;
 import com.pivotal.pxf.service.FragmentsResponseFormatter;
 import com.pivotal.pxf.service.utilities.ProtocolData;
 
@@ -360,8 +362,13 @@ public abstract class PxfUnit {
 		List<Fragment> fragments = getFragmenter(fragmentInputData)
 				.getFragments();
 
-		String jsonOutput = FragmentsResponseFormatter.formatResponseString(
-				fragments, input.toString());
+		FragmentsResponse fragmentsResponse = FragmentsResponseFormatter
+				.formatResponse(fragments, input.toString());
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		fragmentsResponse.write(baos);
+
+		String jsonOutput = baos.toString();
 
 		inputs = new ArrayList<InputData>();
 
