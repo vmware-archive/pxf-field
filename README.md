@@ -19,7 +19,7 @@ All of these projects reference various Pivotal HD libraries using Maven.  These
 
 This repository is referenced in each of the PXF projects. 
 
-In addition to resolve the PXF dependecies you should use the [Big-Data Maven Repository](https://bintray.com/big-data/maven/pxf/view):
+In addition to resolve the PXF dependencies you should use the [Big-Data Maven Repository](https://bintray.com/big-data/maven/pxf/view):
 ```xml
 <repository>
   <id>bintray</id>
@@ -74,49 +74,49 @@ Note that the same repository serves pre-build pxf-field jars as well:
 <dependency>
    <groupId>com.gopivotal</groupId>
    <artifactId>accumulo-pxf-ext</artifactId>
-   <version>3.0.0.0-18</version>
+   <version>3.0.1.0-1</version>
 </dependency>
 
 <dependency>
    <groupId>com.gopivotal</groupId>
    <artifactId>cassandra-pxf-ext</artifactId>
-   <version>3.0.0.0-18</version>
+   <version>3.0.1.0-1</version>
 </dependency>
 
 <dependency>
   <groupId>com.gopivotal</groupId>
   <artifactId>hive-hotfix-pxf-ext</artifactId>
-  <version>3.0.0.0-18</version>
+  <version>3.0.1.0-1</version>
 </dependency>
 
 <dependency>
   <groupId>com.gopivotal</groupId>
   <artifactId>jdbc-pxf-ext</artifactId>
-  <version>3.0.0.0-18</version>
+  <version>3.0.1.0-1</version>
 </dependency>
 
 <dependency>
   <groupId>com.gopivotal</groupId>
   <artifactId>json-pxf-ext</artifactId>
-  <version>3.0.0.0-18</version>
+  <version>3.0.1.0-1</version>
 </dependency>
 
 <dependency>
   <groupId>com.gopivotal</groupId>
   <artifactId>pxf-pipes</artifactId>
-  <version>3.0.0.0-18</version>
+  <version>3.0.1.0-1</version>
 </dependency>
 
 <dependency>
   <groupId>com.gopivotal</groupId>
   <artifactId>pxf-test</artifactId>
-  <version>3.0.0.0-18</version>
+  <version>3.0.1.0-1</version>
 </dependency>
 
 <dependency>
   <groupId>com.gopivotal</groupId>
   <artifactId>redis-pxf-ext</artifactId>
-  <version>3.0.0.0-18</version>
+  <version>3.0.1.0-1</version>
 </dependency>
 ```
 
