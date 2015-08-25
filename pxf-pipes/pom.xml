@@ -2,13 +2,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gopivotal</groupId>
 	<artifactId>pxf-pipes</artifactId>
-	<version>3.0.1.0-1</version>
+	<version>3.0.1.0-2-SNAPSHOT</version>
 
 	<properties>
 		<hadoop-version>2.6.0.3.0.1.0-1</hadoop-version>
 		<pmr-common-version>2.0.1.0-1</pmr-common-version>
 		<pxf-version>2.5.1.0</pxf-version>
-		<pxf-test-version>3.0.1.0-1</pxf-test-version>
+		<pxf-test-version>3.0.1.0-2-SNAPSHOT</pxf-test-version>
 	</properties>
 	
 	<dependencies>
