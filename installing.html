@@ -60,10 +60,8 @@ mv accumulo-pxf-ext-&lt;version&gt;.jar \<br/>
 </code>
 </li></p>
 
-<p><li>On every node modify <strong>/etc/gphd/pxf/conf/pxf-public.classpath<strong> to add the extension and any additional JAR files.</p>
-
+<p><li>On every node modify /etc/gphd/pxf/conf/pxf-public.classpath to add the extension and additional dependecy JARs.</p>
 <code>
-
 <br/>
 vi &lt;configdir&gt;/etc/gphd/pxf/conf/pxf-public.classpath<br/>
 <br/>
@@ -82,7 +80,7 @@ $GPHD_HOME/pxf/lib/accumulo-trace.jar<br/>
 $GPHD_HOME/pxf/lib/libthrift.jar<br/>
 $GPHD_HOME/pxf/lib/jline.jar<br/>
 <br/>
-</li>
+</code></li>
 
 <p><li>Modify pxf-profiles.xml to add a profile for your connector.</p>
 <code>
