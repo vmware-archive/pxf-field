@@ -39,7 +39,9 @@
 
 <p>Profiles are a means to specify the class names and other parameters for you extension.  They are a cleaner shortcut, where a user specifies a PROFILE in an external table definition instead of the FRAGMENTER, ACCESSOR, RESOLVER, etc.  Both ways will work, but one is certainly less characters to type.  You can install a profile by modifying pxf-profiles.xml in your cluster configuration and push it out to the cluster, or use ICM to reconfigure your PHD cluster.  Changes to the PXF profiles are picked up dynamically and do not necessarily require a restart of the cluster.</p>
 
-<p>More info is found in the PXF guide which can be found on the <a href="http://pivotalhd.docs.gopivotal.com/index.html" target="_blank">Pivotal HD documentation site</a>.</p>
+<p>For in-depth PXF architecture and implementation details description read <a href="http://blog.tzolov.net/2015/08/federated-queries-with-hawq-sql-on.html" target="_blank">Notes on PXF Architecture</a>.</p>
+
+<p>More info is found in the PXF guide which can be found on the <a href="http://hawq.docs.pivotal.io/docs-hawq/topics/PXFExternalTableandAPIReference.html" target="_blank">Pivotal HD PXF documentation site</a>.</p>
 
 <h3>Testing Extensions</h3>
 
