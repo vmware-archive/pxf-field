@@ -52,34 +52,40 @@ For example, the following steps will install the <a href="accumulo.html">Accumu
 <p>
 <code>
 scp ./accumulo-pxf-ext-&lt;version&gt;.jar <every HDFS and HAWQ node> </every><br/>
-Then on each node: mv accumulo-pxf-ext-&lt;version&gt;.jar \<br/>
+</code>
+Then on each node
+<code>
+mv accumulo-pxf-ext-&lt;version&gt;.jar \<br/>
 /usr/lib/gphd/pxf<br/>
 </code>
 </li></p>
 
-<p><li>Check out the cluster configuration using ICM.  Modify hadoop-env.sh to add the extension and any additional JAR files.  Modify pxf-profiles.xml to add a profile for your connector.</p>
+<p><li>On every node modify <string></string>/etc/gphd/pxf/conf/pxf-public.classpath<strong> to add the extension and any additional JAR files.</p>
 
 <code>
-icm_client fetch-configuration -l &lt;clustername&gt; -o &lt;configdir&gt;<br/>
+
 <br/>
-vi &lt;configdir&gt;/hdfs/hadoop-env.sh<br/>
+vi &lt;configdir&gt;/etc/gphd/pxf/conf/pxf-public.classpath<br/>
 <br/>
 # Required only for PXF with Accumulo<br/>
-HADOOP_CLASSPATH=$HADOOP_CLASSPATH:\<br/>
-$GPHD_HOME/pxf/accumulo-pxf-ext-&lt;version&gt;.jar:\<br/>
-$GPHD_HOME/accumulo/lib/accumulo-core.jar:\<br/>
-$GPHD_HOME/accumulo/lib/accumulo-core.jar:\<br/>
-$GPHD_HOME/accumulo/lib/accumulo-fate.jar:\<br/>
-$GPHD_HOME/accumulo/lib/accumulo-minicluster.jar:\<br/>
-$GPHD_HOME/accumulo/lib/accumulo-proxy.jar:\<br/>
-$GPHD_HOME/accumulo/lib/accumulo-server.jar:\<br/>
-$GPHD_HOME/accumulo/lib/accumulo-start.jar:\<br/>
-$GPHD_HOME/accumulo/lib/accumulo-test.jar:\<br/>
-$GPHD_HOME/accumulo/lib/accumulo-trace.jar:\<br/>
-$GPHD_HOME/accumulo/lib/libthrift.jar:\<br/>
-$GPHD_HOME/accumulo/lib/jline.jar:\<br/>
-$GPHD_HOME/accumulo/conf<br/>
+
+$GPHD_HOME/pxf/accumulo-pxf-ext-&lt;version&gt;.jar\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-core.jar\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-core.jar\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-fate.jar\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-minicluster.jar\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-proxy.jar\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-server.jar\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-start.jar\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-test.jar\<br/>
+$GPHD_HOME/accumulo/lib/accumulo-trace.jar\<br/>
+$GPHD_HOME/accumulo/lib/libthrift.jar\<br/>
+$GPHD_HOME/accumulo/lib/jline.jar\<br/>
 <br/>
+</li>
+
+<p><li>Modify pxf-profiles.xml to add a profile for your connector.</p>
+<code></code>
 vi &lt;configdir&gt;/gpxf/pxf-profiles.xml<br/>
 &lt;profile&gt;<br\><br/>
 &nbsp;&nbsp;&lt;name&gt;Accumulo&lt;/name&gt;<br\><br/>
@@ -91,9 +97,7 @@ vi &lt;configdir&gt;/gpxf/pxf-profiles.xml<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;resolver&gt;com.pivotal.pxf.plugins.accumulo.AccumuloResolver&lt;/resolver&gt;<br\><br/>
 &nbsp;&nbsp;&lt;/plugins&gt;<br\><br/>
 &lt;/profile&gt;<br\><br/>
-</code></li>
-
-<p><li>Reconfigure the cluster using ICM.</p>
+</code>
 
 <p>
 <code>
