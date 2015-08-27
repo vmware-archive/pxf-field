@@ -25,19 +25,18 @@ A PXF extension is relatively simple to install.  The steps break down to:
 <ol>
 <li>Package extension into a JAR file</li>
 <li>Put the JAR file in the /usr/lib/gphd/pxf directory on each cluster node</li>
-<li>Add this JAR file and any dependencies to the the HADOOP_CLASSPATH in /etc/gphd/hadoop/conf/hadoop-env.sh on each cluster node</li>
-<li>Create a profile for your new extension, modifying pxf-profiles.xml</li>
-<li>Restart the cluster using ICM, or push out the pxf-profiles.xml file manually</li>
+<li>Add this JAR file name and any dependencies names to the <string></string>/etc/gphd/pxf/conf/pxf-public.classpath<strong></strong> file on each cluster node</li>
+<li>Create a profile for your new extension, modifying  /etc/gphd/pxf/conf/pxf-profiles.xml</li>
+<li>Restart both the HAWQ and the PXF services via Ambari. Use the Ambari UI or Ambari REST API</li>
 <li>Create an external table and query data</li>
 <li>If unsuccessful with classpath related errors, go back to 3 and add any missing JAR files</li>
 </ol>
-<b>WARNING</b> Modifying the hadoop-env.sh file can damage the cluster.  Make sure you have backups and know what you're up to in there!
 </p>
 
 <h3>Example Installation</h3>
 
 <p>
-<b>Note</b> This guide was built against the Pivotal HD GA release.
+<b>Note</b> This guide was built against the Pivotal HD 3.0 release.
 </p>
 <p>
 For example, the following steps will install the <a href="accumulo.html">Accumulo extension</a>.
@@ -48,14 +47,12 @@ For example, the following steps will install the <a href="accumulo.html">Accumu
 
 <p><code>scp ~/accumulo-pxf-ext-&lt;version&gt;.jar gpadmin@&lt;hawq_master&gt;:~</code></p>
 
-<p><li>Create a file called <code>hostfile.txt</code> that contains the hostname of every Hadoop node and HAWQ Segment Server in your Pivotal HD cluster.</li></p>
-
-<p><li>As <code>gpadmin</code> on the PCC node (from here on out), use the massh utility to copy the jar file to every HDFS and HAWQ node in the cluster (includes master and slave services).</p>
+<p><li>As <code>gpadmin</code> on the Ambari node (from here on out), use the scp utility to copy the jar file to every HDFS and HAWQ node in the cluster (includes master and slave services).</p>
 
 <p>
 <code>
-massh hostfile.txt push accumulo-pxf-ext-&lt;version&gt;.jar<br/>
-massh hostfile.txt verbose mv accumulo-pxf-ext-&lt;version&gt;.jar \<br/>
+scp ./accumulo-pxf-ext-&lt;version&gt;.jar <every HDFS and HAWQ node> </every><br/>
+Then on each node: mv accumulo-pxf-ext-&lt;version&gt;.jar \<br/>
 /usr/lib/gphd/pxf<br/>
 </code>
 </li></p>
