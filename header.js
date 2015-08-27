@@ -1,6 +1,6 @@
 
 document.write("<header>"
-+ "        <h1>PXF 2.0.1.0</h1>"
++ "        <h1>PXF 3.0.1.0</h1>"
 + "        <p>Prototype PXF extensions for HAWQ</p>"
 + "        <p class=\"view\"><a href=\"https://github.com/Pivotal-Field-Engineering/pxf-field\">View the Project on GitHub <small>Pivotal-Field-Engineering/pxf-field</small></a></p>"
 + "        <ul>"
