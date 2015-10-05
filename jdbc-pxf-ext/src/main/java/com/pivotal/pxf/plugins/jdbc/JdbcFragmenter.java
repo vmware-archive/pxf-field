@@ -20,7 +20,7 @@ public class JdbcFragmenter extends Fragmenter {
         super(metaData);
 
         Pattern p = Pattern.compile("\\/\\/.+:");
-        Pattern p2 = Pattern.compile("\\/\\/.[^/:\\n\\r ]+\\s{1}");
+        Pattern p2 = Pattern.compile("\\/\\/.[^/:]+");
 
         Matcher m = p.matcher(inputData.getUserProperty("DB_URL"));
         Matcher m2 = p2.matcher(inputData.getUserProperty("DB_URL"));
@@ -28,7 +28,7 @@ public class JdbcFragmenter extends Fragmenter {
         if (m.find()) {
             hostName = m.group(0).substring(2,m.group(0).length()-1);
         }else if (m2.find()) {
-            hostName = m.group(0).substring(2,m.group(0).length());
+            hostName = m2.group(0).substring(2,m2.group(0).length());
         }
 
     }
