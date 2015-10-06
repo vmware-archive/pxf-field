@@ -12,7 +12,6 @@ import com.pivotal.pxf.api.ReadAccessor;
 import com.pivotal.pxf.api.WriteAccessor;
 import com.pivotal.pxf.api.utilities.InputData;
 import com.pivotal.pxf.api.utilities.Plugin;
-import org.omg.CORBA.*;
 
 public class JdbcAccessor extends Plugin implements WriteAccessor,ReadAccessor {
 
