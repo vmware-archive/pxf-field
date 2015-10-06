@@ -27,7 +27,7 @@ restart pxf service
 service pxf-service restart
 ```
 
-To write rows to terradata via HAWQ:
+To write rows to Teradata via HAWQ:
 
 
 ```sql
@@ -44,7 +44,7 @@ insert into tr_ext_write  (Kolumna_1, Kolumna_2, Kolumna_3) values ('2' ,'3','1'
 
 ```
 
-select on terradata side to check
+select on Teradata side to check
 ```sql
 select * from schema.tablename
 where Kolumna_1 = 'ala' and Kolumna_2 = 'mola' and Kolumna_3 = 'dola'
@@ -57,7 +57,7 @@ Kolumna_1                                           Kolumna_2                   
 ala                                                 mola                                                dola                                                
 ```
 
-To read data from terradata via HAWQ:
+To read data from Teradata via HAWQ:
 ```sql
 DROP EXTERNAL TABLE tr_ext_read;
 CREATE EXTERNAL TABLE tr_ext_read(
