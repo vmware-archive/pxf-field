@@ -7,7 +7,7 @@
 
 	<properties>
 		<hadoop-version>2.6.0.3.0.1.0-1</hadoop-version>
-		<hive-version>0.14.0.2.2.0.0-2041</hive-version>
+		<hive-version>3.1.2</hive-version>
 		<pxf-version>2.5.1.0</pxf-version>
 		<pxf-test-version>3.0.1.0-2-SNAPSHOT</pxf-test-version>
 	</properties>
