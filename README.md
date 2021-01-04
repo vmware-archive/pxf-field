@@ -1,4 +1,4 @@
-pxf-field
+<h1> VMware has ended active development of this project, this repository will no longer be updated.</h1><br>pxf-field
 =========
 
 All of these projects reference various Pivotal HD libraries using Maven.  These libraries are largely in the Spring Source repository:
