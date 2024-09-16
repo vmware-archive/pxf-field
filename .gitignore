@@ -7,12 +7,28 @@
 # Local files
 build
 
+# Intellij
+.idea/
+*.iml
+*.iws
+
+# Mac
+.DS_Store
+
 # Maven build directories
 */target
 /accumulo-pxf-ext/doc
 /json-pxf-ext/doc
 /pxf-test/doc
+log/
+logs/
+pom.xml.versionsBackup
 
 /external-jars
 /Servers
 /RemoteSystemsTempFiles
+
+# Netbeans
+nb-configuration.xml
+nbactions-run.xml
+nbactions.xml

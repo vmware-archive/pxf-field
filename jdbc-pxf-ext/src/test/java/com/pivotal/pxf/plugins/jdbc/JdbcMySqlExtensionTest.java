@@ -9,29 +9,27 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.pivotal.pxf.api.*;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.pivotal.pxf.PxfUnit;
-import com.pivotal.pxf.api.OneField;
-import com.pivotal.pxf.api.OneRow;
-import com.pivotal.pxf.api.WriteAccessor;
-import com.pivotal.pxf.api.WriteResolver;
 import com.pivotal.pxf.api.io.DataType;
 
 public class JdbcMySqlExtensionTest extends PxfUnit {
 
 	private JdbcAccessor accessor = null;
 	private JdbcResolver resolver = null;
+	private JdbcFragmenter fragmenter = null;
 	private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	private static final String DATABASE = "PXFTEST";
-	private static final String JDBC_CONNECTION = "jdbc:mysql://ambari:3306";
+	private static final String DATABASE = "test";
+	private static final String JDBC_CONNECTION = "jdbc:mysql://localhost:3306";
 	private static final String DB_URL = JDBC_CONNECTION + "/" + DATABASE;
 	private static final String TABLE_NAME = "PXFTEST";
 	private static final String POWER_USER = "root";
-	private static final String POWER_USER_PASSWORD = "secret";
+	private static final String POWER_USER_PASSWORD = "root";
 	private static final String USER = "pxfuser";
 	private static final String PASS = "secret";
 
@@ -100,6 +98,7 @@ public class JdbcMySqlExtensionTest extends PxfUnit {
 		extraParams.add(new Pair<String, String>("DB_URL", DB_URL));
 		extraParams.add(new Pair<String, String>("TABLE_NAME", TABLE_NAME));
 
+		fragmenter = new JdbcFragmenter(super.getInputDataForWritableTable());
 		accessor = new JdbcAccessor(super.getInputDataForWritableTable());
 	}
 
@@ -193,6 +192,10 @@ public class JdbcMySqlExtensionTest extends PxfUnit {
 
 		accessor = new JdbcAccessor(super.getInputDataForWritableTable());
 		resolver = new JdbcResolver(super.getInputDataForWritableTable());
+		fragmenter = new JdbcFragmenter(super.getInputDataForWritableTable());
+
+
+		//List<Fragment> fragments = fragmenter.getFragments();
 
 		List<String> allRows = new ArrayList<String>();
 
@@ -222,6 +225,36 @@ public class JdbcMySqlExtensionTest extends PxfUnit {
 		while (rs.next()) {
 			Assert.assertEquals(allRows.get(i++), rs.getString(1));
 		}
+
+
+	}
+
+	@Test
+	public void testReadValue() throws Exception{
+
+		extraParams.clear();
+
+		extraParams.add(new Pair<String, String>("JDBC_DRIVER", JDBC_DRIVER));
+		extraParams.add(new Pair<String, String>("DB_URL", "jdbc:mysql://localhost:3306/MONKEY"));
+		extraParams.add(new Pair<String, String>("TABLE_NAME", "MONKEY"));
+		extraParams.add(new Pair<String, String>("USER", "MONKEY"));
+		extraParams.add(new Pair<String, String>("PASS", "MONKEY"));
+
+		accessor = new JdbcAccessor(super.getInputDataForWritableTable());
+		resolver = new JdbcResolver(super.getInputDataForWritableTable());
+		fragmenter = new JdbcFragmenter(super.getInputDataForWritableTable());
+
+		fragmenter.getFragments();
+
+		accessor.openForRead();
+
+/*		List<OneField> lista_aaa = resolver.getFields(accessor.readNextObject());
+		for (OneField field : lista_aaa) {
+			System.out.println("type:"+ field.type +"\n" + "value:" + field.val);
+		}*/
+		resolver.getFields(accessor.readNextObject());
+
+		accessor.closeForRead();
 	}
 
 	@Override
@@ -243,4 +276,13 @@ public class JdbcMySqlExtensionTest extends PxfUnit {
 	public Class<? extends WriteResolver> getWriteResolverClass() {
 		return JdbcResolver.class;
 	}
+
+	@Override
+	public Class<? extends ReadResolver> getReadResolverClass() {return JdbcResolver.class;}
+
+	@Override
+	public Class<? extends ReadAccessor> getReadAccessorClass() {return JdbcAccessor.class;}
+
+	@Override
+	public Class<? extends Fragmenter> getFragmenterClass() {return JdbcFragmenter.class;}
 }

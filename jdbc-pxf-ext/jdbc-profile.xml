@@ -5,5 +5,6 @@
 	<plugins>
 		<accessor>com.pivotal.pxf.plugins.jdbc.JdbcAccessor</accessor>
 		<resolver>com.pivotal.pxf.plugins.jdbc.JdbcResolver</resolver>
+		<fragmenter>com.pivotal.pxf.plugins.jdbc.JdbcFragmenter</fragmenter>
 	</plugins>
 </profile>

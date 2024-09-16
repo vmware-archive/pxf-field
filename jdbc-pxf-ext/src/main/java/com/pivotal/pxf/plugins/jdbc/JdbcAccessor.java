@@ -1,14 +1,19 @@
 package com.pivotal.pxf.plugins.jdbc;
 
 import java.io.IOException;
+import java.lang.Object;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import com.pivotal.pxf.api.OneRow;
+import com.pivotal.pxf.api.ReadAccessor;
 import com.pivotal.pxf.api.WriteAccessor;
 import com.pivotal.pxf.api.utilities.InputData;
 import com.pivotal.pxf.api.utilities.Plugin;
 
-public class JdbcAccessor extends Plugin implements WriteAccessor {
+public class JdbcAccessor extends Plugin implements WriteAccessor,ReadAccessor {
 
 	// private static final Logger LOG = Logger.getLogger(JdbcAccessor.class);
 	private String jdbcDriver = null;
@@ -20,6 +25,9 @@ public class JdbcAccessor extends Plugin implements WriteAccessor {
 	private Statement statement = null;
 	private int batchSize = 100;
 	private int numAdded = 0;
+
+	private ResultSet rowsFromTable;
+	private OneRow oneRow = new OneRow();
 
 	public JdbcAccessor(InputData input) throws IOException {
 		super(input);
@@ -60,44 +68,10 @@ public class JdbcAccessor extends Plugin implements WriteAccessor {
 		} else {
 			conn = DriverManager.getConnection(dbUrl);
 		}
-		
+
 		conn.setAutoCommit(false);
 
 		statement = conn.createStatement();
-
-		if (tblName.contains(".")) {
-			String schema = tblName.split("\\.")[0];
-			String table = tblName.split("\\.")[1];
-
-			statement.execute("USE " + schema);
-			ResultSet tables = statement.executeQuery("SHOW TABLES");
-
-			boolean found = false;
-			while (tables.next()) {
-				if (tables.getString(1).equals(table)) {
-					found = true;
-					break;
-				}
-			}
-
-			if (!found) {
-				throw new SQLException("Table " + tblName + " not found.");
-			}
-		} else {
-			ResultSet tables = statement.executeQuery("SHOW TABLES");
-
-			boolean found = false;
-			while (tables.next()) {
-				if (tables.getString(1).equals(tblName)) {
-					found = true;
-					break;
-				}
-			}
-
-			if (!found) {
-				throw new SQLException("Table " + tblName + " not found.");
-			}
-		}
 
 		return true;
 	}
@@ -126,6 +100,57 @@ public class JdbcAccessor extends Plugin implements WriteAccessor {
 
 		if (conn != null) {
 			conn.commit();
+			conn.close();
+		}
+	}
+
+	@Override
+	public boolean openForRead() throws Exception {
+		Class.forName(jdbcDriver);
+
+		if (user != null) {
+			conn = DriverManager.getConnection(dbUrl, user, pass);
+		} else {
+			conn = DriverManager.getConnection(dbUrl);
+		}
+
+		conn.setAutoCommit(false);
+
+		statement = conn.createStatement();
+
+		rowsFromTable = statement.executeQuery("SELECT * FROM " + tblName); // read all rows from table
+
+		return true;
+	}
+
+	@Override
+	public OneRow readNextObject() throws Exception {
+
+		if(rowsFromTable.next()){
+			oneRow.setKey(rowsFromTable.getRow());
+
+			int col_count = rowsFromTable.getMetaData().getColumnCount();
+			List<HashMap<String, Object>> row = new ArrayList<HashMap<String, Object>>();
+
+			for(int i=1;i<=col_count;i++){
+				HashMap<String,Object> col = new HashMap<String,Object>();
+				col.put(rowsFromTable.getMetaData().getColumnTypeName(i),rowsFromTable.getObject(i));
+				row.add(col);
+			}
+
+			oneRow.setData(row);
+
+			return oneRow;
+
+		}else{
+
+			return null;
+		}
+	}
+
+	@Override
+	public void closeForRead() throws Exception {
+		if (conn != null) {
 			conn.close();
 		}
 	}
